@@ -1,0 +1,1431 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>班級步程試算</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+/* Layout: phone-first field card — one column (檔案 → 設定 → 摘要 → 剖面 → 時間表); two columns only for settings + summary on wide screens */
+:root{
+  --bg:#f2f4f1; --surface:#ffffff; --ink:#16201a; --ink2:#4a574f; --muted:#7a877f; --line:#d8ded9; --soft:#eaeeea;
+  --accent:#0c6a5d; --accent-ink:#ffffff; --accent-soft:#dcefe9;
+  --warn:#9a5a00; --warn-bg:#fff0d4; --crit:#a32632; --crit-bg:#fbe2e4;
+  --night:rgba(22,32,26,.16); --dusk:rgba(22,32,26,.07);
+  --b0:#08519d; --b1:#3186e9; --b2:#87bafc; --b3:#d8d7d4; --b4:#fd978f; --b5:#e24947; --b6:#9b0d1a;
+  --profile-line:#2f3833; --strip:#5b6a61; --t-root:#7a4b22; --t-mud:#8a8a3a; --t-trail:#c9cfc9;
+  --font-ui:"PingFang TC","Noto Sans TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
+  --font-num:"Barlow Semi Condensed","Roboto Condensed","Arial Narrow",var(--font-ui);
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1411; --surface:#172019; --ink:#e4ebe6; --ink2:#b2beb6; --muted:#87958c; --line:#2a352e; --soft:#1e2822;
+  --accent:#5cc4b2; --accent-ink:#0b1512; --accent-soft:#18332d;
+  --warn:#f1b24f; --warn-bg:#3a2b0e; --crit:#ff8a93; --crit-bg:#3d161b;
+  --night:rgba(0,0,0,.38); --dusk:rgba(0,0,0,.18);
+  --b0:#3a78c8; --b1:#4f98ee; --b2:#94c3f8; --b3:#545b56; --b4:#f39c93; --b5:#ea5e5f; --b6:#c93545;
+  --profile-line:#dfe7e2; --strip:#9fb0a6; --t-root:#c58a52; --t-mud:#b9b65a; --t-trail:#3a443d; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f1411; --surface:#172019; --ink:#e4ebe6; --ink2:#b2beb6; --muted:#87958c; --line:#2a352e; --soft:#1e2822;
+  --accent:#5cc4b2; --accent-ink:#0b1512; --accent-soft:#18332d;
+  --warn:#f1b24f; --warn-bg:#3a2b0e; --crit:#ff8a93; --crit-bg:#3d161b;
+  --night:rgba(0,0,0,.38); --dusk:rgba(0,0,0,.18);
+  --b0:#3a78c8; --b1:#4f98ee; --b2:#94c3f8; --b3:#545b56; --b4:#f39c93; --b5:#ea5e5f; --b6:#c93545;
+  --profile-line:#dfe7e2; --strip:#9fb0a6; --t-root:#c58a52; --t-mud:#b9b65a; --t-trail:#3a443d; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.55;-webkit-text-size-adjust:100%}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:18px 40px;display:grid;gap:14px}
+h1,h2{margin:0;text-wrap:balance}
+h1{font-size:1.45rem;letter-spacing:.02em}
+h2{font-size:1.02rem}
+.sub{margin:.25rem 0 0;color:var(--ink2);font-size:.92rem}
+.eyebrow{font-weight:600;letter-spacing:.06em;color:var(--accent);font-size:.8rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:10px;min-width:0}
+.cols{display:grid;gap:14px}
+@media (min-width:760px){ .cols{grid-template-columns:1fr 1fr;align-items:start} }
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:inherit;font-size:.93rem;border:1px solid var(--line);background:var(--soft);color:var(--ink);padding:.5rem .85rem;border-radius:8px;cursor:pointer;line-height:1.2;display:inline-flex;align-items:center;gap:.35rem;min-height:40px}
+.btn:hover{border-color:var(--muted)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.btn.ghost{background:transparent}
+.btn:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.status{margin:0;color:var(--ink2);font-size:.9rem}
+.error{margin:0;color:var(--crit);background:var(--crit-bg);border-radius:8px;padding:.55rem .7rem;font-size:.9rem}
+.warnbox{margin:0;color:var(--warn);background:var(--warn-bg);border-radius:8px;padding:.55rem .7rem;font-size:.9rem}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+.form label,.field{display:grid;gap:4px;font-size:.84rem;color:var(--ink2);min-width:0}
+.full{grid-column:1/-1}
+input,select{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.45rem .55rem;min-height:40px;width:100%;min-width:0}
+input[type=number]{font-family:var(--font-num);font-weight:600}
+.inline{display:flex;flex-wrap:wrap;align-items:center;gap:6px;color:var(--ink2);font-size:.88rem}
+.inline input{width:4.6rem}
+.hint{color:var(--muted);font-size:.8rem;margin:0}
+details>summary{cursor:pointer;color:var(--ink2);font-size:.9rem}
+/* summary */
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (min-width:520px){ .kpis{grid-template-columns:repeat(4,minmax(0,1fr))} }
+.kpi{display:grid;gap:2px;padding:8px 10px;border-radius:8px;background:var(--soft);min-width:0}
+.kpi .k{font-size:.76rem;color:var(--muted)}
+.kpi .v{font-family:var(--font-num);font-weight:600;font-size:1.35rem;line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap}
+.kpi .v small{font-size:.72em;color:var(--ink2);font-weight:500}
+.kpi .s{font-size:.74rem;color:var(--ink2);font-variant-numeric:tabular-nums}
+.kpi.main{background:var(--accent-soft)}
+.kpi.main .v{color:var(--accent)}
+.timeline{display:grid;gap:6px}
+.trow{display:flex;justify-content:space-between;gap:10px;font-size:.92rem;border-top:1px dashed var(--line);padding-top:6px}
+.trow b{font-family:var(--font-num);font-weight:600;font-size:1.05rem;font-variant-numeric:tabular-nums}
+.chip{display:inline-block;font-size:.72rem;line-height:1.4;padding:0 .45rem;border-radius:999px;font-weight:600;white-space:nowrap}
+.chip.warn{color:var(--warn);background:var(--warn-bg)}
+.chip.crit{color:var(--crit);background:var(--crit-bg)}
+.chip.ok{color:var(--accent);background:var(--accent-soft)}
+.scen{font-size:.82rem;color:var(--ink2)}
+.scen b{color:var(--ink)}
+/* profile */
+.svgbox{width:100%;min-width:0}
+.svgbox svg{display:block;width:100%;height:auto;touch-action:manipulation}
+.legend{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:.74rem;color:var(--ink2);align-items:center}
+.sw{display:inline-block;width:12px;height:10px;border-radius:2px;margin-right:3px;vertical-align:-1px}
+svg text{font-family:var(--font-num);fill:var(--ink2)}
+/* table */
+.tblwrap{overflow-x:auto;margin-inline:-4px}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th{font-size:.74rem;color:var(--muted);font-weight:500;text-align:left;padding:4px 4px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:7px 3px;border-bottom:1px solid var(--line);vertical-align:top}
+td.num,th.num{text-align:right}
+td .t{font-family:var(--font-num);font-weight:600;font-size:.98rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+td .meta{font-size:.76rem;color:var(--muted);font-variant-numeric:tabular-nums}
+td .nm{font-size:.92rem;padding:.3rem .4rem;min-height:34px;background:transparent;border-color:transparent}
+td .nm:hover,td .nm:focus{border-color:var(--line);background:var(--bg)}
+td .stop{width:2.7rem;min-height:34px;padding:.25rem .3rem;text-align:right}
+td.cpname{min-width:6.4rem}
+td .del{min-width:28px}
+.idx{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--surface);font-family:var(--font-num);font-weight:700;font-size:.8rem}
+.del{border:none;background:transparent;color:var(--muted);font-size:1.15rem;cursor:pointer;min-width:32px;min-height:32px;border-radius:6px}
+.del:hover{color:var(--crit);background:var(--crit-bg)}
+.copybox{width:100%;min-height:9rem;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.6rem}
+.about p,.about li{font-size:.88rem;color:var(--ink2);margin:.3rem 0}
+.about ul{padding-left:1.1rem;margin:.2rem 0}
+.drop{outline:2px dashed var(--accent);outline-offset:3px}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
+
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--soft)}
+.seg input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.seg label{display:inline-flex;align-items:center;padding:.45rem .9rem;min-height:40px;cursor:pointer;font-size:.93rem;color:var(--ink2)}
+.seg input:checked+label{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.seg input:focus-visible+label{outline:2px solid var(--accent);outline-offset:-2px}
+.seclist{display:grid;gap:8px;margin-top:4px}
+.secrow{border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg)}
+.sechead{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.sechead select{flex:1;min-height:38px;padding:.3rem .45rem}
+.secgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.secgrid label{display:grid;gap:2px;font-size:.72rem;color:var(--ink2);min-width:0}
+.secgrid input{min-height:38px;padding:.3rem .4rem;text-align:right;-moz-appearance:textfield;appearance:textfield}
+.secgrid input::-webkit-outer-spin-button,.secgrid input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.secempty{color:var(--muted);font-size:.84rem;margin:.2rem 0}
+.tsw{display:inline-block;width:12px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.ck{display:inline-flex;align-items:center;gap:4px;font-size:.74rem;color:var(--ink2);margin-top:2px;cursor:pointer}
+.ck input{width:16px;height:16px;min-height:0;margin:0}
+.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px}
+.pgrid label{display:grid;gap:3px;font-size:.78rem;color:var(--ink2);min-width:0}
+.pgrid h3{grid-column:1/-1;margin:.4rem 0 0;font-size:.86rem;color:var(--ink)}
+</style>
+
+<main class="wrap">
+  <header>
+    <div class="eyebrow">10/6 實測校正 · 揹重 13 kg</div>
+    <h1>班級步程試算</h1>
+    <p class="sub">青少年負重 Tobler 公式：晴天與雨霧分開算，含休息、轉換緩衝和地形修正。</p>
+  </header>
+
+  <section class="card" id="fileCard" aria-labelledby="hFile">
+    <h2 id="hFile">路線檔案</h2>
+    <div class="row">
+      <label class="btn primary" for="file">選擇 GPX／KML 檔</label>
+      <input type="file" id="file" hidden>
+      <button class="btn" id="btnReverse" type="button">反轉方向</button>
+      <button class="btn ghost" id="btnSample" type="button">載入範例</button>
+    </div>
+    <p class="status" id="fileStatus"></p>
+    <p class="error" id="fileError" hidden></p>
+    <p class="warnbox" id="fileWarn" hidden></p>
+    <details id="rangeBox">
+      <summary>只算其中一段</summary>
+      <div class="inline" style="margin-top:8px">
+        從 <input id="rFrom" type="number" step="0.1" min="0" inputmode="decimal"> km 到
+        <input id="rTo" type="number" step="0.1" min="0" inputmode="decimal"> km（GPX 里程）
+        <button class="btn" id="btnRange" type="button">套用</button>
+        <button class="btn ghost" id="btnRangeAll" type="button">全段</button>
+      </div>
+      <p class="hint">軌跡含搭車段或前後多錄的部分時，用這裡裁掉。</p>
+    </details>
+  </section>
+
+  <section class="card" aria-labelledby="hSec">
+    <div class="row" style="justify-content:space-between">
+      <h2 id="hSec">路段與地形</h2>
+      <button class="btn" id="btnAddSec" type="button">新增路段</button>
+    </div>
+    <div class="seclist" id="secBody"></div>
+    <div class="inline" style="margin-top:8px"><label for="zStart">起點實測海拔（選填）</label><input type="number" id="zStart" step="1" inputmode="numeric" style="width:5.2rem"> m</div>
+    <p class="hint">GPX 常把小彎拉直，距離偏短；有實際里程就填，時間會照實際長度算。地圖規劃的路線也可能走錯稜線、高度不準：知道某段終點的實測海拔（GPS 紀錄、登山口標示）就填，中間的高度會按比例修正，空白就用 GPX 的值（灰字）。「濕滑樹根陡坡」「泥濘草徑」會降低速度，雨霧時降更多。沒設定的部分當一般步道。</p>
+  </section>
+
+  <div class="cols">
+    <section class="card" aria-labelledby="hSet">
+      <h2 id="hSet">設定</h2>
+      <div class="form">
+        <div class="full field">天氣
+          <div class="seg" role="radiogroup" aria-label="天氣">
+            <input type="radio" name="wx" id="wxSun" value="sun"><label for="wxSun">晴天</label>
+            <input type="radio" name="wx" id="wxRain" value="rain"><label for="wxRain">雨天或起霧</label>
+          </div>
+        </div>
+        <label for="date">出發日期<input type="date" id="date"></label>
+        <label for="start">出發時間<input type="time" id="start"></label>
+        <label for="deadline">最晚抵達（選填）<input type="time" id="deadline"></label>
+        <label for="tz">時區 UTC＋<input type="number" id="tz" step="0.5" min="-12" max="14" inputmode="decimal"></label>
+        <label for="rest" class="full">休息（每移動 1 小時，分鐘）<input type="number" id="rest" min="0" step="0.5" inputmode="decimal"></label>
+        <div class="full field">轉換緩衝（每移動 1 小時，分鐘）
+          <div class="inline">晴天 <input type="number" id="transSun" min="0" step="0.5" inputmode="decimal"> 雨霧 <input type="number" id="transRain" min="0" step="0.5" inputmode="decimal"></div>
+        </div>
+        <div class="full field">轉換點整隊（每個轉換點，分鐘）
+          <div class="inline">晴天 <input type="number" id="pointSun" min="0" step="1" inputmode="numeric"> 雨霧 <input type="number" id="pointRain" min="0" step="1" inputmode="numeric"></div>
+        </div>
+      </div>
+      <p class="hint">預設值取自 10/6：休息 8.3 分、雨天短停 8.4 分（穿脫雨具、整隊）。晴天減半與轉換點整隊為推估。</p>
+      <details>
+        <summary>公式參數</summary>
+        <div class="pgrid" id="pgrid" style="margin-top:8px">
+          <h3>基本（一般步道）</h3>
+          <label for="pFu">F 上坡<input type="number" id="pFu" step="0.01" inputmode="decimal"></label>
+          <label for="pFdSun">F 下坡（晴）<input type="number" id="pFdSun" step="0.01" inputmode="decimal"></label>
+          <label for="pFdRain">F 下坡（雨霧）<input type="number" id="pFdRain" step="0.01" inputmode="decimal"></label>
+          <label for="pUpr">爬升上限 m/h<input type="number" id="pUpr" step="10" inputmode="numeric"></label>
+          <label for="pDnrSun">下降上限（晴）<input type="number" id="pDnrSun" step="10" inputmode="numeric"></label>
+          <label for="pDnrRain">下降上限（雨霧）<input type="number" id="pDnrRain" step="10" inputmode="numeric"></label>
+          <h3>濕滑樹根陡坡（係數／爬升上限／下降上限）</h3>
+          <label for="rootSun0">晴 係數<input type="number" id="rootSun0" step="0.05" inputmode="decimal"></label>
+          <label for="rootSun1">晴 爬升<input type="number" id="rootSun1" step="10" inputmode="numeric"></label>
+          <label for="rootSun2">晴 下降<input type="number" id="rootSun2" step="10" inputmode="numeric"></label>
+          <label for="rootRain0">雨霧 係數<input type="number" id="rootRain0" step="0.05" inputmode="decimal"></label>
+          <label for="rootRain1">雨霧 爬升<input type="number" id="rootRain1" step="10" inputmode="numeric"></label>
+          <label for="rootRain2">雨霧 下降<input type="number" id="rootRain2" step="10" inputmode="numeric"></label>
+          <h3>泥濘草徑（係數／爬升上限／下降上限）</h3>
+          <label for="mudSun0">晴 係數<input type="number" id="mudSun0" step="0.05" inputmode="decimal"></label>
+          <label for="mudSun1">晴 爬升<input type="number" id="mudSun1" step="10" inputmode="numeric"></label>
+          <label for="mudSun2">晴 下降<input type="number" id="mudSun2" step="10" inputmode="numeric"></label>
+          <label for="mudRain0">雨霧 係數<input type="number" id="mudRain0" step="0.05" inputmode="decimal"></label>
+          <label for="mudRain1">雨霧 爬升<input type="number" id="mudRain1" step="10" inputmode="numeric"></label>
+          <label for="mudRain2">雨霧 下降<input type="number" id="mudRain2" step="10" inputmode="numeric"></label>
+          <h3>海拔與整體</h3>
+          <label for="pAltUp">≥2,500 m 上坡<input type="number" id="pAltUp" step="0.01" inputmode="decimal"></label>
+          <label for="pAltFlat">≥2,500 m 平路<input type="number" id="pAltFlat" step="0.01" inputmode="decimal"></label>
+          <label for="pAltDown">≥2,500 m 下坡<input type="number" id="pAltDown" step="0.01" inputmode="decimal"></label>
+          <label for="pF">整體時間係數<input type="number" id="pF" step="0.05" inputmode="decimal"></label>
+        </div>
+        <div class="row" style="margin-top:8px"><button class="btn ghost" id="btnResetP" type="button">恢復預設參數</button></div>
+      </details>
+    </section>
+
+    <section class="card" aria-labelledby="hSum">
+      <h2 id="hSum">摘要</h2>
+      <div class="kpis" id="kpis"></div>
+      <div class="timeline" id="tline"></div>
+      <p class="scen" id="scenLine"></p>
+    </section>
+  </div>
+
+  <section class="card" aria-labelledby="hProf">
+    <h2 id="hProf">高度剖面</h2>
+    <div>
+      <div class="hint" style="margin-bottom:4px">1:1 實際比例（距離已依實際里程校正）</div>
+      <div class="svgbox" id="strip"></div>
+    </div>
+    <div class="svgbox" id="profile"></div>
+    <div class="legend" id="legend"></div>
+    <p class="hint">點一下剖面就會在那裡加一個檢查點。上緣數字是預計通過的整點時刻；灰底是日落後，深灰是天黑後。剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑。</p>
+  </section>
+
+  <section class="card" aria-labelledby="hTbl">
+    <div class="row" style="justify-content:space-between">
+      <h2 id="hTbl">時間表</h2>
+      <div class="row">
+        <button class="btn" id="btnKm" type="button">每公里加點</button>
+        <button class="btn ghost" id="btnClear" type="button">清除自訂點</button>
+      </div>
+    </div>
+    <div class="tblwrap">
+      <table>
+        <thead><tr><th>#</th><th>檢查點</th><th class="num">抵達</th><th class="num">停留</th><th class="num">出發</th><th></th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <p class="hint">停留填分鐘數。勾「轉換點」會自動加上整隊時間（例如林道轉步道的登山口）。點名稱可以改名。</p>
+  </section>
+
+  <section class="card" aria-labelledby="hCopy">
+    <div class="row" style="justify-content:space-between">
+      <h2 id="hCopy">純文字時間表</h2>
+      <button class="btn primary" id="btnCopy" type="button">複製</button>
+    </div>
+    <textarea class="copybox" id="copyText" readonly aria-label="純文字時間表"></textarea>
+    <p class="hint" id="copyMsg"></p>
+  </section>
+
+  <details class="card about">
+    <summary>模型怎麼算</summary>
+    <ul>
+      <li>速度 V = F × 6 × e^(−3.5 × |S + 0.05|) km/h，S 是坡度，每 20 m 算一次，用實際長度換算。</li>
+      <li>F：上坡 0.75、雨霧下坡 0.71，是 10/6 班級揹 13 kg 的實測值（當天陣雨、路面濕）；晴天下坡 0.79 是推估（濕滑時步幅約縮短 11%）。</li>
+      <li>垂直速度上限：一般步道每小時爬 380 m，下降晴天 510 m、雨霧 460 m。</li>
+      <li>濕滑樹根陡坡：晴天速度 ×0.70、每小時最多爬 260 m、降 300 m；雨霧 ×0.60、爬 220 m、降 230 m。泥濘草徑：晴天 ×0.75，其餘同樹根。依據：10/6 濕階梯實測約每小時爬 285 m、降 325–354 m（樹根路晴天也一樣濕滑，再打九折）；雨霧速度係數取 Tobler 的無路徑係數 3/5。都是推估，可在「公式參數」修改。</li>
+      <li>海拔 2,500 m 以上：上坡 ×0.85、平路 ×0.90、下坡 ×0.95（依高海拔最大攝氧量下降的研究推估）。</li>
+      <li>總時間＝移動時間 ×（1 ＋（休息＋轉換緩衝）÷ 60）＋各點停留＋轉換點整隊。10/6 步道段：短停 8 次、平均 4.2 分；休息 4 次、平均 8.3 分。</li>
+      <li>範例是 10/20 出發、08:15 從四季新柵門起登，巨木登山口停 30 分吃午餐（加納富溪有活水）。其餘沒有算進去：起登前集合與教學、拍照、天候突變與隊伍狀況。</li>
+      <li>高度用檔案內的數值，每 20 m 取一點；錄製的軌跡（有時間記錄）先做 3 點平滑。填了實測海拔的段落，高度在兩個已知點之間按距離線性修正。日出、日落以起點座標、海平面計算。</li>
+    </ul>
+  </details>
+</main>
+
+<script>
+// ===== core: parsing, model, schedule, sun =====
+var CORE = (function () {
+  var R_EARTH = 6371008.8;
+  var STEP = 20;          // resample spacing (m)
+  var BIN = 100;          // model bin (m)
+  var BREAKS = [-20, -12, -5, 5, 12, 20];
+
+  var PRESETS = {
+    cal:  { label: '校正（10/6 實測）', k: 2.3, upr: 380, dnr: 461, f: 1.00 },
+    con:  { label: '保守',             k: 2.3, upr: 285, dnr: 330, f: 1.00 },
+    alt:  { label: '保守＋15%（高海拔假設）', k: 2.3, upr: 285, dnr: 330, f: 1.15 }
+  };
+
+  function rad(d) { return d * Math.PI / 180; }
+  function hav(a1, o1, a2, o2) {
+    var p1 = rad(a1), p2 = rad(a2), dp = p2 - p1, dl = rad(o2 - o1);
+    var h = Math.sin(dp / 2) * Math.sin(dp / 2) + Math.cos(p1) * Math.cos(p2) * Math.sin(dl / 2) * Math.sin(dl / 2);
+    return 2 * R_EARTH * Math.asin(Math.min(1, Math.sqrt(h)));
+  }
+
+  function byLocal(root, name) {
+    var list = root.getElementsByTagNameNS ? root.getElementsByTagNameNS('*', name) : root.getElementsByTagName(name);
+    if (!list || list.length === 0) list = root.getElementsByTagName(name);
+    return Array.prototype.slice.call(list);
+  }
+  function childText(el, name) {
+    var c = byLocal(el, name);
+    return c.length ? (c[0].textContent || '').trim() : '';
+  }
+  function num(s) { var v = parseFloat(s); return isFinite(v) ? v : null; }
+
+  // Parse GPX or KML text -> { name, pts:[{lat,lon,ele}], wpts:[{lat,lon,name}] }
+  function parseTrackText(text, DOMParserImpl) {
+    var P = DOMParserImpl || DOMParser;
+    var doc = new P().parseFromString(text, 'application/xml');
+    var root = doc.documentElement;
+    if (!root) throw new Error('檔案不是有效的 GPX 或 KML。');
+    var rootName = (root.localName || root.nodeName || '').toLowerCase().replace(/^.*:/, '');
+    var out = { name: '', pts: [], wpts: [] };
+    if (rootName === 'gpx') {
+      var trks = byLocal(root, 'trk');
+      out.name = trks.length ? childText(trks[0], 'name') : '';
+      var tp = byLocal(root, 'trkpt');
+      if (!tp.length) tp = byLocal(root, 'rtept');
+      if (!out.name) { var rtes = byLocal(root, 'rte'); if (rtes.length) out.name = childText(rtes[0], 'name'); }
+      tp.forEach(function (p) {
+        var lat = num(p.getAttribute('lat')), lon = num(p.getAttribute('lon'));
+        if (lat === null || lon === null) return;
+        var e = num(childText(p, 'ele'));
+        var tm = childText(p, 'time'), t = tm ? Date.parse(tm) : NaN;
+        out.pts.push({ lat: lat, lon: lon, ele: e, t: isFinite(t) ? t : null });
+      });
+      byLocal(root, 'wpt').forEach(function (w) {
+        var lat = num(w.getAttribute('lat')), lon = num(w.getAttribute('lon'));
+        if (lat === null || lon === null) return;
+        out.wpts.push({ lat: lat, lon: lon, name: childText(w, 'name') || '航點' });
+      });
+    } else if (rootName === 'kml') {
+      var docs = byLocal(root, 'Document');
+      out.name = docs.length ? childText(docs[0], 'name') : '';
+      byLocal(root, 'LineString').forEach(function (ls) {
+        var c = childText(ls, 'coordinates');
+        c.split(/\s+/).forEach(function (tok) {
+          if (!tok) return;
+          var a = tok.split(',');
+          var lon = num(a[0]), lat = num(a[1]), e = a.length > 2 ? num(a[2]) : null;
+          if (lat !== null && lon !== null) out.pts.push({ lat: lat, lon: lon, ele: e });
+        });
+      });
+      if (!out.pts.length) {
+        byLocal(root, 'coord').forEach(function (g) {
+          var a = (g.textContent || '').trim().split(/\s+/);
+          var lon = num(a[0]), lat = num(a[1]), e = a.length > 2 ? num(a[2]) : null;
+          if (lat !== null && lon !== null) out.pts.push({ lat: lat, lon: lon, ele: e });
+        });
+      }
+      byLocal(root, 'Placemark').forEach(function (pm) {
+        var pt = byLocal(pm, 'Point');
+        if (!pt.length) return;
+        var a = childText(pt[0], 'coordinates').split(',');
+        var lon = num(a[0]), lat = num(a[1]);
+        if (lat !== null && lon !== null) out.wpts.push({ lat: lat, lon: lon, name: childText(pm, 'name') || '航點' });
+      });
+    } else {
+      throw new Error('檔案不是 GPX 或 KML。');
+    }
+    if (out.pts.length < 2) throw new Error('檔案裡找不到軌跡或路線點。');
+    return out;
+  }
+
+  // Build cumulative distance on raw points, fill missing elevation, resample to STEP metres
+  function buildTrack(parsed, opts) {
+    var tr = buildTrackRaw(parsed);
+    var w = opts && opts.smooth ? opts.smooth : 1;
+    if (w > 1) {
+      var z = tr.z, n = z.length, h = Math.floor(w / 2), out = [];
+      for (var i = 0; i < n; i++) {
+        var s = 0, c = 0;
+        for (var j = Math.max(0, i - h); j <= Math.min(n - 1, i + h); j++) { s += z[j]; c++; }
+        out.push(s / c);
+      }
+      tr.z = out;
+    }
+    return tr;
+  }
+  function buildTrackRaw(parsed) {
+    var raw = [];
+    parsed.pts.forEach(function (p) {
+      var last = raw[raw.length - 1];
+      if (last && last.lat === p.lat && last.lon === p.lon) return;
+      raw.push({ lat: p.lat, lon: p.lon, ele: p.ele });
+    });
+    if (raw.length < 2) throw new Error('軌跡點太少，無法計算。');
+    var cum = [0];
+    for (var i = 1; i < raw.length; i++) cum.push(cum[i - 1] + hav(raw[i - 1].lat, raw[i - 1].lon, raw[i].lat, raw[i].lon));
+    var have = raw.filter(function (p) { return p.ele !== null; }).length;
+    if (have < raw.length * 0.5) throw new Error('這個檔案沒有高度資料。請在 Locus 先補上高度再匯出，或改用 CoMaps 匯出的 GPX。');
+    // fill gaps by linear interpolation along distance
+    var known = [];
+    raw.forEach(function (p, j) { if (p.ele !== null) known.push(j); });
+    raw.forEach(function (p, j) {
+      if (p.ele !== null) return;
+      var a = null, b = null;
+      for (var q = 0; q < known.length; q++) { if (known[q] < j) a = known[q]; else { b = known[q]; break; } }
+      if (a === null) p.ele = raw[b].ele;
+      else if (b === null) p.ele = raw[a].ele;
+      else p.ele = raw[a].ele + (raw[b].ele - raw[a].ele) * (cum[j] - cum[a]) / ((cum[b] - cum[a]) || 1);
+    });
+    var total = cum[cum.length - 1];
+    var x = [], z = [];
+    var n = Math.floor(total / STEP);
+    var k = 0;
+    for (var s = 0; s <= n; s++) {
+      var d = s * STEP;
+      while (k < cum.length - 2 && cum[k + 1] < d) k++;
+      x.push(d); z.push(interpSeg(cum, raw, k, d));
+    }
+    if (x[x.length - 1] < total - 1e-6) { x.push(total); z.push(raw[raw.length - 1].ele); }
+    return { raw: raw, cum: cum, x: x, z: z, total: total, name: parsed.name || '' };
+  }
+  function interpSeg(cum, raw, k, d) {
+    var a = cum[k], b = cum[k + 1];
+    if (b <= a) return raw[k].ele;
+    var t = Math.max(0, Math.min(1, (d - a) / (b - a)));
+    return raw[k].ele + (raw[k + 1].ele - raw[k].ele) * t;
+  }
+  function reverseTrack(tr, opts) {
+    var raw = tr.raw.slice().reverse();
+    return buildTrack({ name: tr.name, pts: raw, wpts: [] }, opts);
+  }
+  function zAt(tr, d) {
+    var x = tr.x, z = tr.z;
+    if (d <= 0) return z[0];
+    if (d >= tr.total) return z[z.length - 1];
+    var i = Math.min(x.length - 2, Math.floor(d / STEP));
+    while (i < x.length - 2 && x[i + 1] < d) i++;
+    var t = (d - x[i]) / ((x[i + 1] - x[i]) || 1);
+    return z[i] + (z[i + 1] - z[i]) * t;
+  }
+
+  function stats(tr) {
+    var up = 0, dn = 0, zmin = Infinity, zmax = -Infinity, imax = 0;
+    for (var i = 0; i < tr.z.length; i++) {
+      if (i) { var d = tr.z[i] - tr.z[i - 1]; if (d > 0) up += d; else dn -= d; }
+      if (tr.z[i] < zmin) zmin = tr.z[i];
+      if (tr.z[i] > zmax) { zmax = tr.z[i]; imax = i; }
+    }
+    return { dist: tr.total, up: up, dn: dn, zmin: zmin, zmax: zmax, dmax: tr.x[imax] };
+  }
+
+  // pace model (hours) on a short polyline
+  function tmod(xs, zs, k) {
+    var v = 2.5 * k, r = 250 * k, s = 400 * k, sg = 700 * k, T = 0;
+    for (var i = 1; i < xs.length; i++) {
+      var dx = xs[i] - xs[i - 1], dz = zs[i] - zs[i - 1];
+      var g = dz / Math.max(dx, 1e-9);
+      var up = dz > 0 ? dz : 0, dn = dz < 0 ? -dz : 0;
+      var steep = g < -0.12;
+      T += (dx / 1000) / v + up / r + (steep ? dn / s : 0) + (steep ? 0 : dn / sg);
+    }
+    return T * 1.13;
+  }
+
+  // capped model: per BIN take max(pace model, up/upr, dn/dnr), times factor f
+  function runModel(tr, p) {
+    var x = tr.x, z = tr.z, total = tr.total;
+    var edges = [];
+    for (var e = 0; e < total; e += BIN) edges.push(e);
+    edges.push(total);
+    if (edges.length >= 2 && edges[edges.length - 1] - edges[edges.length - 2] < 1e-6) edges.pop();
+    var binH = [], binCls = [], cum = [0];
+    var j = 0;
+    for (var b = 0; b < edges.length - 1; b++) {
+      var a0 = edges[b], b0 = edges[b + 1];
+      var xs = [a0], zs = [zAt(tr, a0)];
+      while (j < x.length && x[j] <= a0) j++;
+      var jj = j;
+      while (jj < x.length && x[jj] < b0) { xs.push(x[jj]); zs.push(z[jj]); jj++; }
+      xs.push(b0); zs.push(zAt(tr, b0));
+      var up = 0, dn = 0;
+      for (var i = 1; i < zs.length; i++) { var d = zs[i] - zs[i - 1]; if (d > 0) up += d; else dn -= d; }
+      var h = Math.max(tmod(xs, zs, p.k), up / p.upr, dn / p.dnr) * p.f;
+      binH.push(h);
+      var grade = 100 * (zs[zs.length - 1] - zs[0]) / ((b0 - a0) || 1);
+      binCls.push(gradeClass(grade));
+      cum.push(cum[b] + h);
+    }
+    return { edges: edges, binH: binH, binCls: binCls, cum: cum, total: cum[cum.length - 1] };
+  }
+  function gradeClass(g) {
+    var c = 0;
+    for (var i = 0; i < BREAKS.length; i++) if (g >= BREAKS[i]) c = i + 1;
+    return c; // 0..6 : DN3 DN2 DN1 FLAT UP1 UP2 UP3
+  }
+  // moving hours from start to distance d
+  function movingAt(m, d) {
+    var e = m.edges;
+    if (d <= 0) return 0;
+    if (d >= e[e.length - 1]) return m.total;
+    var b = Math.min(e.length - 2, Math.floor(d / BIN));
+    while (b < e.length - 2 && e[b + 1] < d) b++;
+    var t = (d - e[b]) / ((e[b + 1] - e[b]) || 1);
+    return m.cum[b] + m.binH[b] * t;
+  }
+
+  // schedule: cps sorted by d with .stop (min); rest = {mode, walk, pause, ratio}
+  function schedule(cps, m, rest, startMin) {
+    var rows = [], t = startMin, acc = 0, prevMv = 0;
+    for (var i = 0; i < cps.length; i++) {
+      var cp = cps[i];
+      var mv = movingAt(m, cp.d) * 60;
+      var seg = i === 0 ? 0 : mv - prevMv;
+      var restAdded = 0, arr;
+      if (i === 0) {
+        arr = t;
+      } else if (rest.mode === 'interval' && rest.walk > 0) {
+        var left = seg;
+        while (acc + left > rest.walk + 0.5) {   // a rest falls strictly inside this leg
+          left -= (rest.walk - acc);
+          acc = 0;
+          restAdded += rest.pause;
+        }
+        acc += left;
+        arr = t + seg + restAdded;
+      } else if (rest.mode === 'ratio') {
+        var r = Math.min(0.9, Math.max(0, rest.ratio));
+        arr = t + seg / (1 - r);
+        restAdded = seg / (1 - r) - seg;
+      } else {
+        arr = t + seg;
+      }
+      var stop = Math.max(0, cp.stop || 0);
+      if (rest.mode === 'interval' && stop >= rest.pause) acc = 0;
+      var accAtDep = acc;
+      rows.push({ cp: cp, seg: seg, rest: restAdded, arr: arr, dep: arr + stop, mv: mv, accDep: accAtDep });
+      t = arr + stop;
+      prevMv = mv;
+    }
+    return rows;
+  }
+  // clock minutes at distance d given schedule rows (for ticks / shading)
+  function clockAt(rows, m, rest, d) {
+    var i = 0;
+    while (i < rows.length - 1 && rows[i + 1].cp.d <= d) i++;
+    var r0 = rows[i];
+    if (i === rows.length - 1 || d <= r0.cp.d) return d <= r0.cp.d && i === 0 ? r0.arr : r0.dep;
+    var mvd = movingAt(m, d) * 60 - r0.mv;
+    if (rest.mode === 'interval' && rest.walk > 0) {
+      var n = Math.floor((r0.accDep + mvd) / rest.walk);
+      return r0.dep + mvd + n * rest.pause;
+    }
+    if (rest.mode === 'ratio') {
+      var rr = Math.min(0.9, Math.max(0, rest.ratio));
+      return r0.dep + mvd / (1 - rr);
+    }
+    return r0.dep + mvd;
+  }
+
+  // project waypoints onto the raw track; one entry per pass (runs within thr metres)
+  function projectWpts(tr, wpts, thr) {
+    thr = thr || 100;
+    var out = [];
+    wpts.forEach(function (w) {
+      var inRun = false, best = null;
+      for (var i = 0; i < tr.raw.length; i++) {
+        var dd = hav(w.lat, w.lon, tr.raw[i].lat, tr.raw[i].lon);
+        if (dd < thr) {
+          if (!inRun) { inRun = true; best = { i: i, dd: dd }; }
+          else if (dd < best.dd) best = { i: i, dd: dd };
+        } else if (inRun) {
+          out.push({ d: tr.cum[best.i], name: w.name, off: best.dd, trans: !!w.trans, stop: +w.stop || 0 });
+          inRun = false; best = null;
+        }
+      }
+      if (inRun) out.push({ d: tr.cum[best.i], name: w.name, off: best.dd, trans: !!w.trans, stop: +w.stop || 0 });
+    });
+    return out;
+  }
+
+  // auto points: start, end, highest, turnaround (if out-and-back / loop)
+  function autoPoints(tr, st) {
+    var pts = [{ d: 0, name: '起點', kind: 'start' }, { d: tr.total, name: '終點', kind: 'end' }];
+    var prom = st.zmax - Math.max(tr.z[0], tr.z[tr.z.length - 1]);   // skip a 'summit' that is only a bump near an end
+    if (st.dmax > 150 && st.dmax < tr.total - 150 && prom > 30) pts.push({ d: st.dmax, name: '最高點', kind: 'peak' });
+    var a = tr.raw[0], b = tr.raw[tr.raw.length - 1];
+    if (hav(a.lat, a.lon, b.lat, b.lon) < 300 && tr.total > 1000) {
+      var far = 0, fi = 0;
+      for (var i = 0; i < tr.raw.length; i++) {
+        var dd = hav(a.lat, a.lon, tr.raw[i].lat, tr.raw[i].lon);
+        if (dd > far) { far = dd; fi = i; }
+      }
+      var dt = tr.cum[fi];
+      if (Math.abs(dt - st.dmax) > 150) pts.push({ d: dt, name: '折返點', kind: 'turn' });
+      else pts.forEach(function (p) { if (p.kind === 'peak') p.name = '最高點／折返'; });
+    }
+    return pts;
+  }
+
+  // NOAA sunrise / sunset (sea level). alt: -0.833 sunrise/set, -6 civil. returns local hours
+  function jd(y, m, d) {
+    if (m <= 2) { y -= 1; m += 12; }
+    var A = Math.floor(y / 100), B = 2 - A + Math.floor(A / 4);
+    return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + B - 1524.5;
+  }
+  function sunEvents(dateStr, lat, lon, tz, altDeg) {
+    var p = dateStr.split('-').map(Number);
+    var n = jd(p[0], p[1], p[2]) - 2451545.0 + 0.5 - lon / 360.0;
+    var J = 2451545.0 + n + 0.0009, out = {};
+    [[-1, 'rise'], [1, 'set']].forEach(function (sk) {
+      var Jt = J, ok = true;
+      for (var it = 0; it < 60; it++) {
+        var M = (357.5291 + 0.98560028 * (Jt - 2451545.0)) % 360;
+        var C = 1.9148 * Math.sin(rad(M)) + 0.0200 * Math.sin(rad(2 * M)) + 0.0003 * Math.sin(rad(3 * M));
+        var lam = (M + C + 180 + 102.9372) % 360;
+        var Jtr = 2451545.0 + n + 0.0053 * Math.sin(rad(M)) - 0.0069 * Math.sin(rad(2 * lam));
+        var dec = Math.asin(Math.sin(rad(lam)) * Math.sin(rad(23.44))) * 180 / Math.PI;
+        var cosw = (Math.sin(rad(altDeg)) - Math.sin(rad(lat)) * Math.sin(rad(dec))) / (Math.cos(rad(lat)) * Math.cos(rad(dec)));
+        if (cosw < -1 || cosw > 1) { ok = false; break; }
+        var w = Math.acos(cosw) * 180 / Math.PI;
+        var Jn = Jtr + sk[0] * w / 360.0;
+        if (Math.abs(Jn - Jt) < 1e-7) { Jt = Jn; break; }
+        Jt = Jn;
+      }
+      out[sk[1]] = ok ? (((Jt + 0.5 - Math.floor(Jt + 0.5)) * 24 + tz) % 24 + 24) % 24 : null;
+    });
+    return out;
+  }
+  function sunDay(dateStr, lat, lon, tz) {
+    var s = sunEvents(dateStr, lat, lon, tz, -0.833), c = sunEvents(dateStr, lat, lon, tz, -6);
+    return { rise: s.rise, set: s.set, dawn: c.rise, dusk: c.set };
+  }
+
+  // ================= v3: youth loaded Tobler, weather, terrain, real distance =================
+  var TERRAIN_KEYS = ['trail', 'root', 'mud'];
+  var DEFAULTS = {
+    Fu: 0.75, FdSun: 0.79, FdRain: 0.71,             // Tobler multipliers (10/6 calibrated; sunny descent estimated)
+    upr: 380, dnrSun: 510, dnrRain: 460,              // vertical caps on ordinary trail (m/h)
+    f: 1.00,                                          // overall factor (time multiplier)
+    altZ: 2500, altUp: 0.85, altFlat: 0.90, altDown: 0.95,
+    terr: {
+      trail: { name: '一般步道', sun: [1.00, 380, 510], rain: [1.00, 380, 460] },
+      root:  { name: '濕滑樹根陡坡',   sun: [0.70, 260, 300], rain: [0.60, 220, 230] },
+      mud:   { name: '泥濘草徑',       sun: [0.75, 260, 300], rain: [0.60, 220, 230] }
+    }
+  };
+  // ---- measured-elevation correction: knots at section ends (full-track GPX metres) ----
+  function isNum(v) { return v !== null && v !== undefined && v !== '' && isFinite(+v); }
+  function zKnots(full, secsFull, zStart) {
+    var k = [];
+    (secsFull || []).forEach(function (q) {
+      if (!isNum(q.zEnd)) return;
+      var d = Math.max(0, Math.min(full.total, +q.b));
+      k.push([d, +q.zEnd - zAt(full, d)]);
+    });
+    if (isNum(zStart)) k.push([0, +zStart - zAt(full, 0)]);
+    if (!k.length) return null;
+    k.sort(function (p, q) { return p[0] - q[0]; });
+    var m = [];
+    k.forEach(function (p) { if (m.length && Math.abs(p[0] - m[m.length - 1][0]) < 1) m[m.length - 1] = p; else m.push(p); });
+    if (m[0][0] > 1) m.unshift([0, 0]);
+    if (m[m.length - 1][0] < full.total - 1) m.push([full.total, 0]);
+    return m;
+  }
+  function deltaAt(knots, d) {
+    if (!knots) return 0;
+    if (d <= knots[0][0]) return knots[0][1];
+    for (var i = 1; i < knots.length; i++) {
+      if (d <= knots[i][0]) { var a = knots[i - 1], b = knots[i], t = (d - a[0]) / ((b[0] - a[0]) || 1); return a[1] + (b[1] - a[1]) * t; }
+    }
+    return knots[knots.length - 1][1];
+  }
+  // returns a copy of tr whose z follows the measured elevations; off = where tr starts on the full track
+  function applyZFix(tr, knots, off) {
+    if (!knots) return tr;
+    off = off || 0;
+    var o = {};
+    Object.keys(tr).forEach(function (key) { o[key] = tr[key]; });
+    o.zRaw = tr.z;
+    o.z = tr.x.map(function (d, i) { return tr.z[i] + deltaAt(knots, d + off); });
+    o.zfix = true;
+    return o;
+  }
+  // sections: [{a,b (GPX m), real (m|null), terr}] -> normalised, gap-free, sorted
+  function normSections(total, secs) {
+    var s = (secs || []).map(function (q) {
+      return { a: Math.max(0, Math.min(total, +q.a || 0)), b: Math.max(0, Math.min(total, +q.b || 0)), real: q.real, terr: TERRAIN_KEYS.indexOf(q.terr) >= 0 ? q.terr : 'trail' };
+    }).filter(function (q) { return q.b - q.a > 1; }).sort(function (p, q) { return p.a - q.a; });
+    var out = [], cur = 0;
+    s.forEach(function (q) {
+      var a = Math.max(q.a, cur);
+      if (q.b - a <= 1) return;
+      if (a > cur + 1) out.push({ a: cur, b: a, real: null, terr: 'trail' });
+      var scale = (q.real && q.real > 0 && a === q.a) ? q.real / (q.b - q.a) : 1;
+      out.push({ a: a, b: q.b, real: (q.b - a) * scale, terr: q.terr });
+      cur = q.b;
+    });
+    if (total > cur + 1) out.push({ a: cur, b: total, real: null, terr: 'trail' });
+    var off = 0;
+    out.forEach(function (q) { if (!(q.real > 0)) q.real = q.b - q.a; q.scale = q.real / (q.b - q.a); q.off = off; off += q.real; });
+    return out;
+  }
+  function secAt(secs, d) {
+    for (var i = 0; i < secs.length; i++) if (d <= secs[i].b + 1e-9) return secs[i];
+    return secs[secs.length - 1];
+  }
+  function gpx2real(secs, d) { var q = secAt(secs, d); return q.off + (Math.max(q.a, Math.min(q.b, d)) - q.a) * q.scale; }
+  function real2gpx(secs, r) {
+    for (var i = 0; i < secs.length; i++) {
+      var q = secs[i];
+      if (r <= q.off + q.real + 1e-9) return q.a + (Math.max(0, r - q.off)) / q.scale;
+    }
+    var l = secs[secs.length - 1]; return l.b;
+  }
+  function tobler(S) { return 6 * Math.exp(-3.5 * Math.abs(S + 0.05)); }
+  // returns {x (GPX m grid), cum (h at grid pts), total, xr (real m at grid pts), realTotal, edges, binCls, binRealGrade}
+  function runModelV3(tr, secs, wx, P) {
+    P = P || DEFAULTS;
+    var rain = wx === 'rain';
+    var x = tr.x, z = tr.z, cum = [0], xr = [0];
+    for (var i = 1; i < x.length; i++) {
+      var dxg = x[i] - x[i - 1];
+      if (dxg <= 0) { cum.push(cum[i - 1]); xr.push(xr[i - 1]); continue; }
+      var mid = (x[i] + x[i - 1]) / 2, q = secAt(secs, mid);
+      var dx = dxg * q.scale, dz = z[i] - z[i - 1], S = dz / dx, zm = (z[i] + z[i - 1]) / 2;
+      var t = (P.terr[q.terr] || P.terr.trail)[rain ? 'rain' : 'sun'];
+      var F = S >= 0 ? P.Fu : (rain ? P.FdRain : P.FdSun);
+      var v = F * t[0] * tobler(S);
+      var upCap = Math.min(t[1], P.upr), dnCap = Math.min(t[2], rain ? P.dnrRain : P.dnrSun);
+      if (zm >= P.altZ) {
+        v *= Math.abs(S) < 0.05 ? P.altFlat : (S > 0 ? P.altUp : P.altDown);
+        upCap *= P.altUp; dnCap *= P.altDown;
+      }
+      var h = (dx / 1000) / v;
+      if (dz > 0) h = Math.max(h, dz / upCap); else if (dz < 0) h = Math.max(h, -dz / dnCap);
+      cum.push(cum[i - 1] + h * P.f);
+      xr.push(xr[i - 1] + dx);
+    }
+    // colour bins: 100 m of GPX distance, grade on real distance
+    var edges = [], binCls = [];
+    for (var e = 0; e < tr.total; e += BIN) edges.push(e);
+    edges.push(tr.total);
+    if (edges.length >= 2 && edges[edges.length - 1] - edges[edges.length - 2] < 1e-6) edges.pop();
+    for (var b = 0; b < edges.length - 1; b++) {
+      var ra = gpx2real(secs, edges[b]), rb = gpx2real(secs, edges[b + 1]);
+      var g = 100 * (zAt(tr, edges[b + 1]) - zAt(tr, edges[b])) / ((rb - ra) || 1);
+      binCls.push(gradeClass(g));
+    }
+    return { x: x, cum: cum, xr: xr, total: cum[cum.length - 1], realTotal: xr[xr.length - 1], edges: edges, binCls: binCls };
+  }
+  function movingAtV3(m, d) {
+    var x = m.x;
+    if (d <= 0) return 0;
+    if (d >= x[x.length - 1]) return m.total;
+    var i = Math.min(x.length - 2, Math.floor(d / STEP));
+    while (i < x.length - 2 && x[i + 1] < d) i++;
+    while (i > 0 && x[i] > d) i--;
+    var t = (d - x[i]) / ((x[i + 1] - x[i]) || 1);
+    return m.cum[i] + (m.cum[i + 1] - m.cum[i]) * t;
+  }
+  // buf: {rest, trans (min per moving hour), point (min at transition checkpoints)}
+  function scheduleV3(cps, m, buf, startMin) {
+    var k = 1 + (buf.rest + buf.trans) / 60, rows = [], t = startMin, prev = 0;
+    for (var i = 0; i < cps.length; i++) {
+      var cp = cps[i], mv = movingAtV3(m, cp.d) * 60, seg = i ? mv - prev : 0;
+      var arr = i ? t + seg * k : t;
+      var stop = Math.max(0, cp.stop || 0) + (cp.trans ? buf.point : 0);
+      rows.push({ cp: cp, seg: seg, rest: seg * (k - 1), arr: arr, dep: arr + stop, mv: mv, stop: stop });
+      t = arr + stop; prev = mv;
+    }
+    return rows;
+  }
+  function clockAtV3(rows, m, buf, d) {
+    var k = 1 + (buf.rest + buf.trans) / 60, i = 0;
+    while (i < rows.length - 1 && rows[i + 1].cp.d <= d) i++;
+    var r0 = rows[i];
+    if (i === 0 && d <= r0.cp.d) return r0.arr;
+    if (i === rows.length - 1) return r0.arr;
+    return r0.dep + (movingAtV3(m, d) * 60 - r0.mv) * k;
+  }
+
+  return {
+    DEFAULTS: DEFAULTS, TERRAIN_KEYS: TERRAIN_KEYS, normSections: normSections, gpx2real: gpx2real, real2gpx: real2gpx,
+    zKnots: zKnots, deltaAt: deltaAt, applyZFix: applyZFix,
+    runModelV3: runModelV3, movingAtV3: movingAtV3, scheduleV3: scheduleV3, clockAtV3: clockAtV3,
+    PRESETS: PRESETS, BREAKS: BREAKS, STEP: STEP, BIN: BIN,
+    hav: hav, parseTrackText: parseTrackText, buildTrack: buildTrack, reverseTrack: reverseTrack,
+    zAt: zAt, stats: stats, tmod: tmod, runModel: runModel, movingAt: movingAt,
+    schedule: schedule, clockAt: clockAt, projectWpts: projectWpts, autoPoints: autoPoints,
+    sunDay: sunDay, gradeClass: gradeClass
+  };
+})();
+if (typeof module !== 'undefined') module.exports = CORE;
+
+</script>
+<script>
+var SAMPLE = {"name":"四季新柵門→加羅湖","pts":[[24.488317,121.433262,973.5],[24.488309,121.433293,975.7],[24.488285,121.433316,977.2],[24.488196,121.433358,979.5],[24.487285,121.433612,986.1],[24.487075,121.433767,992.1],[24.48692,121.434011,997.4],[24.486877,121.434185,1001.9],[24.486845,121.434379,1010.0],[24.486847,121.434495,1015.1],[24.486838,121.434579,1016.0],[24.486792,121.434679,1013.8],[24.486681,121.434887,1013.8],[24.486529,121.435073,1020.2],[24.486514,121.435129,1022.6],[24.486521,121.435188,1024.9],[24.48655,121.43524,1026.3],[24.486624,121.435329,1028.6],[24.486697,121.435431,1032.4],[24.486761,121.435481,1034.7],[24.486851,121.435518,1037.3],[24.487049,121.435581,1041.7],[24.48728,121.43573,1048.8],[24.48732,121.435745,1050.1],[24.487366,121.435749,1051.4],[24.48745,121.43573,1053.4],[24.487508,121.435706,1054.8],[24.487546,121.435676,1055.5],[24.48757,121.435641,1055.7],[24.487614,121.435614,1057.0],[24.487643,121.435576,1057.8],[24.487656,121.435526,1058.1],[24.487657,121.435425,1058.8],[24.487639,121.435302,1059.9],[24.487613,121.434971,1066.0],[24.487625,121.434845,1068.0],[24.487656,121.434749,1070.1],[24.487745,121.434612,1074.7],[24.487776,121.434589,1075.9],[24.487806,121.434578,1077.0],[24.487834,121.434588,1078.1],[24.487856,121.434614,1079.2],[24.487869,121.434666,1080.0],[24.48787,121.434887,1081.1],[24.487887,121.434951,1082.0],[24.488046,121.435199,1092.0],[24.488145,121.435368,1098.2],[24.4882,121.435479,1101.5],[24.488228,121.435574,1103.1],[24.488239,121.435653,1104.1],[24.488228,121.435744,1104.1],[24.488229,121.435834,1104.0],[24.488242,121.43588,1104.0],[24.488298,121.435956,1104.8],[24.488563,121.436179,1110.1],[24.488657,121.436273,1111.8],[24.48871,121.436351,1112.8],[24.488829,121.43664,1116.3],[24.48883,121.436678,1116.6],[24.488774,121.436976,1119.9],[24.488754,121.437043,1121.2],[24.488721,121.437131,1122.9],[24.488509,121.437606,1130.7],[24.488476,121.437658,1131.5],[24.488436,121.437699,1132.3],[24.488391,121.437718,1132.7],[24.488351,121.43772,1133.1],[24.488307,121.437705,1133.5],[24.488242,121.437669,1134.8],[24.488052,121.437483,1138.3],[24.48799,121.437437,1140.0],[24.487926,121.437411,1143.6],[24.487778,121.437399,1152.3],[24.487669,121.437398,1153.3],[24.487397,121.437508,1158.1],[24.487358,121.437508,1158.0],[24.487253,121.437453,1155.5],[24.487164,121.437438,1155.7],[24.487113,121.437438,1156.4],[24.486937,121.43749,1161.6],[24.486716,121.437471,1163.6],[24.486096,121.437299,1176.0],[24.485998,121.437289,1176.8],[24.485906,121.437327,1179.3],[24.485805,121.437452,1184.5],[24.485695,121.437675,1191.8],[24.485422,121.438246,1197.7],[24.485363,121.438511,1202.8],[24.485318,121.438806,1205.4],[24.485374,121.439393,1220.0],[24.485358,121.439502,1223.6],[24.485298,121.439596,1225.6],[24.48482,121.440102,1243.6],[24.484517,121.440643,1255.8],[24.48441,121.440726,1256.6],[24.484294,121.440756,1254.3],[24.484255,121.440789,1254.9],[24.484233,121.440852,1256.8],[24.484233,121.440921,1258.3],[24.484258,121.440995,1260.1],[24.484471,121.441191,1270.3],[24.484693,121.441464,1273.0],[24.484813,121.441532,1275.0],[24.484984,121.441571,1278.4],[24.485342,121.441613,1283.7],[24.485727,121.441647,1297.0],[24.48607,121.441664,1305.8],[24.48643,121.441748,1315.8],[24.48652,121.441798,1317.8],[24.48661,121.441924,1320.3],[24.486666,121.442201,1321.3],[24.486886,121.44261,1334.8],[24.48699,121.442931,1339.2],[24.487201,121.443194,1345.4],[24.487464,121.443462,1353.5],[24.48756,121.443594,1356.2],[24.487636,121.443732,1358.5],[24.487684,121.443867,1361.1],[24.487684,121.444015,1363.4],[24.487655,121.444171,1365.5],[24.48761,121.444327,1367.9],[24.487596,121.444427,1369.5],[24.487662,121.444556,1372.2],[24.48824,121.444944,1396.4],[24.488315,121.445056,1399.6],[24.488334,121.445163,1402.6],[24.488287,121.445451,1405.0],[24.488291,121.445712,1407.5],[24.488332,121.445911,1409.4],[24.488388,121.446063,1410.5],[24.488511,121.446273,1413.9],[24.488632,121.446561,1417.3],[24.488658,121.44668,1418.6],[24.488573,121.447056,1423.9],[24.488431,121.447389,1430.5],[24.488511,121.447704,1440.2],[24.488684,121.447901,1446.0],[24.488749,121.448043,1449.3],[24.488712,121.448187,1453.0],[24.488575,121.448364,1455.6],[24.488444,121.448672,1461.7],[24.48841,121.448916,1469.0],[24.4884,121.449099,1472.5],[24.488447,121.449282,1478.2],[24.488503,121.449355,1481.6],[24.48851,121.449481,1484.2],[24.488674,121.449611,1493.1],[24.488737,121.449607,1494.9],[24.488822,121.449307,1495.1],[24.488827,121.44906,1493.8],[24.488878,121.449006,1494.9],[24.488936,121.448974,1496.6],[24.488994,121.448991,1499.6],[24.48903,121.449049,1502.3],[24.489038,121.449234,1505.0],[24.489031,121.449276,1504.9],[24.489,121.449844,1512.3],[24.48851,121.450303,1528.4],[24.488262,121.450591,1532.0],[24.488084,121.450984,1535.7],[24.487913,121.45125,1546.2],[24.487782,121.451762,1557.4],[24.487795,121.452272,1561.0],[24.487702,121.452578,1564.5],[24.487609,121.45261,1565.1],[24.487535,121.45256,1566.9],[24.487401,121.452415,1572.4],[24.487319,121.452396,1574.0],[24.48718,121.452499,1575.7],[24.487116,121.452704,1573.9],[24.487096,121.4528,1571.8],[24.48701,121.452855,1572.8],[24.486773,121.452812,1586.2],[24.486672,121.452942,1588.7],[24.486616,121.453312,1590.4],[24.486469,121.453621,1598.2],[24.486355,121.45384,1602.2],[24.485872,121.454442,1611.6],[24.485859,121.454585,1613.7],[24.485906,121.4547,1613.8],[24.485908,121.454882,1614.8],[24.48577,121.455016,1616.9],[24.48546,121.455095,1619.5],[24.485352,121.455092,1621.2],[24.485135,121.455164,1621.8],[24.4849,121.455117,1623.0],[24.484747,121.455201,1620.5],[24.48468,121.455357,1616.9],[24.484535,121.455491,1615.3],[24.484295,121.455568,1619.7],[24.484212,121.455662,1620.5],[24.484177,121.455905,1620.3],[24.484185,121.456136,1619.9],[24.48407,121.45622,1625.0],[24.483526,121.456288,1627.8],[24.483298,121.456335,1628.5],[24.483082,121.456397,1630.1],[24.482941,121.456579,1630.1],[24.482903,121.456811,1630.4],[24.482842,121.456944,1630.7],[24.482671,121.456977,1635.2],[24.482437,121.4572,1641.6],[24.482352,121.457334,1642.0],[24.482231,121.457381,1644.1],[24.482018,121.457417,1647.1],[24.481853,121.457523,1650.9],[24.481948,121.457956,1651.1],[24.481879,121.45822,1655.8],[24.481869,121.458464,1660.0],[24.481941,121.458724,1659.4],[24.481899,121.45884,1659.7],[24.481726,121.45888,1662.7],[24.481557,121.458866,1669.2],[24.481166,121.459019,1675.2],[24.480836,121.459063,1679.4],[24.480502,121.459074,1685.5],[24.480136,121.459196,1686.7],[24.479909,121.459199,1692.7],[24.479782,121.459159,1697.7],[24.479637,121.459234,1699.5],[24.479523,121.45946,1701.2],[24.47948,121.459716,1705.7],[24.47945,121.45985,1706.4],[24.479392,121.459998,1707.1],[24.479218,121.46016,1711.3],[24.479092,121.460163,1714.8],[24.479054,121.460149,1715.8],[24.478949,121.460176,1716.1],[24.478843,121.460186,1717.0],[24.478715,121.460209,1717.4],[24.478565,121.460218,1717.7],[24.478431,121.4602,1717.8],[24.478325,121.460194,1717.9],[24.478267,121.460219,1717.2],[24.478207,121.460325,1714.4],[24.478049,121.460447,1713.0],[24.477951,121.460496,1712.6],[24.477856,121.460511,1713.7],[24.477752,121.460576,1714.0],[24.47763,121.460789,1705.5],[24.477364,121.461017,1709.8],[24.477225,121.461165,1712.5],[24.477153,121.461335,1711.5],[24.477127,121.461495,1708.6],[24.477078,121.461639,1707.2],[24.477085,121.461719,1702.6],[24.477064,121.461767,1700.5],[24.477015,121.461791,1701.0],[24.476856,121.461828,1702.9],[24.476733,121.461915,1698.7],[24.476646,121.462006,1696.9],[24.476571,121.462096,1697.4],[24.476539,121.462219,1698.2],[24.47657,121.462322,1698.7],[24.476654,121.462504,1699.9],[24.476716,121.462622,1697.7],[24.476731,121.46275,1698.1],[24.476769,121.462897,1697.7],[24.476851,121.463004,1693.5],[24.476862,121.463112,1693.7],[24.47686,121.463271,1694.3],[24.476822,121.463518,1697.1],[24.476858,121.463696,1694.6],[24.476853,121.463883,1694.7],[24.476781,121.464326,1689.3],[24.47673,121.464527,1687.6],[24.476693,121.46477,1682.3],[24.476615,121.464932,1681.9],[24.476609,121.465034,1680.8],[24.476632,121.465153,1680.7],[24.476674,121.465292,1682.2],[24.476693,121.465349,1683.2],[24.476728,121.465393,1684.5],[24.476756,121.465426,1685.8],[24.476831,121.465384,1687.1],[24.476859,121.46523,1684.2],[24.476992,121.465059,1682.7],[24.477089,121.464952,1682.2],[24.477201,121.46491,1683.7],[24.47733,121.464945,1687.7],[24.477484,121.464956,1690.8],[24.477616,121.464914,1692.9],[24.477734,121.464923,1697.2],[24.477776,121.464906,1697.7],[24.477794,121.464911,1698.3],[24.477904,121.464941,1702.3],[24.477963,121.464967,1704.8],[24.477992,121.465041,1709.2],[24.478016,121.465061,1710.7],[24.478083,121.465096,1713.5],[24.478107,121.465144,1716.5],[24.478131,121.465213,1720.8],[24.47813,121.46525,1723.0],[24.47812,121.465322,1727.0],[24.478141,121.465345,1728.4],[24.478181,121.465356,1729.2],[24.47827,121.465394,1731.5],[24.478338,121.465412,1732.3],[24.478443,121.465459,1732.6],[24.478568,121.465534,1733.1],[24.478706,121.465648,1740.1],[24.478873,121.465798,1748.3],[24.478949,121.465854,1752.0],[24.479007,121.465845,1753.3],[24.479071,121.465741,1752.3],[24.47917,121.465681,1753.3],[24.479211,121.465694,1754.2],[24.479224,121.46574,1755.7],[24.479202,121.465819,1758.1],[24.479225,121.465898,1761.9],[24.479304,121.465989,1768.7],[24.479377,121.466239,1784.0],[24.479415,121.466451,1793.9],[24.479495,121.466537,1798.9],[24.479538,121.466614,1802.3],[24.479545,121.466701,1806.2],[24.479542,121.466802,1811.1],[24.479533,121.466876,1815.1],[24.479482,121.46705,1826.9],[24.479487,121.467118,1832.3],[24.479518,121.467196,1838.6],[24.479575,121.467245,1842.3],[24.479699,121.467284,1844.8],[24.479789,121.46735,1849.2],[24.479876,121.467429,1854.0],[24.479985,121.467455,1855.8],[24.480172,121.467429,1859.6],[24.480261,121.467433,1862.8],[24.480489,121.467429,1864.6],[24.480612,121.467421,1864.8],[24.480703,121.467444,1866.8],[24.480763,121.467488,1869.0],[24.480774,121.467564,1872.8],[24.480765,121.467639,1877.0],[24.480714,121.467695,1881.0],[24.480564,121.467751,1886.1],[24.480546,121.46778,1888.2],[24.480556,121.467817,1890.7],[24.480629,121.467854,1892.5],[24.480739,121.467923,1894.5],[24.480791,121.467995,1896.8],[24.480824,121.468137,1901.9],[24.480817,121.468195,1904.4],[24.480853,121.468302,1906.4],[24.480848,121.468351,1909.0],[24.480822,121.468358,1910.9],[24.480783,121.468346,1912.5],[24.480748,121.468316,1912.9],[24.480699,121.468306,1914.7],[24.480649,121.468343,1918.7],[24.480601,121.468404,1924.3],[24.480584,121.468446,1927.8],[24.480551,121.468503,1933.1],[24.480545,121.468547,1936.4],[24.480558,121.468574,1937.7],[24.480584,121.468782,1946.5],[24.480603,121.468912,1949.3],[24.480661,121.469053,1947.2],[24.48069,121.46916,1945.6],[24.480687,121.469238,1946.7],[24.480669,121.469296,1948.8],[24.480622,121.469339,1953.0],[24.480557,121.469322,1957.4],[24.480542,121.469231,1956.9],[24.480507,121.469169,1958.0],[24.480475,121.469142,1959.4],[24.48043,121.469147,1961.9],[24.48041,121.469173,1963.5],[24.480369,121.469269,1967.6],[24.480331,121.469482,1972.6],[24.480276,121.469562,1976.7],[24.480221,121.469615,1981.2],[24.480183,121.469701,1985.2],[24.480098,121.469846,1992.8],[24.480048,121.469961,1996.5],[24.479976,121.470068,2002.7],[24.479878,121.470151,2010.7],[24.479795,121.470267,2016.7],[24.479634,121.470524,2025.0],[24.479481,121.47065,2027.4],[24.479316,121.470821,2030.6],[24.479154,121.471041,2034.7],[24.479041,121.471216,2035.5],[24.478988,121.471491,2029.4],[24.478931,121.471543,2032.5],[24.478821,121.471555,2042.3],[24.478639,121.471593,2059.6],[24.47851,121.47173,2068.0],[24.478487,121.47196,2071.8],[24.478489,121.47226,2078.3],[24.478429,121.472408,2082.3],[24.478316,121.472572,2087.4],[24.478195,121.472656,2092.5],[24.47814,121.472776,2096.8],[24.478131,121.472882,2099.9],[24.478151,121.472959,2101.0],[24.478149,121.473088,2105.1],[24.478109,121.473193,2112.1],[24.47805,121.473245,2118.4],[24.477968,121.473294,2126.0],[24.477917,121.473343,2130.8],[24.477829,121.473506,2138.0],[24.477821,121.473582,2139.0],[24.477727,121.473751,2147.6],[24.477682,121.473929,2155.9],[24.477663,121.474038,2161.9],[24.477638,121.474123,2167.6],[24.477621,121.474212,2172.0],[24.477627,121.47432,2173.8],[24.477602,121.474446,2178.6],[24.477547,121.474616,2186.0],[24.477545,121.474712,2186.8],[24.477516,121.474837,2190.9],[24.477506,121.474994,2193.2],[24.47753,121.475097,2191.7],[24.477527,121.475197,2193.6],[24.477486,121.475406,2203.3],[24.477463,121.475589,2212.0],[24.477484,121.475786,2218.8],[24.477522,121.47583,2218.7],[24.477659,121.4759,2216.2],[24.477695,121.475976,2219.5],[24.477713,121.476082,2225.0],[24.477747,121.476189,2229.4],[24.477673,121.476502,2235.9],[24.477672,121.476618,2233.8],[24.477736,121.476744,2234.2],[24.477834,121.476839,2236.0],[24.477949,121.476981,2237.5],[24.477982,121.477204,2236.9],[24.478047,121.477394,2237.5],[24.478047,121.477507,2237.8],[24.477993,121.47758,2237.9],[24.477896,121.477682,2238.2],[24.477839,121.477774,2238.7],[24.477801,121.477882,2239.5],[24.477865,121.47817,2244.8],[24.477976,121.478519,2247.3],[24.477983,121.478629,2247.3],[24.47808,121.478868,2246.5],[24.478095,121.478984,2246.9],[24.478134,121.479064,2246.6],[24.478226,121.479459,2249.0],[24.478299,121.479812,2251.9],[24.478312,121.479853,2252.4],[24.478355,121.480099,2256.3],[24.478355,121.480178,2257.4],[24.478327,121.480211,2257.9],[24.478291,121.480226,2258.2],[24.47801,121.480243,2256.0],[24.477904,121.480263,2252.2],[24.477775,121.480304,2247.1],[24.477725,121.480308,2245.8],[24.477635,121.480268,2245.1],[24.477533,121.48024,2243.8],[24.477436,121.480197,2243.3],[24.477335,121.480191,2243.1],[24.477277,121.480128,2243.4],[24.477214,121.479972,2244.0],[24.477197,121.479902,2243.8],[24.477139,121.479803,2243.4],[24.477117,121.479736,2243.1],[24.476972,121.479633,2242.8],[24.476932,121.47958,2242.3],[24.476882,121.479537,2242.1],[24.476798,121.479412,2241.8],[24.476708,121.479305,2241.6],[24.47655,121.479064,2239.4],[24.4765,121.479013,2238.6],[24.476447,121.47898,2237.8],[24.476381,121.478971,2237.2],[24.476211,121.479,2239.4],[24.476141,121.478966,2240.2],[24.476064,121.478869,2240.7],[24.475974,121.47881,2242.4],[24.475891,121.47877,2244.1],[24.475657,121.47869,2245.3],[24.475532,121.47871,2245.7],[24.475481,121.478687,2245.6],[24.47541,121.478605,2245.0],[24.475345,121.478553,2244.7],[24.475293,121.478529,2244.5],[24.475208,121.478529,2244.4],[24.475134,121.478547,2244.5],[24.475085,121.478539,2244.4],[24.474979,121.478469,2243.3],[24.474914,121.478444,2242.6],[24.47476,121.478349,2241.2],[24.474682,121.478268,2240.9],[24.474585,121.478229,2240.0]],"wpts":[{"lat":24.488317,"lon":121.433262,"name":"四季新柵門"},{"lat":24.484258,"lon":121.440995,"name":"舊柵門"},{"lat":24.477776,"lon":121.464906,"name":"巨木登山口","trans":true,"stop":30},{"lat":24.477747,"lon":121.476189,"name":"1.9K 平台（檜木池岔路）"},{"lat":24.474585,"lon":121.478229,"name":"加羅湖"}],"sections":[{"a":0,"b":1679,"real":null,"terr":"trail","zEnd":null},{"a":1679,"b":5739,"real":4300,"terr":"trail","zEnd":1725},{"a":5739,"b":7404,"real":1900,"terr":"root","zEnd":2230},{"a":7404,"b":8352,"real":1000,"terr":"mud","zEnd":2250}],"zStart":null,"weather":"rain","date":"2026-10-20","start":"08:15"};
+(function () {
+  'use strict';
+  var C = CORE;
+  function $(id) { return document.getElementById(id); }
+  var LS_KEY = 'ctp.v33', LS_OLD = ['ctp.v32', 'ctp.v31', 'ctp.v3'];
+  var WD = ['日', '一', '二', '三', '四', '五', '六'];
+  var KIND_PRI = { start: 0, end: 0, wpt: 1, peak: 2, turn: 2, user: 3, km: 4 };
+  var BAND_LABEL = ['≤−20%', '−20～−12%', '−12～−5%', '−5～+5%', '+5～+12%', '+12～+20%', '≥+20%'];
+  var TERR_COLOR = { trail: '--t-trail', root: '--t-root', mud: '--t-mud' };
+  var WX_LABEL = { sun: '晴天', rain: '雨天或起霧' };
+
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  var S = { date: todayStr(), start: '07:30', deadline: '', tz: 8, wx: 'rain', rest: 8.3, transSun: 4.2, transRain: 8.4, pointSun: 10, pointRain: 15 };
+  var PP = clone(C.DEFAULTS);
+  var T = { parsed: null, name: '', fileName: '', reversed: false, range: null, full: null, track: null, stats: null,
+            secsFull: [], secs: null, cps: [], seq: 1, isSample: true, warn: '', suggest: null, recorded: false,
+            zStart: null, trackRaw: null };
+  var LAST = null;
+
+  // ---------- helpers ----------
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function todayStr() { var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function hm(min) {
+    var day = Math.floor(min / 1440), m = Math.round(min - day * 1440);
+    if (m >= 1440) { day += 1; m -= 1440; }
+    var s = pad(Math.floor(m / 60)) + ':' + pad(m % 60);
+    return day > 0 ? '+' + day + '天 ' + s : s;
+  }
+  function dur(min) { var m = Math.max(0, Math.round(min)); return Math.floor(m / 60) + ':' + pad(m % 60); }
+  function durZh(min) { var m = Math.max(0, Math.round(min)), h = Math.floor(m / 60), r = m % 60; return h ? (h + ' 小時 ' + r + ' 分') : (r + ' 分'); }
+  function parseHM(s) { if (!s || !/^\d{1,2}:\d{2}/.test(s)) return null; var a = s.split(':'); return (+a[0]) * 60 + (+a[1]); }
+  function nf(v) { return Math.round(v).toLocaleString('en-US'); }
+  function km(m) { return (m / 1000).toFixed(1); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function numOr(v, d) { v = parseFloat(v); return isFinite(v) ? v : d; }
+  function hhmmFromHours(h) { return h === null || h === undefined ? '—' : hm(h * 60); }
+  function R(d) { return C.gpx2real(T.secs, d); }
+  function isNum(v) { return v !== null && v !== undefined && v !== '' && isFinite(+v); }
+
+  // ---------- storage ----------
+  function save() {
+    try {
+      localStorage.setItem(LS_KEY, JSON.stringify({
+        S: S, PP: PP, isSample: T.isSample, recorded: T.recorded, fileName: T.fileName, reversed: T.reversed, range: T.range,
+        warn: T.warn, suggest: T.suggest, secsFull: T.secsFull, cps: T.cps, seq: T.seq, zStart: T.zStart,
+        track: T.parsed ? { name: T.parsed.name, pts: T.parsed.pts.map(function (p) { return [p.lat, p.lon, p.ele]; }), wpts: T.parsed.wpts || [] } : null
+      }));
+    } catch (e) { /* storage unavailable: page still works */ }
+  }
+  function loadSaved() {
+    try {
+      var s = localStorage.getItem(LS_KEY);
+      if (s) return JSON.parse(s);
+      for (var i = 0; i < LS_OLD.length; i++) {
+        var o = localStorage.getItem(LS_OLD[i]);
+        if (!o) continue;
+        o = JSON.parse(o);
+        if (LS_OLD[i] === 'ctp.v3') delete o.PP;   // model parameters changed in v3.1
+        if (o.isSample) { delete o.track; delete o.cps; delete o.secsFull; delete o.zStart; }   // sample route was corrected
+        return o;
+      }
+      return null;
+    } catch (e) { return null; }
+  }
+
+  // ---------- track ----------
+  function bopts() { return { smooth: T.recorded ? 3 : 1 }; }
+  function lerpPt(p, q, t) { return { lat: p.lat + (q.lat - p.lat) * t, lon: p.lon + (q.lon - p.lon) * t, ele: p.ele + (q.ele - p.ele) * t }; }
+  function ptAt(full, d) {
+    var c = full.cum, i = 0;
+    while (i < c.length - 2 && c[i + 1] < d) i++;
+    var t = (d - c[i]) / ((c[i + 1] - c[i]) || 1);
+    return lerpPt(full.raw[i], full.raw[i + 1], Math.max(0, Math.min(1, t)));
+  }
+  function sliceTrack(full, a, b) {
+    var pts = [ptAt(full, a)];
+    for (var i = 0; i < full.raw.length; i++) if (full.cum[i] > a && full.cum[i] < b) pts.push(full.raw[i]);
+    pts.push(ptAt(full, b));
+    return C.buildTrack({ name: full.name, pts: pts, wpts: [] }, bopts());
+  }
+  function curSections() {
+    var r0 = T.range ? T.range[0] : 0, r1 = T.range ? T.range[1] : T.full.total, out = [];
+    (T.secsFull || []).forEach(function (q) {
+      var a = Math.max(q.a, r0), b = Math.min(q.b, r1);
+      if (b - a <= 1) return;
+      var realFull = q.real && q.real > 0 ? q.real : null;
+      out.push({ a: a - r0, b: b - r0, real: realFull ? realFull * (b - a) / (q.b - q.a) : null, terr: q.terr });
+    });
+    return C.normSections(T.track.total, out);
+  }
+  function rebuild(keepCps) {
+    var pts = T.parsed.pts;
+    if (T.reversed) pts = pts.slice().reverse();
+    var full = C.buildTrack({ name: T.parsed.name, pts: pts, wpts: [] }, bopts());
+    T.full = full;
+    var tr = full;
+    if (T.range) {
+      var a = Math.max(0, Math.min(T.range[0], full.total)), b = Math.max(0, Math.min(T.range[1], full.total));
+      if (b - a > 200) tr = sliceTrack(full, a, b); else T.range = null;
+    }
+    T.trackRaw = tr; T.track = tr;
+    T.secs = curSections();
+    applyFix();
+    if (!keepCps) initCps();
+  }
+  function applyFix() {
+    var knots = C.zKnots(T.full, T.secsFull, T.zStart);
+    T.track = C.applyZFix(T.trackRaw, knots, T.range ? T.range[0] : 0);
+    T.stats = C.stats(T.track);
+  }
+  function refreshSecs() { T.secs = curSections(); applyFix(); }
+  function mirrorSections(total) {
+    var knots = [];
+    (T.secsFull || []).forEach(function (q) { if (isNum(q.zEnd)) knots.push([q.b, +q.zEnd]); });
+    if (isNum(T.zStart)) knots.push([0, +T.zStart]);
+    T.secsFull = (T.secsFull || []).map(function (q) { return { a: Math.max(0, total - q.b), b: Math.min(total, total - q.a), real: q.real, terr: q.terr, zEnd: null }; })
+      .sort(function (p, q) { return p.a - q.a; });
+    T.zStart = null;
+    knots.forEach(function (k) {
+      var d = total - k[0];
+      if (d < 1) { T.zStart = k[1]; return; }
+      var hit = T.secsFull.filter(function (q) { return Math.abs(q.b - d) < 1; })[0];
+      if (hit) { hit.zEnd = k[1]; return; }
+      var prevEnd = 0;
+      T.secsFull.forEach(function (q) { if (q.b <= d && q.b > prevEnd) prevEnd = q.b; });
+      if (d - prevEnd > 1) T.secsFull.push({ a: prevEnd, b: d, real: null, terr: 'trail', zEnd: k[1] });
+    });
+    T.secsFull.sort(function (p, q) { return p.a - q.a; });
+  }
+  function vehicleInfo(parsed) {
+    var pts = parsed.pts, fast = 0, segs = [], cum = 0;
+    for (var i = 1; i < pts.length; i++) {
+      var a = pts[i - 1], b = pts[i], d = C.hav(a.lat, a.lon, b.lat, b.lon), isFast = false;
+      if (a.t != null && b.t != null) { var dt = (b.t - a.t) / 1000; if (dt > 0 && d / dt * 3.6 > 15) { isFast = true; fast += d; } }
+      segs.push({ a: cum, b: cum + d, fast: isFast }); cum += d;
+    }
+    var best = null, runA = null;
+    segs.forEach(function (s, k) {
+      if (!s.fast && runA === null) runA = s.a;
+      if (s.fast || k === segs.length - 1) {
+        if (runA !== null) { var end = s.fast ? s.a : s.b; if (!best || end - runA > best[1] - best[0]) best = [runA, end]; }
+        runA = null;
+      }
+    });
+    return { fast: fast, best: best };
+  }
+
+  // ---------- checkpoints ----------
+  function addCp(p) {
+    for (var i = 0; i < T.cps.length; i++) {
+      var q = T.cps[i];
+      if (Math.abs(q.d - p.d) < 40) {
+        if (p.kind === 'wpt' && q.kind !== 'wpt') q.name = p.name;
+        else if (KIND_PRI[p.kind] < KIND_PRI[q.kind]) { q.name = p.name; q.kind = p.kind; }
+        if (p.stop && !q.stop) q.stop = p.stop;
+        if (p.trans) q.trans = true;
+        return q;
+      }
+    }
+    p.id = T.seq++;
+    T.cps.push(p);
+    T.cps.sort(function (a, b) { return a.d - b.d; });
+    return p;
+  }
+  function initCps() {
+    var tr = T.track, list = [];
+    C.autoPoints(tr, T.stats).forEach(function (p) {
+      list.push({ d: p.d, name: p.name, kind: p.kind, stop: (p.kind === 'peak' || p.kind === 'turn') ? 10 : 0, trans: false });
+    });
+    if (T.parsed.wpts && T.parsed.wpts.length) {
+      C.projectWpts(tr, T.parsed.wpts, 100).forEach(function (w) { list.push({ d: w.d, name: w.name, kind: 'wpt', stop: w.stop || 0, trans: !!w.trans }); });
+    }
+    list.sort(function (a, b) { return a.d - b.d || KIND_PRI[a.kind] - KIND_PRI[b.kind]; });
+    T.cps = [];
+    list.forEach(addCp);
+  }
+  function addKm() {
+    var rt = R(T.track.total);
+    for (var r = 1000; r < rt - 150; r += 1000) addCp({ d: C.real2gpx(T.secs, r), name: km(r) + ' km', kind: 'km', stop: 0, trans: false });
+  }
+  function hasKm() { return T.cps.some(function (c) { return c.kind === 'km'; }); }
+
+  // ---------- model ----------
+  function buf() {
+    var sun = S.wx === 'sun';
+    return { rest: Math.max(0, numOr(S.rest, 8.3)), trans: Math.max(0, numOr(sun ? S.transSun : S.transRain, sun ? 4.2 : 8.4)), point: Math.max(0, numOr(sun ? S.pointSun : S.pointRain, sun ? 10 : 15)) };
+  }
+  function lightState(sun, min) {
+    if (!sun || sun.rise === null || sun.set === null) return 0;
+    var t = ((min % 1440) + 1440) % 1440;
+    var dawn = sun.dawn === null ? sun.rise * 60 : sun.dawn * 60, dusk = sun.dusk === null ? sun.set * 60 : sun.dusk * 60;
+    if (t >= dusk || t < dawn) return 2;
+    if (t >= sun.set * 60 || t < sun.rise * 60) return 1;
+    return 0;
+  }
+
+  // ---------- render ----------
+  function render() {
+    if (!T.track) return;
+    var tr = T.track, st = T.stats;
+    var mSun = C.runModelV3(tr, T.secs, 'sun', PP), mRain = C.runModelV3(tr, T.secs, 'rain', PP);
+    var m = S.wx === 'sun' ? mSun : mRain, b = buf();
+    var startMin = parseHM(S.start); if (startMin === null) startMin = 450;
+    var rows = C.scheduleV3(T.cps, m, b, startMin);
+    var sun = null;
+    try { sun = C.sunDay(S.date || todayStr(), tr.raw[0].lat, tr.raw[0].lon, numOr(S.tz, 8)); } catch (e) { sun = null; }
+    var ctx = { tr: tr, st: st, m: m, mSun: mSun, mRain: mRain, buf: b, rows: rows, sun: sun, startMin: startMin };
+    LAST = ctx;
+    renderStatus(); renderSections(); renderSummary(ctx); renderStrip(ctx); renderProfile(ctx); renderTable(ctx); renderCopy(ctx);
+    $('btnKm').textContent = hasKm() ? '移除公里點' : '每公里加點';
+    save();
+  }
+
+  function renderStatus() {
+    var s = [(T.isSample ? '範例：' : '') + (T.name || T.fileName || '路線'), 'GPX 全長 ' + km(T.full.total) + ' km'];
+    var rt = R(T.track.total);
+    if (Math.abs(rt - T.track.total) > 50) s.push('校正後 ' + km(rt) + ' km');
+    if (T.reversed) s.push('已反轉方向');
+    if (T.range) s.push('只算 GPX ' + km(T.range[0]) + '–' + km(T.range[1]) + ' km');
+    if (T.recorded) s.push('錄製軌跡，高度已平滑');
+    if (T.track && T.track.zfix) s.push('高度依實測校正');
+    var txt = s.join('｜');
+    if (T.isSample) txt += '。選你的檔案後就會改算你的路線。';
+    $('fileStatus').textContent = txt;
+    var w = $('fileWarn');
+    if (T.warn) {
+      w.hidden = false;
+      w.innerHTML = esc(T.warn) + (T.suggest && !T.range ? ' <button class="btn" type="button" id="btnSuggest">只算步行段 ' + km(T.suggest[0]) + '–' + km(T.suggest[1]) + ' km</button>' : '');
+      var bt = $('btnSuggest');
+      if (bt) bt.onclick = function () { T.range = T.suggest.slice(); rebuild(false); setRangeInputs(); render(); };
+    } else { w.hidden = true; w.innerHTML = ''; }
+  }
+
+  function renderSections() {
+    var act = document.activeElement && document.activeElement.id ? document.activeElement.id : null;
+    var html = [];
+    if (!T.secsFull.length) html.push('<p class="secempty">全段當一般步道，距離與高度用 GPX 原值。按「新增路段」設定實際里程、實測海拔或地形。</p>');
+    T.secsFull.forEach(function (q, i) {
+      var n = i + 1;
+      var opts = C.TERRAIN_KEYS.map(function (k) { return '<option value="' + k + '"' + (q.terr === k ? ' selected' : '') + '>' + PP.terr[k].name + '</option>'; }).join('');
+      html.push('<div class="secrow">' +
+        '<div class="sechead"><span class="tsw" style="background:var(' + TERR_COLOR[q.terr] + ')"></span>' +
+        '<select id="sxt-' + i + '" aria-label="第 ' + n + ' 段地形">' + opts + '</select>' +
+        '<button class="del" type="button" data-sdel="' + i + '" aria-label="刪除第 ' + n + ' 段">×</button></div>' +
+        '<div class="secgrid">' +
+        '<label for="sxa-' + i + '">GPX 起 km<input type="number" step="0.01" min="0" inputmode="decimal" id="sxa-' + i + '" value="' + (Math.max(0, q.a) / 1000).toFixed(2) + '"></label>' +
+        '<label for="sxb-' + i + '">GPX 迄 km<input type="number" step="0.01" min="0" inputmode="decimal" id="sxb-' + i + '" value="' + (q.b / 1000).toFixed(2) + '"></label>' +
+        '<label for="sxr-' + i + '">實際 km<input type="number" step="0.1" min="0" inputmode="decimal" id="sxr-' + i + '" value="' + (q.real ? (q.real / 1000).toFixed(2) : '') + '" placeholder="同 GPX"></label>' +
+        '<label for="sxz-' + i + '">終點海拔 m<input type="number" step="1" inputmode="numeric" id="sxz-' + i + '" value="' + (isNum(q.zEnd) ? Math.round(q.zEnd) : '') + '" placeholder="' + Math.round(C.zAt(T.full, Math.min(q.b, T.full.total))) + '"></label>' +
+        '</div></div>');
+    });
+    $('secBody').innerHTML = html.join('');
+    var zs = $('zStart');
+    if (zs && document.activeElement !== zs) { zs.value = isNum(T.zStart) ? Math.round(T.zStart) : ''; zs.placeholder = Math.round(C.zAt(T.full, 0)); }
+    if (act && /^sx[abrtz]-/.test(act) && $(act)) $(act).focus();
+  }
+
+  function renderSummary(c) {
+    var last = c.rows[c.rows.length - 1], total = last.arr - c.startMin, rt = R(c.tr.total);
+    var k = [];
+    k.push(kpi('距離', km(rt) + '<small> km</small>', false, Math.abs(rt - c.tr.total) > 50 ? 'GPX ' + km(c.tr.total) + ' km，已依實際里程校正' : '依 GPX 計算'));
+    k.push(kpi('爬升', '+' + nf(c.st.up) + '<small> m</small>', false, '下降 ' + nf(c.st.dn) + ' m｜最高 ' + nf(c.st.zmax) + ' m'));
+    k.push(kpi('移動時間（' + (S.wx === 'sun' ? '晴' : '雨霧') + '）', dur(c.m.total * 60), true, '晴 ' + dur(c.mSun.total * 60) + '／雨霧 ' + dur(c.mRain.total * 60)));
+    k.push(kpi('抵達終點', hm(last.arr), false, '含休息與轉換共 ' + dur(total)));
+    $('kpis').innerHTML = k.join('');
+    var t = [trow('出發', hm(c.startMin))];
+    if (c.sun) {
+      t.push(trow('日出／日落', hhmmFromHours(c.sun.rise) + '／' + hhmmFromHours(c.sun.set)));
+      t.push(trow('天黑（民用暮光結束）', hhmmFromHours(c.sun.dusk)));
+      var ls = lightState(c.sun, last.arr);
+      if (ls === 2) t.push(trow('終點時的光線', '<span class="chip crit">天黑後抵達</span>'));
+      else if (ls === 1) t.push(trow('終點時的光線', '<span class="chip warn">日落後抵達</span>'));
+    }
+    var dl = parseHM(S.deadline);
+    if (dl !== null) {
+      var diff = dl - last.arr;
+      t.push(trow('最晚抵達 ' + hm(dl), diff >= 0 ? '<span class="chip ok">餘裕 ' + dur(diff) + '</span>' : '<span class="chip crit">晚 ' + dur(-diff) + '</span>'));
+    }
+    $('tline').innerHTML = t.join('');
+    $('scenLine').innerHTML = '目前：<b>' + WX_LABEL[S.wx] + '</b>。只算移動：晴天 ' + durZh(c.mSun.total * 60) + '，雨霧 ' + durZh(c.mRain.total * 60) +
+      '。休息 ' + c.buf.rest + ' 分、轉換緩衝 ' + c.buf.trans + ' 分（每移動 1 小時），轉換點整隊 ' + c.buf.point + ' 分。';
+  }
+  function kpi(label, value, main, sub) { return '<div class="kpi' + (main ? ' main' : '') + '"><span class="k">' + label + '</span><span class="v">' + value + '</span>' + (sub ? '<span class="s">' + sub + '</span>' : '') + '</div>'; }
+  function trow(label, value) { return '<div class="trow"><span>' + label + '</span><b>' + value + '</b></div>'; }
+
+  function niceStep(range, target) {
+    var raw = range / Math.max(1, target), p = Math.pow(10, Math.floor(Math.log10(raw))), steps = [1, 2, 2.5, 5, 10];
+    for (var i = 0; i < steps.length; i++) if (steps[i] * p >= raw) return steps[i] * p;
+    return 10 * p;
+  }
+  function widthOf(el) { var w = el.getBoundingClientRect().width; return Math.max(280, Math.round(w || 340)); }
+
+  function renderStrip(c) {
+    var box = $('strip'), W = widthOf(box), L = 42, Rm = 12, pw = W - L - Rm;
+    var xr = c.m.xr, z = c.tr.z, D = xr[xr.length - 1], sc = pw / D, relief = (c.st.zmax - c.st.zmin) * sc;
+    var h = Math.max(6, Math.min(relief, 240)), H = Math.ceil(h + 8), top = 4, pts = [];
+    for (var i = 0; i < xr.length; i++) pts.push((L + xr[i] * sc).toFixed(1) + ',' + (top + (c.st.zmax - z[i]) * sc).toFixed(1));
+    var base = (top + (c.st.zmax - c.st.zmin) * sc).toFixed(1);
+    box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="1:1 實際比例高度剖面">' +
+      '<polygon points="' + L + ',' + base + ' ' + pts.join(' ') + ' ' + (L + D * sc).toFixed(1) + ',' + base + '" style="fill:var(--strip);opacity:.35"></polygon>' +
+      '<polyline points="' + pts.join(' ') + '" style="fill:none;stroke:var(--profile-line);stroke-width:1.2"></polyline>' +
+      '<text x="' + (L - 6) + '" y="' + Math.min(H - 2, 14) + '" text-anchor="end" font-size="11">1:1</text></svg>';
+  }
+
+  function renderProfile(c) {
+    var box = $('profile'), W = widthOf(box), H = W < 520 ? 246 : 296;
+    var L = 42, Rm = 12, Tp = 30, B = 38, pw = W - L - Rm, ph = H - Tp - B;
+    var tr = c.tr, st = c.st, xr = c.m.xr, D = xr[xr.length - 1];
+    var zs = niceStep(Math.max(50, st.zmax - st.zmin), 4);
+    var zlo = Math.floor((st.zmin - zs * 0.3) / zs) * zs, zhi = Math.ceil((st.zmax + zs * 0.15) / zs) * zs;
+    function sx(r) { return L + pw * r / D; }
+    function sy(zv) { return Tp + ph * (1 - (zv - zlo) / (zhi - zlo)); }
+    var o = [];
+    var clocks = tr.x.map(function (d) { return C.clockAtV3(c.rows, c.m, c.buf, d); });
+    if (c.sun) {
+      var runStart = null, runState = 0;
+      for (var i = 0; i <= tr.x.length; i++) {
+        var s = i < tr.x.length ? lightState(c.sun, clocks[i]) : -1;
+        if (s !== runState) {
+          if (runState > 0 && runStart !== null) {
+            var xa = sx(xr[runStart]), xb = sx(xr[Math.min(i, tr.x.length - 1)]);
+            o.push('<rect x="' + xa.toFixed(1) + '" y="' + Tp + '" width="' + Math.max(1, xb - xa).toFixed(1) + '" height="' + ph + '" style="fill:var(' + (runState === 2 ? '--night' : '--dusk') + ')"></rect>');
+          }
+          runState = s; runStart = i;
+        }
+      }
+    }
+    for (var zt = zlo; zt <= zhi + 0.1; zt += zs) {
+      var yy = sy(zt).toFixed(1);
+      o.push('<line x1="' + L + '" x2="' + (W - Rm) + '" y1="' + yy + '" y2="' + yy + '" style="stroke:var(--line);stroke-width:1"></line>');
+      o.push('<text x="' + (L - 6) + '" y="' + (+yy + 4) + '" text-anchor="end" font-size="11">' + nf(zt) + '</text>');
+    }
+    var e = c.m.edges;
+    for (var b = 0; b < e.length - 1; b++) {
+      var a0 = e[b], b0 = e[b + 1], poly = [sx(R(a0)).toFixed(1) + ',' + sy(zlo).toFixed(1), sx(R(a0)).toFixed(1) + ',' + sy(C.zAt(tr, a0)).toFixed(1)];
+      for (var j = Math.ceil(a0 / C.STEP); j < tr.x.length && tr.x[j] < b0; j++) if (tr.x[j] > a0) poly.push(sx(xr[j]).toFixed(1) + ',' + sy(tr.z[j]).toFixed(1));
+      poly.push(sx(R(b0)).toFixed(1) + ',' + sy(C.zAt(tr, b0)).toFixed(1), sx(R(b0)).toFixed(1) + ',' + sy(zlo).toFixed(1));
+      var cls = c.m.binCls[b];
+      o.push('<polygon points="' + poly.join(' ') + '" style="fill:var(--b' + cls + ');stroke:var(--b' + cls + ');stroke-width:.7;opacity:.88"></polygon>');
+    }
+    var path = tr.x.map(function (d, k) { return (k ? 'L' : 'M') + sx(xr[k]).toFixed(1) + ' ' + sy(tr.z[k]).toFixed(1); }).join('');
+    o.push('<path d="' + path + '" style="fill:none;stroke:var(--profile-line);stroke-width:1.6;stroke-linejoin:round"></path>');
+    // terrain strip
+    var ty = Tp + ph + 3;
+    T.secs.forEach(function (q) {
+      var xa = sx(q.off), xb = sx(q.off + q.real);
+      o.push('<rect x="' + xa.toFixed(1) + '" y="' + ty + '" width="' + Math.max(1, xb - xa).toFixed(1) + '" height="6" style="fill:var(' + TERR_COLOR[q.terr] + ')"></rect>');
+    });
+    var xs = niceStep(D / 1000, W < 520 ? 4 : 7);
+    for (var kx = 0; kx <= D / 1000 + 1e-9; kx += xs) {
+      var px = sx(kx * 1000).toFixed(1);
+      o.push('<text x="' + px + '" y="' + (H - 8) + '" text-anchor="middle" font-size="11">' + (+kx.toFixed(2)) + (kx === 0 ? ' km' : '') + '</text>');
+    }
+    var lastHour = Math.floor(clocks[0] / 60), lastLabelX = -99;
+    for (var q2 = 1; q2 < clocks.length; q2++) {
+      var hr = Math.floor(clocks[q2] / 60);
+      if (hr > lastHour) {
+        var hx = sx(xr[q2]);
+        o.push('<line x1="' + hx.toFixed(1) + '" x2="' + hx.toFixed(1) + '" y1="' + (Tp - 6) + '" y2="' + (Tp + ph) + '" style="stroke:var(--muted);stroke-width:1;stroke-dasharray:2 3;opacity:.7"></line>');
+        if (hx - lastLabelX > 24) { o.push('<text x="' + hx.toFixed(1) + '" y="' + (Tp - 10) + '" text-anchor="middle" font-size="11" style="font-weight:600">' + pad(((hr % 24) + 24) % 24) + '</text>'); lastLabelX = hx; }
+        lastHour = hr;
+      }
+    }
+    c.rows.forEach(function (r, idx) {
+      var cx = sx(R(r.cp.d)), cy = sy(C.zAt(tr, r.cp.d));
+      o.push('<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="8.5" style="fill:var(--ink);stroke:var(--surface);stroke-width:1.5"></circle>');
+      o.push('<text x="' + cx.toFixed(1) + '" y="' + (cy + 3.8).toFixed(1) + '" text-anchor="middle" font-size="10.5" style="fill:var(--surface);font-weight:700">' + (idx + 1) + '</text>');
+    });
+    o.push('<rect x="' + L + '" y="' + (Tp - 14) + '" width="' + pw + '" height="' + (ph + 14) + '" style="fill:transparent;cursor:crosshair"></rect>');
+    box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="高度剖面，依坡度分色，標出檢查點、整點時刻與地形">' + o.join('') + '</svg>';
+    box._geom = { L: L, pw: pw, D: D };
+    var lg = [];
+    for (var g = 0; g < 7; g++) lg.push('<span><i class="sw" style="background:var(--b' + g + ')"></i>' + BAND_LABEL[g] + '</span>');
+    lg.push('<span><i class="sw" style="background:var(--t-root)"></i>樹根陡坡</span>', '<span><i class="sw" style="background:var(--t-mud)"></i>泥濘草徑</span>');
+    $('legend').innerHTML = lg.join('');
+  }
+
+  function renderTable(c) {
+    var act = document.activeElement && document.activeElement.id ? document.activeElement.id : null;
+    var dl = parseHM(S.deadline), html = [];
+    c.rows.forEach(function (r, i) {
+      var cp = r.cp, zv = C.zAt(c.tr, cp.d), first = i === 0, last = i === c.rows.length - 1, chips = '';
+      if (!first) {
+        var ls = lightState(c.sun, r.arr);
+        if (ls === 2) chips += ' <span class="chip crit">天黑後</span>'; else if (ls === 1) chips += ' <span class="chip warn">日落後</span>';
+        if (dl !== null && r.arr > dl) chips += ' <span class="chip crit">超過最晚抵達</span>';
+      }
+      var meta = km(R(cp.d)) + ' km｜' + nf(zv) + ' m' + (first ? '' : '<br>移動 ' + dur(r.seg) + (r.rest >= 1 ? '＋休息轉換 ' + Math.round(r.rest) + ' 分' : ''));
+      var transBox = last ? '' : '<label class="ck"><input type="checkbox" id="tr-' + cp.id + '"' + (cp.trans ? ' checked' : '') + '>轉換點</label>';
+      html.push('<tr>' +
+        '<td><span class="idx">' + (i + 1) + '</span></td>' +
+        '<td class="cpname"><input class="nm" id="nm-' + cp.id + '" value="' + esc(cp.name) + '" aria-label="第 ' + (i + 1) + ' 點名稱"><div class="meta">' + meta + chips + '</div>' + transBox + '</td>' +
+        '<td class="num"><span class="t">' + (first ? '—' : hm(r.arr)) + '</span></td>' +
+        '<td class="num">' + (last ? '' : '<input class="stop" type="number" min="0" step="5" inputmode="numeric" id="st-' + cp.id + '" value="' + (cp.stop || 0) + '" aria-label="第 ' + (i + 1) + ' 點停留分鐘">') + '</td>' +
+        '<td class="num"><span class="t">' + (last ? '—' : (first || r.stop > 0 ? hm(r.dep) : '')) + '</span></td>' +
+        '<td>' + (cp.kind === 'start' || cp.kind === 'end' ? '' : '<button class="del" type="button" data-del="' + cp.id + '" aria-label="刪除第 ' + (i + 1) + ' 點">×</button>') + '</td>' +
+        '</tr>');
+    });
+    $('tbody').innerHTML = html.join('');
+    if (act && /^(nm|st|tr)-/.test(act) && $(act)) $(act).focus();
+  }
+
+  function renderCopy(c) {
+    var p = (S.date || todayStr()).split('-').map(Number), d = new Date(p[0], p[1] - 1, p[2]), dl = parseHM(S.deadline);
+    var L = [];
+    L.push('班級步程試算｜' + (T.name || '路線') + (T.reversed ? '（反向）' : ''));
+    L.push('・' + (S.date || todayStr()) + '（' + WD[d.getDay()] + '）出發 ' + hm(c.startMin) + '｜' + WX_LABEL[S.wx]);
+    L.push('・距離 ' + km(R(c.tr.total)) + ' km｜爬升 ' + nf(c.st.up) + ' m｜下降 ' + nf(c.st.dn) + ' m｜最高 ' + nf(c.st.zmax) + ' m');
+    L.push('・移動時間 晴天 ' + durZh(c.mSun.total * 60) + '／雨霧 ' + durZh(c.mRain.total * 60));
+    L.push('・休息 ' + c.buf.rest + ' 分、轉換緩衝 ' + c.buf.trans + ' 分（每移動 1 小時），轉換點整隊 ' + c.buf.point + ' 分');
+    c.rows.forEach(function (r, i) {
+      var zv = C.zAt(c.tr, r.cp.d), flag = '';
+      if (i > 0) {
+        var ls = lightState(c.sun, r.arr);
+        if (ls === 2) flag += '（天黑後）'; else if (ls === 1) flag += '（日落後）';
+        if (dl !== null && r.arr > dl) flag += '（超過最晚抵達）';
+      }
+      var tt = i === 0 ? '出發 ' + hm(r.dep) : '抵達 ' + hm(r.arr) + (r.stop > 0 && i < c.rows.length - 1 ? '，停 ' + Math.round(r.stop) + ' 分' : '');
+      L.push('・' + (i + 1) + ' ' + r.cp.name + '　' + km(R(r.cp.d)) + ' km　' + nf(zv) + ' m　' + tt + flag);
+    });
+    if (c.sun) L.push('・日出 ' + hhmmFromHours(c.sun.rise) + '｜日落 ' + hhmmFromHours(c.sun.set) + '｜天黑 ' + hhmmFromHours(c.sun.dusk));
+    L.push('・未含起登前集合、午餐、拍照；天候與隊伍狀況另計。');
+    $('copyText').value = L.join('\n');
+  }
+
+  // ---------- inputs ----------
+  var PMAP = [['pFu', 'Fu'], ['pFdSun', 'FdSun'], ['pFdRain', 'FdRain'], ['pUpr', 'upr'], ['pDnrSun', 'dnrSun'], ['pDnrRain', 'dnrRain'],
+              ['pAltUp', 'altUp'], ['pAltFlat', 'altFlat'], ['pAltDown', 'altDown'], ['pF', 'f']];
+  function applyInputs() {
+    $('date').value = S.date; $('start').value = S.start; $('deadline').value = S.deadline; $('tz').value = S.tz;
+    $('rest').value = S.rest; $('transSun').value = S.transSun; $('transRain').value = S.transRain; $('pointSun').value = S.pointSun; $('pointRain').value = S.pointRain;
+    $('wxSun').checked = S.wx === 'sun'; $('wxRain').checked = S.wx !== 'sun';
+    PMAP.forEach(function (pm) { $(pm[0]).value = PP[pm[1]]; });
+    ['root', 'mud'].forEach(function (k) { ['Sun', 'Rain'].forEach(function (w) { for (var i = 0; i < 3; i++) $(k + w + i).value = PP.terr[k][w.toLowerCase()][i]; }); });
+  }
+  function setRangeInputs() {
+    var r = T.range || [0, T.full.total];
+    $('rFrom').value = (r[0] / 1000).toFixed(1); $('rTo').value = (r[1] / 1000).toFixed(1);
+  }
+  function showError(msg) { var e = $('fileError'); e.textContent = msg; e.hidden = false; }
+  function hideError() { $('fileError').hidden = true; }
+  function readKmz(file) {
+    if (typeof JSZip === 'undefined') return Promise.reject(new Error('目前無法解開 KMZ，請改匯出 GPX 或 KML。'));
+    return file.arrayBuffer().then(function (b) { return JSZip.loadAsync(b); }).then(function (zip) {
+      var name = Object.keys(zip.files).filter(function (n) { return /\.kml$/i.test(n); })[0];
+      if (!name) throw new Error('KMZ 裡找不到 KML 檔。');
+      return zip.files[name].async('string');
+    });
+  }
+  function handleFile(file) {
+    if (!file) return;
+    var name = file.name || '';
+    (/\.kmz$/i.test(name) ? readKmz(file) : file.text()).then(function (text) {
+      var parsed = C.parseTrackText(text);
+      if (!parsed.name) parsed.name = name.replace(/\.(gpx|kml|kmz|xml)$/i, '');
+      var vi = vehicleInfo(parsed);
+      T.parsed = parsed; T.name = parsed.name; T.fileName = name; T.reversed = false; T.range = null; T.isSample = false;
+      T.secsFull = []; T.zStart = null; T.warn = ''; T.suggest = null;
+      T.recorded = parsed.pts.filter(function (q) { return q.t != null; }).length >= parsed.pts.length * 0.5;
+      if (vi.fast > 500) {
+        T.warn = '軌跡中約 ' + km(vi.fast) + ' km 的速度超過每小時 15 公里，可能含搭車段。';
+        if (vi.best && vi.best[1] - vi.best[0] > 300) T.suggest = [vi.best[0], vi.best[1]];
+      }
+      rebuild(false); setRangeInputs(); hideError(); render();
+      $('file').value = '';
+    }).catch(function (err) { showError((err && err.message) ? err.message : '讀取失敗，請確認是 GPX 或 KML 檔。'); $('file').value = ''; });
+  }
+  function loadSample() {
+    T.parsed = { name: SAMPLE.name, pts: SAMPLE.pts.map(function (a) { return { lat: a[0], lon: a[1], ele: a[2], t: null }; }), wpts: clone(SAMPLE.wpts || []) };
+    T.name = SAMPLE.name; T.fileName = ''; T.reversed = false; T.range = null; T.isSample = true; T.warn = ''; T.suggest = null; T.recorded = false;
+    T.secsFull = clone(SAMPLE.sections || []);
+    T.zStart = isNum(SAMPLE.zStart) ? +SAMPLE.zStart : null;
+    if (SAMPLE.date) S.date = SAMPLE.date;
+    if (SAMPLE.start) S.start = SAMPLE.start;
+    if (SAMPLE.weather) S.wx = SAMPLE.weather;
+    applyInputs();
+    rebuild(false);
+  }
+
+  function bind() {
+    $('file').addEventListener('change', function (e) { handleFile(e.target.files && e.target.files[0]); });
+    var card = $('fileCard');
+    card.addEventListener('dragover', function (e) { e.preventDefault(); card.classList.add('drop'); });
+    card.addEventListener('dragleave', function () { card.classList.remove('drop'); });
+    card.addEventListener('drop', function (e) { e.preventDefault(); card.classList.remove('drop'); handleFile(e.dataTransfer.files && e.dataTransfer.files[0]); });
+    $('btnSample').addEventListener('click', function () { loadSample(); setRangeInputs(); hideError(); render(); });
+    $('btnReverse').addEventListener('click', function () {
+      var tot = T.full.total;
+      if (T.range) T.range = [tot - T.range[1], tot - T.range[0]];
+      if (T.suggest) T.suggest = [tot - T.suggest[1], tot - T.suggest[0]];
+      mirrorSections(tot);
+      T.reversed = !T.reversed; rebuild(false); setRangeInputs(); render();
+    });
+    $('btnRange').addEventListener('click', function () {
+      var a = numOr($('rFrom').value, 0) * 1000, b = numOr($('rTo').value, T.full.total / 1000) * 1000;
+      if (b < a) { var t = a; a = b; b = t; }
+      a = Math.max(0, a); b = Math.min(T.full.total, b);
+      if (b - a < 200) { showError('範圍太短，至少要 0.2 km。'); return; }
+      hideError(); T.range = (a <= 1 && b >= T.full.total - 1) ? null : [a, b];
+      rebuild(false); setRangeInputs(); render();
+    });
+    $('btnRangeAll').addEventListener('click', function () { T.range = null; rebuild(false); setRangeInputs(); render(); });
+    ['date', 'start', 'deadline', 'tz', 'rest', 'transSun', 'transRain', 'pointSun', 'pointRain'].forEach(function (id) {
+      $(id).addEventListener('input', function () { S[id] = $(id).value; render(); });
+    });
+    ['wxSun', 'wxRain'].forEach(function (id) { $(id).addEventListener('change', function () { if ($(id).checked) { S.wx = $(id).value; render(); } }); });
+    PMAP.forEach(function (pm) { $(pm[0]).addEventListener('change', function () { PP[pm[1]] = numOr($(pm[0]).value, C.DEFAULTS[pm[1]]); render(); }); });
+    ['root', 'mud'].forEach(function (k) {
+      ['Sun', 'Rain'].forEach(function (w) {
+        for (var i = 0; i < 3; i++) (function (i) {
+          var id = k + w + i;
+          $(id).addEventListener('change', function () { PP.terr[k][w.toLowerCase()][i] = numOr($(id).value, C.DEFAULTS.terr[k][w.toLowerCase()][i]); render(); });
+        })(i);
+      });
+    });
+    $('btnResetP').addEventListener('click', function () { PP = clone(C.DEFAULTS); applyInputs(); render(); });
+    $('btnAddSec').addEventListener('click', function () {
+      var tot = T.full.total, lastB = T.secsFull.length ? Math.max.apply(null, T.secsFull.map(function (q) { return q.b; })) : 0;
+      var a = lastB < tot - 50 ? lastB : 0;
+      T.secsFull.push({ a: a, b: tot, real: null, terr: 'trail', zEnd: null });
+      rebuild(true); render();
+    });
+    $('secBody').addEventListener('change', function (e) {
+      var m = (e.target.id || '').match(/^sx([abrtz])-(\d+)$/);
+      if (!m) return;
+      var q = T.secsFull[+m[2]]; if (!q) return;
+      var v = e.target.value;
+      if (m[1] === 'a') q.a = Math.max(0, numOr(v, 0) * 1000);
+      else if (m[1] === 'b') q.b = Math.min(T.full.total, numOr(v, T.full.total / 1000) * 1000);
+      else if (m[1] === 'r') q.real = v === '' ? null : Math.max(0, numOr(v, 0) * 1000) || null;
+      else if (m[1] === 'z') q.zEnd = (v === '' || !isNum(v)) ? null : Math.round(+v);
+      else q.terr = v;
+      if (q.b < q.a) { var t = q.a; q.a = q.b; q.b = t; }
+      T.secsFull.sort(function (p, r) { return p.a - r.a; });
+      refreshSecs(); render();
+    });
+    $('secBody').addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('[data-sdel]') : null;
+      if (!b) return;
+      T.secsFull.splice(+b.getAttribute('data-sdel'), 1);
+      refreshSecs(); render();
+    });
+    $('zStart').addEventListener('change', function () {
+      var v = $('zStart').value;
+      T.zStart = (v === '' || !isNum(v)) ? null : Math.round(+v);
+      refreshSecs(); render();
+    });
+    $('btnKm').addEventListener('click', function () { if (hasKm()) T.cps = T.cps.filter(function (c) { return c.kind !== 'km'; }); else addKm(); render(); });
+    $('btnClear').addEventListener('click', function () { T.cps = T.cps.filter(function (c) { return c.kind !== 'km' && c.kind !== 'user'; }); render(); });
+    $('tbody').addEventListener('change', function (e) {
+      var m = (e.target.id || '').match(/^(nm|st|tr)-(\d+)$/);
+      if (!m) return;
+      var cp = T.cps.filter(function (c) { return c.id === +m[2]; })[0];
+      if (!cp) return;
+      if (m[1] === 'nm') cp.name = e.target.value.trim() || cp.name;
+      else if (m[1] === 'st') cp.stop = Math.max(0, Math.round(numOr(e.target.value, 0)));
+      else cp.trans = !!e.target.checked;
+      render();
+    });
+    $('tbody').addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('[data-del]') : null;
+      if (!b) return;
+      var id = +b.getAttribute('data-del');
+      T.cps = T.cps.filter(function (c) { return c.id !== id; });
+      render();
+    });
+    $('profile').addEventListener('click', function (e) {
+      var box = $('profile'), g = box._geom; if (!g) return;
+      var svg = box.querySelector('svg'); if (!svg) return;
+      var rect = svg.getBoundingClientRect(), scale = rect.width / (+svg.getAttribute('width'));
+      var x = (e.clientX - rect.left) / scale;
+      if (x < g.L - 2 || x > g.L + g.pw + 2) return;
+      var r = Math.max(0, Math.min(g.D, (x - g.L) / g.pw * g.D));
+      var d = Math.round(C.real2gpx(T.secs, r) / C.STEP) * C.STEP;
+      addCp({ d: Math.min(d, T.track.total), name: km(r) + ' km', kind: 'user', stop: 0, trans: false });
+      render();
+    });
+    $('btnCopy').addEventListener('click', function () {
+      var ta = $('copyText'), msg = $('copyMsg');
+      function fallback() { ta.focus(); ta.select(); msg.textContent = '已選取全文，請用系統的複製。'; }
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(function () { msg.textContent = '已複製。'; }, fallback);
+        else fallback();
+      } catch (err) { fallback(); }
+    });
+    var raf = null;
+    window.addEventListener('resize', function () {
+      if (raf) cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(function () { if (LAST) { renderStrip(LAST); renderProfile(LAST); } });
+    });
+  }
+
+  function init() {
+    var saved = loadSaved();
+    if (saved && saved.S) Object.keys(S).forEach(function (k) { if (saved.S[k] !== undefined && saved.S[k] !== null) S[k] = saved.S[k]; });
+    if (saved && saved.PP && saved.PP.terr) PP = saved.PP;
+    applyInputs();
+    var ok = false;
+    if (saved && saved.track && saved.track.pts && saved.track.pts.length > 1) {
+      try {
+        T.parsed = { name: saved.track.name, pts: saved.track.pts.map(function (a) { return { lat: a[0], lon: a[1], ele: a[2], t: null }; }), wpts: saved.track.wpts || [] };
+        T.name = saved.track.name || ''; T.fileName = saved.fileName || ''; T.reversed = !!saved.reversed; T.range = saved.range || null;
+        T.isSample = !!saved.isSample; T.warn = saved.warn || ''; T.suggest = saved.suggest || null; T.recorded = !!saved.recorded;
+        T.secsFull = saved.secsFull || [];
+        T.zStart = isNum(saved.zStart) ? +saved.zStart : null;
+        rebuild(true);
+        if (saved.cps && saved.cps.length >= 2) {
+          T.cps = saved.cps.filter(function (c) { return c.d <= T.track.total + 1; });
+          T.seq = saved.seq || 1 + Math.max.apply(null, T.cps.map(function (c) { return c.id || 0; }));
+        } else initCps();
+        ok = T.cps.length >= 2;
+      } catch (e) { ok = false; }
+    }
+    if (!ok) loadSample();
+    setRangeInputs();
+    bind();
+    render();
+  }
+  init();
+})();
+
+</script>
+
+</body></html>
