@@ -135,7 +135,7 @@ td .del{min-width:28px}
   <header>
     <div class="eyebrow">10/6 實測校正 · 揹重 13 kg</div>
     <h1>班級步程試算</h1>
-    <p class="sub">青少年負重 Tobler 公式：晴天與雨霧分開算，含休息、轉換緩衝和地形修正。</p>
+    <p class="sub">Tobler 與 DIN 33466 各半的混合公式，用 10/6 班級揹 13 kg 的實測校正：晴天與雨霧分開算，含休息、轉換緩衝、地形與高度修正。</p>
   </header>
 
   <section class="card" id="fileCard" aria-labelledby="hFile">
@@ -197,13 +197,13 @@ td .del{min-width:28px}
       <details>
         <summary>公式參數</summary>
         <div class="pgrid" id="pgrid" style="margin-top:8px">
-          <h3>基本（一般步道）</h3>
-          <label for="pFu">F 上坡<input type="number" id="pFu" step="0.01" inputmode="decimal"></label>
-          <label for="pFdSun">F 下坡（晴）<input type="number" id="pFdSun" step="0.01" inputmode="decimal"></label>
-          <label for="pFdRain">F 下坡（雨霧）<input type="number" id="pFdRain" step="0.01" inputmode="decimal"></label>
-          <label for="pUpr">爬升上限 m/h<input type="number" id="pUpr" step="10" inputmode="numeric"></label>
-          <label for="pDnrSun">下降上限（晴）<input type="number" id="pDnrSun" step="10" inputmode="numeric"></label>
-          <label for="pDnrRain">下降上限（雨霧）<input type="number" id="pDnrRain" step="10" inputmode="numeric"></label>
+          <h3>Tobler 與 DIN 33466（一般步道）</h3>
+          <label for="pTobF">Tobler 係數 F<input type="number" id="pTobF" step="0.01" inputmode="decimal"></label>
+          <label for="pWTob">Tobler 佔比<input type="number" id="pWTob" step="0.1" min="0" max="1" inputmode="decimal"></label>
+          <label for="pSunDown">晴天下坡時間×<input type="number" id="pSunDown" step="0.05" inputmode="decimal"></label>
+          <label for="pDinH">DIN 水平 km/h<input type="number" id="pDinH" step="0.1" inputmode="decimal"></label>
+          <label for="pDinUp">DIN 上升 m/h<input type="number" id="pDinUp" step="10" inputmode="numeric"></label>
+          <label for="pDinDown">DIN 下降 m/h<input type="number" id="pDinDown" step="10" inputmode="numeric"></label>
           <h3>濕滑樹根陡坡（係數／爬升上限／下降上限）</h3>
           <label for="rootSun0">晴 係數<input type="number" id="rootSun0" step="0.05" inputmode="decimal"></label>
           <label for="rootSun1">晴 爬升<input type="number" id="rootSun1" step="10" inputmode="numeric"></label>
@@ -218,11 +218,10 @@ td .del{min-width:28px}
           <label for="mudRain0">雨霧 係數<input type="number" id="mudRain0" step="0.05" inputmode="decimal"></label>
           <label for="mudRain1">雨霧 爬升<input type="number" id="mudRain1" step="10" inputmode="numeric"></label>
           <label for="mudRain2">雨霧 下降<input type="number" id="mudRain2" step="10" inputmode="numeric"></label>
-          <h3>海拔與整體</h3>
-          <label for="pAltUp">≥2,500 m 上坡<input type="number" id="pAltUp" step="0.01" inputmode="decimal"></label>
-          <label for="pAltFlat">≥2,500 m 平路<input type="number" id="pAltFlat" step="0.01" inputmode="decimal"></label>
-          <label for="pAltDown">≥2,500 m 下坡<input type="number" id="pAltDown" step="0.01" inputmode="decimal"></label>
-          <label for="pF">整體時間係數<input type="number" id="pF" step="0.05" inputmode="decimal"></label>
+          <h3>高度與整體</h3>
+          <label for="pAltPct">每千公尺慢 %<input type="number" id="pAltPct" step="0.5" inputmode="decimal"></label>
+          <label for="pAltRef">高度基準 m<input type="number" id="pAltRef" step="50" inputmode="numeric"></label>
+          <label for="pFall">整體時間係數<input type="number" id="pFall" step="0.05" inputmode="decimal"></label>
         </div>
         <div class="row" style="margin-top:8px"><button class="btn ghost" id="btnResetP" type="button">恢復預設參數</button></div>
       </details>
@@ -276,11 +275,11 @@ td .del{min-width:28px}
   <details class="card about">
     <summary>模型怎麼算</summary>
     <ul>
-      <li>速度 V = F × 6 × e^(−3.5 × |S + 0.05|) km/h，S 是坡度，每 20 m 算一次，用實際長度換算。</li>
-      <li>F：上坡 0.75、雨霧下坡 0.71，是 10/6 班級揹 13 kg 的實測值（當天陣雨、路面濕）；晴天下坡 0.79 是推估（濕滑時步幅約縮短 11%）。</li>
-      <li>垂直速度上限：一般步道每小時爬 380 m，下降晴天 510 m、雨霧 460 m。</li>
-      <li>濕滑樹根陡坡：晴天速度 ×0.70、每小時最多爬 260 m、降 300 m；雨霧 ×0.60、爬 220 m、降 230 m。泥濘草徑：晴天 ×0.75，其餘同樹根。依據：10/6 濕階梯實測約每小時爬 285 m、降 325–354 m（樹根路晴天也一樣濕滑，再打九折）；雨霧速度係數取 Tobler 的無路徑係數 3/5。都是推估，可在「公式參數」修改。</li>
-      <li>海拔 2,500 m 以上：上坡 ×0.85、平路 ×0.90、下坡 ×0.95（依高海拔最大攝氧量下降的研究推估）。</li>
+      <li>每 20 m 算兩種時間再各取一半。Tobler：距離 ÷（0.734 × 6 × e^(−3.5 × |S + 0.05|)）km/h，S 是坡度。DIN 33466：水平每小時 3.62 km、上升 468 m、下降 791 m，水平與垂直時間取較大者，再加上較小者的一半。距離用實際長度換算。</li>
+      <li>係數取自 10/6 班級揹 13 kg 的實測（陣雨、路濕），只用移動中的片段。四段步道每段誤差在 3% 以內；每次拿掉一段、用其他段校正再預測它，平均誤差 2.3%。</li>
+      <li>晴天：下坡時間 ×0.9（推估，沒有晴天實測）。</li>
+      <li>一般步道不設垂直速度上限。濕滑樹根陡坡：晴天速度 ×0.70、每小時最多爬 260 m、降 300 m；雨霧 ×0.60、爬 220 m、降 230 m。泥濘草徑：晴天 ×0.75，其餘同樹根。都是推估，可在「公式參數」修改。</li>
+      <li>高度：比 300 m 每高 1,000 m，上坡慢 6.3%、平路慢 3.2%、下坡慢 2.1%（依最大攝氧量隨高度下降的研究推估）。</li>
       <li>總時間＝移動時間 ×（1 ＋（休息＋轉換緩衝）÷ 60）＋各點停留＋轉換點整隊。10/6 步道段：短停 8 次、平均 4.2 分；休息 4 次、平均 8.3 分。</li>
       <li>範例是 10/20 出發、08:15 從四季新柵門起登，巨木登山口停 30 分吃午餐（加納富溪有活水）。其餘沒有算進去：起登前集合與教學、拍照、天候突變與隊伍狀況。</li>
       <li>高度用檔案內的數值，每 20 m 取一點；錄製的軌跡（有時間記錄）先做 3 點平滑。填了實測海拔的段落，高度在兩個已知點之間按距離線性修正。日出、日落以起點座標、海平面計算。</li>
@@ -643,15 +642,18 @@ var CORE = (function () {
 
   // ================= v3: youth loaded Tobler, weather, terrain, real distance =================
   var TERRAIN_KEYS = ['trail', 'root', 'mud'];
+  // v4: half Tobler, half DIN 33466 (rates refit to the 10/6 class data); linear altitude correction
   var DEFAULTS = {
-    Fu: 0.75, FdSun: 0.79, FdRain: 0.71,             // Tobler multipliers (10/6 calibrated; sunny descent estimated)
-    upr: 380, dnrSun: 510, dnrRain: 460,              // vertical caps on ordinary trail (m/h)
-    f: 1.00,                                          // overall factor (time multiplier)
-    altZ: 2500, altUp: 0.85, altFlat: 0.90, altDown: 0.95,
+    F: 0.734,                                  // Tobler multiplier (10/6, rain, both directions)
+    dinH: 3.62, dinUp: 468, dinDown: 791,      // DIN 33466 rates refit to 10/6: km/h, m/h up, m/h down
+    wTob: 0.5,                                 // share of the Tobler time (the rest is DIN)
+    sunDown: 0.90,                             // dry descents: time x 0.9 (estimate)
+    altRef: 300, altPct: 6.3,                  // uphill speed -6.3 % per 1,000 m above 300 m (flat 1/2, down 1/3)
+    f: 1.00,                                   // overall time factor
     terr: {
-      trail: { name: '一般步道', sun: [1.00, 380, 510], rain: [1.00, 380, 460] },
-      root:  { name: '濕滑樹根陡坡',   sun: [0.70, 260, 300], rain: [0.60, 220, 230] },
-      mud:   { name: '泥濘草徑',       sun: [0.75, 260, 300], rain: [0.60, 220, 230] }
+      trail: { name: '一般步道', sun: [1.00, 0, 0], rain: [1.00, 0, 0] },           // 0 = no vertical cap
+      root:  { name: '濕滑樹根陡坡', sun: [0.70, 260, 300], rain: [0.60, 220, 230] },
+      mud:   { name: '泥濘草徑',     sun: [0.75, 260, 300], rain: [0.60, 220, 230] }
     }
   };
   // ---- measured-elevation correction: knots at section ends (full-track GPX metres) ----
@@ -728,21 +730,25 @@ var CORE = (function () {
     P = P || DEFAULTS;
     var rain = wx === 'rain';
     var x = tr.x, z = tr.z, cum = [0], xr = [0];
+    var wT = Math.max(0, Math.min(1, P.wTob)), aK = (P.altPct || 0) / 100;
     for (var i = 1; i < x.length; i++) {
       var dxg = x[i] - x[i - 1];
       if (dxg <= 0) { cum.push(cum[i - 1]); xr.push(xr[i - 1]); continue; }
       var mid = (x[i] + x[i - 1]) / 2, q = secAt(secs, mid);
       var dx = dxg * q.scale, dz = z[i] - z[i - 1], S = dz / dx, zm = (z[i] + z[i - 1]) / 2;
       var t = (P.terr[q.terr] || P.terr.trail)[rain ? 'rain' : 'sun'];
-      var F = S >= 0 ? P.Fu : (rain ? P.FdRain : P.FdSun);
-      var v = F * t[0] * tobler(S);
-      var upCap = Math.min(t[1], P.upr), dnCap = Math.min(t[2], rain ? P.dnrRain : P.dnrSun);
-      if (zm >= P.altZ) {
-        v *= Math.abs(S) < 0.05 ? P.altFlat : (S > 0 ? P.altUp : P.altDown);
-        upCap *= P.altUp; dnCap *= P.altDown;
-      }
-      var h = (dx / 1000) / v;
-      if (dz > 0) h = Math.max(h, dz / upCap); else if (dz < 0) h = Math.max(h, -dz / dnCap);
+      // altitude: uphill slower by altPct per 1,000 m above altRef; flat half of that, downhill a third
+      var a = Math.max(0, (zm - P.altRef) / 1000 * aK), fu = 1 - a, ff = 1 - a / 2, fd = 1 - a / 3;
+      var fAlt = S >= 0.05 ? fu : (S <= -0.05 ? fd : ff);
+      var dk = dx / 1000;
+      var tTob = dk / (P.F * tobler(S));                                   // Tobler
+      var th = dk / P.dinH, tv = dz > 0 ? dz / P.dinUp : -dz / P.dinDown;  // DIN 33466
+      var tDin = Math.max(th, tv) + 0.5 * Math.min(th, tv);
+      var h = wT * tTob + (1 - wT) * tDin;
+      if (!rain && dz < 0) h *= P.sunDown;
+      h = h / (t[0] * fAlt);
+      if (dz > 0 && t[1] > 0) h = Math.max(h, dz / (t[1] * fu));
+      else if (dz < 0 && t[2] > 0) h = Math.max(h, -dz / (t[2] * fd));
       cum.push(cum[i - 1] + h * P.f);
       xr.push(xr[i - 1] + dx);
     }
@@ -809,7 +815,7 @@ var SAMPLE = {"name":"四季新柵門→加羅湖","pts":[[24.488317,121.433262,
   'use strict';
   var C = CORE;
   function $(id) { return document.getElementById(id); }
-  var LS_KEY = 'ctp.v33', LS_OLD = ['ctp.v32', 'ctp.v31', 'ctp.v3'];
+  var LS_KEY = 'ctp.v34', LS_OLD = ['ctp.v33', 'ctp.v32', 'ctp.v31', 'ctp.v3'];
   var WD = ['日', '一', '二', '三', '四', '五', '六'];
   var KIND_PRI = { start: 0, end: 0, wpt: 1, peak: 2, turn: 2, user: 3, km: 4 };
   var BAND_LABEL = ['≤−20%', '−20～−12%', '−12～−5%', '−5～+5%', '+5～+12%', '+12～+20%', '≥+20%'];
@@ -862,7 +868,7 @@ var SAMPLE = {"name":"四季新柵門→加羅湖","pts":[[24.488317,121.433262,
         var o = localStorage.getItem(LS_OLD[i]);
         if (!o) continue;
         o = JSON.parse(o);
-        if (LS_OLD[i] === 'ctp.v3') delete o.PP;   // model parameters changed in v3.1
+        delete o.PP;   // model changed in v4 (Tobler + DIN 33466): start from the new defaults
         if (o.isSample) { delete o.track; delete o.cps; delete o.secsFull; delete o.zStart; }   // sample route was corrected
         return o;
       }
@@ -1226,13 +1232,13 @@ var SAMPLE = {"name":"四季新柵門→加羅湖","pts":[[24.488317,121.433262,
       L.push('・' + (i + 1) + ' ' + r.cp.name + '　' + km(R(r.cp.d)) + ' km　' + nf(zv) + ' m　' + tt + flag);
     });
     if (c.sun) L.push('・日出 ' + hhmmFromHours(c.sun.rise) + '｜日落 ' + hhmmFromHours(c.sun.set) + '｜天黑 ' + hhmmFromHours(c.sun.dusk));
-    L.push('・未含起登前集合、午餐、拍照；天候與隊伍狀況另計。');
+    L.push('・停留只算表內填的分鐘；起登前集合、拍照、天候與隊伍狀況另計。');
     $('copyText').value = L.join('\n');
   }
 
   // ---------- inputs ----------
-  var PMAP = [['pFu', 'Fu'], ['pFdSun', 'FdSun'], ['pFdRain', 'FdRain'], ['pUpr', 'upr'], ['pDnrSun', 'dnrSun'], ['pDnrRain', 'dnrRain'],
-              ['pAltUp', 'altUp'], ['pAltFlat', 'altFlat'], ['pAltDown', 'altDown'], ['pF', 'f']];
+  var PMAP = [['pTobF', 'F'], ['pWTob', 'wTob'], ['pSunDown', 'sunDown'], ['pDinH', 'dinH'], ['pDinUp', 'dinUp'], ['pDinDown', 'dinDown'],
+              ['pAltPct', 'altPct'], ['pAltRef', 'altRef'], ['pFall', 'f']];
   function applyInputs() {
     $('date').value = S.date; $('start').value = S.start; $('deadline').value = S.deadline; $('tz').value = S.tz;
     $('rest').value = S.rest; $('transSun').value = S.transSun; $('transRain').value = S.transRain; $('pointSun').value = S.pointSun; $('pointRain').value = S.pointRain;
@@ -1400,7 +1406,7 @@ var SAMPLE = {"name":"四季新柵門→加羅湖","pts":[[24.488317,121.433262,
   function init() {
     var saved = loadSaved();
     if (saved && saved.S) Object.keys(S).forEach(function (k) { if (saved.S[k] !== undefined && saved.S[k] !== null) S[k] = saved.S[k]; });
-    if (saved && saved.PP && saved.PP.terr) PP = saved.PP;
+    if (saved && saved.PP && saved.PP.terr && saved.PP.dinH !== undefined) PP = saved.PP;
     applyInputs();
     var ok = false;
     if (saved && saved.track && saved.track.pts && saved.track.pts.length > 1) {
