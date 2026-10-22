@@ -145,13 +145,22 @@ td .del{min-width:28px}
 .spdtbl caption{caption-side:top;text-align:left;font-size:.78rem;color:var(--ink2);padding:0 0 4px}
 .spdtbl th{white-space:normal;line-height:1.25}
 .spdtbl td{padding:5px 3px;font-variant-numeric:tabular-nums}
+.teamrow{display:grid;gap:4px;font-size:.84rem;color:var(--ink2);min-width:0}
+.teamrow .inline input{width:4.8rem}
+.teamnote{margin:0;font-size:.86rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.calbody{display:grid;gap:8px;margin-top:8px}
+#calOut{display:grid;gap:8px;border-top:1px dashed var(--line);padding-top:8px}
+.calmsg{margin:0;font-size:.84rem;color:var(--ink2)}
+.caltbl{font-size:.84rem}
+.caltbl td{padding:5px 3px;font-variant-numeric:tabular-nums}
+.caltbl td.num{font-family:var(--font-num);font-weight:600;white-space:nowrap}
 </style>
 
 <main class="wrap">
   <header>
     <div class="eyebrow">10/6 實測校正 · 揹重 13 kg</div>
     <h1>步程試算</h1>
-    <p class="sub">Tobler 與 DIN 33466 各半的混合公式，用 10/6 班級揹 13 kg 的實測校正，10/20–21 四季林道實走再修正：含途中停留、地形與高度修正（每小時走 47 分、停 13 分）。</p>
+    <p class="sub">Tobler 與 DIN 33466 各半的混合公式，用 10/6 班級揹 13 kg 的實測校正，10/20–21 四季林道實走再修正：含途中停留、地形與高度修正（每小時走 47 分、停 13 分）。<br><br>別的隊伍可在「設定」調整隊伍速度，並用自己的 GPS 紀錄校準。</p>
   </header>
 
   <section class="card" id="fileCard" aria-labelledby="hFile">
@@ -182,7 +191,7 @@ td .del{min-width:28px}
       <h2 id="hSec">路段與地形</h2>
       <button class="btn" id="btnAddSec" type="button">新增路段</button>
     </div>
-    <p class="lead">選項後面的速度是該段的平均水平速度：坡度、海拔都已算進去，只算走路、不含停留。<br><br>勾「重裝」＝揹 13 kg 大背包，不勾＝輕裝。<br><br>勾「雨天」＝下雨或起霧、路濕，不勾＝晴天。</p>
+    <p class="lead">選項後面的速度是該段的平均水平速度：坡度、海拔、隊伍速度都已算進去，只算走路、不含停留。<br><br>勾「重裝」＝揹 13 kg 大背包，不勾＝輕裝。<br><br>勾「雨天」＝下雨或起霧、路濕，不勾＝晴天。</p>
     <div class="seclist" id="secBody"></div>
     <details class="spdref" id="spdBox"><summary>各坡度的水平速度（參考）</summary><div id="spdRef"></div></details>
     <div class="inline" style="margin-top:8px"><label for="zStart">起點實測海拔（選填）</label><input type="number" id="zStart" step="1" inputmode="numeric" style="width:5.2rem"> m</div>
@@ -199,6 +208,19 @@ td .del{min-width:28px}
         <label for="stopH" class="full">途中停留（每小時內含幾分鐘）<input type="number" id="stopH" min="0" max="45" step="0.5" inputmode="decimal"></label>
       </div>
       <p class="hint">途中停留＝休息、整裝、集合、等人等短停的合計，算在同一小時之內。<br><br>預設 13 分：每小時走 47 分、停 13 分。<br><br>13 分取自 10/6：休息 4 次、平均 8.3 分，短停 8 次、平均 4.2 分，合計約佔總時間的 22%。<br><br>停留不分晴雨：10/6 雨天每小時約停 15 分，10/20 晴天上坡約 16 分。<br><br>午餐、儀式等長停留，另外填在時間表各點的「停留」。<br><br>雨天只放慢走路速度，依各路段的「雨天」勾選。</p>
+      <div class="teamrow">
+        <span>隊伍速度（倍數；1＝八年級學生實測）</span>
+        <div class="inline"><label for="teamUp">上坡與平路 ×</label><input type="number" id="teamUp" min="0.3" max="2.5" step="0.05" inputmode="decimal"><label for="teamDn">下坡 ×</label><input type="number" id="teamDn" min="0.3" max="2.5" step="0.05" inputmode="decimal"></div>
+      </div>
+      <p class="teamnote" id="teamNote"></p>
+      <p class="hint">只調人的差別：體能、年紀、經驗。<br><br>有沒有揹大背包、晴雨、地形、停下來的時間，各有自己的設定，不要重複算進倍數。<br><br>填 1.2＝比基準快 20%，走路時間少約 17%；填 0.8＝慢 20%，走路時間多 25%。<br><br>下坡分開填：年紀較大或膝蓋不好的人，陡下坡常比上坡慢得多；比 −5% 陡的下坡用「下坡」倍數。</p>
+      <details class="calbox" id="calBox">
+        <summary>怎麼定倍數：用 GPS 紀錄校準</summary>
+        <div class="calbody">
+          <p class="hint">最準的方法是用同一群人最近一次的 GPS 紀錄來算。<br><br>1. 載入那次的 GPX，要有時間紀錄，手機 App 或手錶錄的都可以。<br><br>搭車、在停車場或營地走動的部分，先用「只算其中一段」裁掉。<br><br>2. 在「路段與地形」照那天的實況設定地形、重裝、雨天。<br><br>3. 下面會比對實際走路的時間（停下來的時間已扣掉）和模型，算出兩個倍數，按「套用」。<br><br>4. 再載入要去的路線，倍數會保留。<br><br>例：上坡實際走了 2 小時，模型算 1 小時 48 分，倍數＝108 ÷ 120＝0.9。<br><br>紀錄最好上坡、下坡各有 1 小時以上，路況也和要去的路線相近。<br><br>隊伍以最慢的人為準，要用最慢的那位也在的紀錄。<br><br>沒有紀錄只能猜：寧可填慢一點，並先訂好最晚折返時間。</p>
+          <div id="calOut"></div>
+        </div>
+      </details>
       <details>
         <summary>公式參數</summary>
         <div class="pgrid" id="pgrid" style="margin-top:8px">
@@ -233,10 +255,9 @@ td .del{min-width:28px}
           <label for="pRoadHF">重裝×<input type="number" id="pRoadHF" step="0.01" inputmode="decimal"></label>
           <label for="pRoadLU">輕裝上坡×<input type="number" id="pRoadLU" step="0.01" inputmode="decimal"></label>
           <label for="pRoadLD">輕裝下坡×<input type="number" id="pRoadLD" step="0.01" inputmode="decimal"></label>
-          <h3>高度與整體</h3>
+          <h3>高度</h3>
           <label for="pAltPct">每千公尺慢 %<input type="number" id="pAltPct" step="0.5" inputmode="decimal"></label>
           <label for="pAltRef">高度基準 m<input type="number" id="pAltRef" step="50" inputmode="numeric"></label>
-          <label for="pFall">整體時間係數<input type="number" id="pFall" step="0.05" inputmode="decimal"></label>
         </div>
         <div class="row" style="margin-top:8px"><button class="btn ghost" id="btnResetP" type="button">恢復預設參數</button></div>
       </details>
@@ -299,7 +320,8 @@ td .del{min-width:28px}
       <li>沒勾「重裝」的路段（行李另外運送）：假設出力和揹 13 kg 時相同，用 Pandolf 能量公式換算成只揹 2 kg 的速度（體重以 50 kg 計）。<br><br>加速比例用一般步道的速度算，每種地形套同一比例：平路約快 15%，15% 上坡約快 22%，30% 上坡約快 24%；下坡用平路的算法，約快 18–27%。<br><br>樹根陡坡、泥濘草徑的爬升與下降上限也按同一比例放寬。<br><br>林道輕裝依 10/20–21 實測、只算移動時間再乘：上坡 ×0.92（停車處→紅柵欄 2.4 km、爬升 388 m：實際 57 分，模型 57 分），下坡 ×0.75（原路下山：實際 34 分，模型 35 分）。<br><br>輕裝走一般步道、樹根、泥濘都沒有班級實測。<br><br>都可在「公式參數」修改。</li>
       <li>林道揹重裝：速度和一般步道相同（「林道重裝×」1.00）。<br><br>依據 10/20、10/21 四季林道揹 13 kg 實走，只算移動時間：上坡紅柵欄→廢棄護管所（3.3 km、爬升 468 m）實際 95 分、模型 100 分；下坡同段反向（下降 470 m）實際 72 分、模型 73 分。</li>
       <li>總時間＝走路時間 × 60 ÷（60 − 每小時停留）＋各點停留。<br><br>預設每小時停 13 分，等於每小時走 47 分：走 47 分鐘的路要花 1 小時。<br><br>13 分取自 10/6 步道段：休息 4 次、平均 8.3 分；短停 8 次、平均 4.2 分，合計約佔總時間的 22%。<br><br>集合、整隊、等人都算在這裡，不另外加。</li>
-      <li>範例是 10/20 第 1 天實走：09:04 從四季公墓停車處起步（乘車段不列），紅柵欄（舊柵門）停 63 分取裝、入山儀式，途中午餐 25 分，加納富溪停 30 分，終點是巨木登山口後 450 m 的營地，當天 14:45 抵達。<br><br>紅柵欄以前行李上菜車、學生不揹大背包，這段設成林道、不勾重裝；紅柵欄到營地是林道、揹重裝；當天晴天，都不勾雨天。<br><br>範例估 14:57 抵達，比實際晚 12 分，其中 10 分在紅柵欄以前（估 10:17，實際 10:07）：林道輕裝那 63 分鐘實際只停 6 分，模型每小時停 13 分。<br><br>距離與高度用 GPX 原值（當天 Garmin 實測高度和 GPX 相差 3 m 內）；巨木登山口到營地取自隨隊家長的 Garmin 軌跡，距離按 450 m 計。<br><br>其餘沒有算進去：拍照、天候突變與隊伍狀況。</li>
+      <li>隊伍速度：每 20 m 的走路時間 ÷ 倍數；比 −5% 陡的下坡用「下坡」倍數，其餘用「上坡與平路」。<br><br>樹根陡坡、泥濘草徑的爬升與下降上限也一起乘上倍數。<br><br>基準 1＝10/6、10/20–21 的八年級學生實測。<br><br>校準時把紀錄每 5 秒取一點，前後各 60 秒的淨位移換算不到每小時 0.6 km 就算停下來，其餘算走路。<br><br>走路的時間依當時的位置分到每 20 m，再和倍數 1 的模型比：倍數＝模型時間 ÷ 實際走路時間。<br><br>10 分鐘以內的停留換算成「途中停留」每小時幾分；更長的（午餐、儀式）只列出來，不算進去。</li>
+      <li>範例是 10/20 第 1 天實走：09:04 從四季公墓停車處起步（乘車段不列），紅柵欄（舊柵門）停 63 分取裝、入山儀式，途中午餐 25 分，加納富溪停 30 分，終點是巨木登山口後 450 m 的營地，當天 14:45 抵達。<br><br>紅柵欄以前行李上菜車、學生不揹大背包，這段設成林道、不勾重裝；紅柵欄到營地是林道、揹重裝；當天晴天，都不勾雨天。<br><br>範例估 14:57 抵達（隊伍速度 ×1），比實際晚 12 分，其中 10 分在紅柵欄以前（估 10:17，實際 10:07）：林道輕裝那 63 分鐘實際只停 6 分，模型每小時停 13 分。<br><br>距離與高度用 GPX 原值（當天 Garmin 實測高度和 GPX 相差 3 m 內）；巨木登山口到營地取自隨隊家長的 Garmin 軌跡，距離按 450 m 計。<br><br>其餘沒有算進去：拍照、天候突變與隊伍狀況。</li>
       <li>高度用檔案內的數值，每 20 m 取一點；錄製的軌跡（有時間記錄）先做 3 點平滑。<br><br>填了實測海拔的段落，高度在兩個已知點之間按距離線性修正。<br><br>日出、日落以起點座標、海平面、台灣時間（UTC+8）計算。</li>
     </ul>
   </details>
@@ -667,7 +689,7 @@ var CORE = (function () {
     wTob: 0.5,                                 // share of the Tobler time (the rest is DIN)
     sunDown: 1.00,                             // dry descents same speed as wet: 10/18 舊寮 dry walk (7 kg) down/up ratio matched the wet calibration
     altRef: 300, altPct: 6.3,                  // uphill speed -6.3 % per 1,000 m above 300 m (flat 1/2, down 1/3)
-    f: 1.00,                                   // overall time factor
+    f: 1.00,                                   // overall time factor (v27: kept at 1; the team speed teamUp / teamDn is a setting)
     bodyKg: 50, lightKg: 2, calKg: 13,         // light sections: same effort (Pandolf 1977) with lightKg instead of the 13 kg calibration load
     roadHeavyF: 1.00,                          // 林道 with 13 kg: time x1.00 (四季林道 moving time, 10/20 up 95 vs model 100 min, 10/21 down 72 vs 73 min)
     roadLightUp: 0.92, roadLightDown: 0.75,    // 林道 without the big pack: light time x0.92 uphill, x0.75 downhill (moving time 10/20 up 57 vs 62 min, 10/21 down 34 vs 46 min)
@@ -785,7 +807,8 @@ var CORE = (function () {
     var rc = Math.max(1, r);
     if (dz > 0 && t[1] > 0) h = Math.max(h, dz / (t[1] * fu * rc));     // vertical caps (13 kg): up and down separately
     else if (dz < 0 && t[2] > 0) h = Math.max(h, -dz / (t[2] * fd * rc));
-    return h * P.f;
+    var v = S <= -0.05 ? P.teamDn : P.teamUp;                          // v27: team speed (1 = the class); steeper than -5 % uses the downhill value
+    return h * P.f / (v > 0 ? v : 1);
   }
   // horizontal speeds (km/h) of one terrain at altitude zm on 0 %, +-15 % and +-30 % grades; heavy false = no big pack
   function refSpeeds(terr, wx, P, zm, heavy) {
@@ -883,6 +906,89 @@ var CORE = (function () {
     return r0.dep + (bufferedAtV3(m, d) * 60 - r0.mb);
   }
 
+  // ================= v27: team speed from a timed record =================
+  // pts: parsed points in file order [{lat, lon, t (ms or null)}]; distance d follows buildTrack (consecutive duplicates add nothing).
+  // Returns a time grid (step s) with along-track distance d (m) and a stop flag: net displacement within +-win s under vmin km/h.
+  function timeGrid(pts, step, win, vmin) {
+    step = step || 5; win = win || 60; vmin = vmin || 0.6;
+    var s = [], d = 0, prev = null, i, k;
+    for (i = 0; i < pts.length; i++) {
+      var p = pts[i];
+      if (prev && !(prev.lat === p.lat && prev.lon === p.lon)) d += hav(prev.lat, prev.lon, p.lat, p.lon);
+      prev = p;
+      if (p.t !== null && p.t !== undefined && isFinite(p.t)) s.push([p.t / 1000, p.lat, p.lon, d]);
+    }
+    if (s.length < 10) return null;
+    s.sort(function (a, b) { return a[0] - b[0]; });
+    var t0 = s[0][0], t1 = s[s.length - 1][0];
+    if (!(t1 - t0 >= 600)) return null;
+    var n = Math.floor((t1 - t0) / step) + 1;
+    if (n > 250000) return null;
+    var T = new Float64Array(n), LA = new Float64Array(n), LO = new Float64Array(n), D = new Float64Array(n), j = 0;
+    for (k = 0; k < n; k++) {
+      var t = t0 + k * step;
+      while (j < s.length - 2 && s[j + 1][0] <= t) j++;
+      var a = s[j], b = s[j + 1], f = b[0] > a[0] ? Math.max(0, Math.min(1, (t - a[0]) / (b[0] - a[0]))) : 1;
+      T[k] = t; LA[k] = a[1] + (b[1] - a[1]) * f; LO[k] = a[2] + (b[2] - a[2]) * f; D[k] = a[3] + (b[3] - a[3]) * f;
+    }
+    var h = Math.max(1, Math.round(win / step)), stop = new Uint8Array(n);
+    for (k = 0; k < n; k++) {
+      var ka = Math.max(0, k - h), kb = Math.min(n - 1, k + h), tt = T[kb] - T[ka];
+      stop[k] = tt > 0 && hav(LA[ka], LO[ka], LA[kb], LO[kb]) / tt * 3.6 < vmin ? 1 : 0;
+    }
+    return { t: T, d: D, stop: stop, step: step, n: n };
+  }
+  // Compare the record with the model at team speed 1 on track tr, which starts at off metres of the full track. Minutes.
+  // Each moving grid step spreads its time and distance over the 20 m model steps it covers. A model step counts only the share
+  // of its length covered while moving, so GPS drift during stops (and very slow creeping) drops out of both sides.
+  // Steps steeper than -5 % count as downhill.
+  function calibrate(tr, secs, P, G, off) {
+    P = P || DEFAULTS; off = off || 0;
+    var P1 = {};
+    Object.keys(P).forEach(function (key) { P1[key] = P[key]; });
+    P1.teamUp = 1; P1.teamDn = 1;
+    var m = runModelV3(tr, secs, null, P1), x = m.x, n = x.length, i;
+    var movD = new Float64Array(n), actS = new Float64Array(n);
+    function stepOf(v) {
+      var j = Math.max(1, Math.min(n - 1, Math.ceil(v / STEP)));
+      while (j < n - 1 && x[j] < v) j++;
+      while (j > 1 && x[j - 1] > v) j--;
+      return j;
+    }
+    var L = tr.total, st = G.step, runs = [], cur = null, first = null, last = null;
+    for (var k = 0; k < G.n; k++) {
+      var xk = G.d[k] - off;
+      if (xk < -0.5 || xk > L + 0.5) { if (cur) { runs.push(cur); cur = null; } continue; }
+      if (first === null) first = G.t[k];
+      last = G.t[k];
+      if (G.stop[k]) { if (cur) cur[1] = k; else cur = [k, k]; continue; }
+      if (cur) { runs.push(cur); cur = null; }
+      var lo = Math.max(0, Math.min(L, xk)), hi = Math.max(0, Math.min(L, k < G.n - 1 ? G.d[k + 1] - off : xk));
+      if (hi < lo) { var sw = lo; lo = hi; hi = sw; }
+      var j = stepOf(lo);
+      if (hi - lo < 1e-6) { actS[j] += st; continue; }
+      for (; j < n; j++) {
+        var a = Math.max(lo, x[j - 1]), b = Math.min(hi, x[j]);
+        if (b > a) { movD[j] += b - a; actS[j] += st * (b - a) / (hi - lo); }
+        if (x[j] >= hi) break;
+      }
+    }
+    if (cur) runs.push(cur);
+    var modUp = 0, modDn = 0, actUp = 0, actDn = 0, still = 0;
+    for (i = 1; i < n; i++) {
+      var len = x[i] - x[i - 1], share = len > 0 ? Math.min(1, movD[i] / len) : 0, dh = (m.cum[i] - m.cum[i - 1]) * share, dxr = m.xr[i] - m.xr[i - 1];
+      still += len * (1 - share);
+      if (dxr > 0 && (tr.z[i] - tr.z[i - 1]) / dxr <= -0.05) { modDn += dh; actDn += actS[i]; } else { modUp += dh; actUp += actS[i]; }
+    }
+    var shortMin = 0, shortN = 0, longs = [];
+    runs.forEach(function (r) {
+      var mn = (r[1] - r[0] + 1) * st / 60;
+      if (mn >= 10) longs.push({ t: G.t[r[0]], min: mn }); else { shortMin += mn; shortN++; }
+    });
+    return { modUp: modUp * 60, modDn: modDn * 60, actUp: actUp / 60, actDn: actDn / 60, shortMin: shortMin, shortN: shortN, longs: longs,
+             still: still, elapsed: first === null ? 0 : (last - first) / 60, first: first, last: last };
+  }
+
   return {
     DEFAULTS: DEFAULTS, TERRAIN_KEYS: TERRAIN_KEYS, normSections: normSections, gpx2real: gpx2real, real2gpx: real2gpx,
     zKnots: zKnots, deltaAt: deltaAt, applyZFix: applyZFix,
@@ -891,7 +997,7 @@ var CORE = (function () {
     hav: hav, parseTrackText: parseTrackText, buildTrack: buildTrack, reverseTrack: reverseTrack,
     zAt: zAt, stats: stats, tmod: tmod, runModel: runModel, movingAt: movingAt,
     schedule: schedule, clockAt: clockAt, projectWpts: projectWpts, autoPoints: autoPoints,
-    sunDay: sunDay, gradeClass: gradeClass
+    sunDay: sunDay, gradeClass: gradeClass, timeGrid: timeGrid, calibrate: calibrate
   };
 })();
 if (typeof module !== 'undefined') module.exports = CORE;
@@ -911,13 +1017,13 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   var WX_LABEL = { sun: '晴天', rain: '雨天或起霧' };
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
-  var S = { date: todayStr(), start: '07:30', deadline: '', stopH: 13 };
+  var S = { date: todayStr(), start: '07:30', deadline: '', stopH: 13, teamUp: 1, teamDn: 1 };
   var TZ = 8;   // 台灣時間 UTC+8 (v21: no time-zone input)
   var PP = clone(C.DEFAULTS);
   var T = { parsed: null, name: '', fileName: '', reversed: false, range: null, full: null, track: null, stats: null,
             secsFull: [], secs: null, cps: [], seq: 1, isSample: true, warn: '', suggest: null, recorded: false,
-            zStart: null, trackRaw: null, fullFix: null };
-  var LAST = null;
+            zStart: null, trackRaw: null, fullFix: null, calFor: null, calG: null };
+  var LAST = null, PM = null;   // PM: model parameters with the team speed (v27)
 
   // ---------- helpers ----------
   function pad(n) { return String(n).padStart(2, '0'); }
@@ -946,9 +1052,15 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       localStorage.setItem(LS_KEY, JSON.stringify({
         S: S, PP: PP, isSample: T.isSample, recorded: T.recorded, fileName: T.fileName, reversed: T.reversed, range: T.range,
         warn: T.warn, suggest: T.suggest, secsFull: T.secsFull, cps: T.cps, seq: T.seq, zStart: T.zStart,
-        track: T.parsed ? { name: T.parsed.name, pts: T.parsed.pts.map(function (p) { return [p.lat, p.lon, p.ele]; }), wpts: T.parsed.wpts || [] } : null
+        track: T.parsed ? packTrack(T.parsed) : null
       }));
     } catch (e) { /* storage unavailable: page still works */ }
+  }
+  function packTrack(pr) {   // v27: keep the record times as seconds after the first point
+    var t0 = null;
+    pr.pts.forEach(function (p) { if (p.t !== null && p.t !== undefined && isFinite(p.t) && (t0 === null || p.t < t0)) t0 = p.t; });
+    return { name: pr.name, t0: t0, wpts: pr.wpts || [],
+             pts: pr.pts.map(function (p) { return t0 !== null && p.t !== null && p.t !== undefined && isFinite(p.t) ? [p.lat, p.lon, p.ele, Math.round((p.t - t0) / 1000)] : [p.lat, p.lon, p.ele]; }) };
   }
   function loadSaved() {
     try {
@@ -1100,6 +1212,69 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     var pa = 60 * q / (60 - q);                                 // the same as minutes added per walking hour
     return { stopH: q, walkH: 60 - q, pause: pa, rest: pa, transSun: 0, transRain: 0, pointSun: 0, pointRain: 0 };
   }
+  // ---------- team speed (v27) ----------
+  function teamV(v) { return Math.min(2.5, Math.max(0.3, numOr(v, 1))); }
+  function MP() {   // model parameters with the team speed
+    var p = {};
+    Object.keys(PP).forEach(function (k) { p[k] = PP[k]; });
+    p.f = 1; p.teamUp = teamV(S.teamUp); p.teamDn = teamV(S.teamDn);
+    return p;
+  }
+  function f2(v) { return String(Math.round(v * 100) / 100); }
+  function teamIsOne() { return Math.abs(teamV(S.teamUp) - 1) < 1e-9 && Math.abs(teamV(S.teamDn) - 1) < 1e-9; }
+  function teamTxt() {
+    var u = teamV(S.teamUp), d = teamV(S.teamDn);
+    return Math.abs(u - d) < 1e-9 ? '×' + f2(u) : '上坡與平路 ×' + f2(u) + '、下坡 ×' + f2(d);
+  }
+  function slowTxt(v) { var p = Math.round((1 / v - 1) * 100); return p === 0 ? '走路時間不變' : (p > 0 ? '走路時間多 ' + p + '%' : '走路時間少 ' + (-p) + '%'); }
+  function calGrid() {
+    if (!T.parsed || !T.recorded) return null;
+    if (T.calFor !== T.parsed) { T.calFor = T.parsed; try { T.calG = C.timeGrid(T.parsed.pts); } catch (e) { T.calG = null; } }
+    return T.calG;
+  }
+  function recDrift() {   // metres a record gained while stopped (GPS drift), inside the current range
+    var G = calGrid(); if (!G || !T.full) return 0;
+    var tot = T.full.total, a = T.range ? T.range[0] : 0, b = T.range ? T.range[1] : tot, s = 0;
+    if (T.reversed) { var a2 = tot - b; b = tot - a; a = a2; }
+    for (var k = 0; k < G.n - 1; k++) if (G.stop[k] && G.d[k] >= a && G.d[k] <= b) s += G.d[k + 1] - G.d[k];
+    return s;
+  }
+  function clockOf(sec) { var m = Math.floor(sec / 60) + TZ * 60; return hm(((m % 1440) + 1440) % 1440); }
+  function renderTeam() {
+    var u = teamV(S.teamUp), d = teamV(S.teamDn);
+    $('teamNote').textContent = teamIsOne() ? '目前 ×1：和基準一樣。' : '上坡與平路 ×' + f2(u) + '：' + slowTxt(u) + '；下坡 ×' + f2(d) + '：' + slowTxt(d) + '。';
+    renderCal();
+  }
+  function renderCal() {
+    var box = $('calOut'), G = calGrid();
+    if (!G) { box.innerHTML = '<p class="calmsg">目前的路線沒有時間紀錄，還不能校準。<br><br>載入一筆有時間的 GPX，這裡就會算出建議的倍數。</p>'; return; }
+    if (T.reversed) { box.innerHTML = '<p class="calmsg">路線已反轉，但紀錄是照原方向走的。<br><br>按「反轉方向」轉回來，才能校準。</p>'; return; }
+    var r = C.calibrate(T.track, T.secs, PP, G, T.range ? T.range[0] : 0), act = r.actUp + r.actDn, mod = r.modUp + r.modDn;
+    if (act < 10) { box.innerHTML = '<p class="calmsg">這段紀錄幾乎沒有走路的時間，無法校準。</p>'; return; }
+    var su = r.actUp >= 15 ? r.modUp / r.actUp : null, sd = r.actDn >= 15 ? r.modDn / r.actDn : null, h = [];
+    function row(lab, a, mm, v) { return '<tr><td>' + lab + '</td><td class="num">' + dur(a) + '</td><td class="num">' + dur(mm) + '</td><td class="num">' + (v === null ? '太少' : '×' + v.toFixed(2)) + '</td></tr>'; }
+    h.push('<p class="calmsg">比較這筆紀錄' + (T.range ? '（GPX ' + km(T.range[0]) + '–' + km(T.range[1]) + ' km）' : '') + '實際走路的時間和模型（倍數 1）。<br><br>算出來的是錄這筆軌跡那群人的倍數。' +
+      (r.still >= 100 ? '<br><br>紀錄裡約 ' + km(r.still) + ' km 是停下來時 GPS 飄移或極慢移動的距離，比較時已排除。' : '') + '</p>');
+    h.push('<table class="caltbl"><thead><tr><th></th><th class="num">實際走路</th><th class="num">模型</th><th class="num">倍數</th></tr></thead><tbody>' +
+      row('上坡與平路', r.actUp, r.modUp, su) + row('下坡', r.actDn, r.modDn, sd) + row('整段', act, mod, mod / act) + '</tbody></table>');
+    var warn = [];
+    if (T.warn && !T.range) warn.push('軌跡可能含搭車段：先用「只算其中一段」裁掉，否則倍數會偏大。');
+    if (act < 45) warn.push('走路不到 45 分鐘，倍數誤差會很大。');
+    if ((su !== null && (su < 0.4 || su > 2.5)) || (sd !== null && (sd < 0.4 || sd > 2.5))) warn.push('倍數不太合理，請檢查路段設定，或是否含搭車段。');
+    if (warn.length) h.push('<p class="warnbox">' + warn.join('<br><br>') + '</p>');
+    var longMin = r.longs.reduce(function (a, z) { return a + z.min; }, 0);
+    var q = r.shortMin / (act + r.shortMin) * 60, qq = Math.min(45, Math.round(q * 2) / 2);
+    var qa = (r.shortMin + longMin) / (act + r.shortMin + longMin) * 60, qqa = Math.min(45, Math.round(qa * 2) / 2);
+    var lg = r.longs.slice(0, 4).map(function (z) { return clockOf(z.t) + ' 起 ' + Math.round(z.min) + ' 分'; }).join('、') + (r.longs.length > 4 ? ' 等' : '');
+    h.push('<p class="calmsg">停留：10 分鐘以內的停留 ' + r.shortN + ' 次，換算每小時停 ' + nf1(q) + ' 分。' +
+      (r.longs.length ? '<br><br>較長的停留 ' + r.longs.length + ' 次：' + lg + '。<br><br>午餐、等車這類填在時間表各點；固定的休息也該算進每小時的停留，全部算進去是每小時 ' + nf1(qa) + ' 分。' : '') + '</p>');
+    var nu = su !== null ? Math.round(teamV(su) * 100) / 100 : teamV(S.teamUp), nd = sd !== null ? Math.round(teamV(sd) * 100) / 100 : teamV(S.teamDn);
+    h.push('<div class="row">' + (su !== null || sd !== null ? '<button class="btn" type="button" data-cal="team" data-u="' + nu + '" data-d="' + nd + '">套用倍數：上坡與平路 ×' + f2(nu) + (su === null ? '（維持）' : '') + '、下坡 ×' + f2(nd) + (sd === null ? '（維持）' : '') + '</button>' : '') +
+      '<button class="btn ghost" type="button" data-cal="stop" data-q="' + qq + '">套用停留 ' + nf1(qq) + ' 分</button>' +
+      (r.longs.length ? '<button class="btn ghost" type="button" data-cal="stop" data-q="' + qqa + '">套用停留 ' + nf1(qqa) + ' 分（含較長的）</button>' : '') + '</div>');
+    h.push('<p class="hint">倍數＝模型時間 ÷ 實際走路時間；大於 1 代表比基準快。<br><br>「太少」代表那個方向走不到 15 分鐘，套用時維持目前的值。<br><br>下坡指比 −5% 陡的路段。<br><br>套用前先確認「路段與地形」照那天的實況設定，例如那天沒揹大背包就不勾重裝。</p>');
+    box.innerHTML = h.join('');
+  }
   function wxText() {   // weather of the current track from the section checkboxes
     var rk = 0, tk = 0;
     (T.secs || []).forEach(function (q) { tk += q.real; if (q.rain) rk += q.real; });
@@ -1134,8 +1309,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     if (!T.track) return;
     var tr = T.track, st = T.stats;
     var b = buf();
-    var m = C.applyBuffer(C.runModelV3(tr, T.secs, null, PP), b);
-    var mSun = C.applyBuffer(C.runModelV3(tr, T.secs, 'sun', PP), b), mRain = C.applyBuffer(C.runModelV3(tr, T.secs, 'rain', PP), b);
+    PM = MP();
+    var m = C.applyBuffer(C.runModelV3(tr, T.secs, null, PM), b);
+    var mSun = C.applyBuffer(C.runModelV3(tr, T.secs, 'sun', PM), b), mRain = C.applyBuffer(C.runModelV3(tr, T.secs, 'rain', PM), b);
     var startMin = parseHM(S.start); if (startMin === null) startMin = 450;
     var rows = C.scheduleV3(T.cps, m, b, startMin);
     var arrSun = C.scheduleV3(T.cps, mSun, b, startMin).pop().arr, arrRain = C.scheduleV3(T.cps, mRain, b, startMin).pop().arr;
@@ -1143,7 +1319,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     try { sun = C.sunDay(S.date || todayStr(), tr.raw[0].lat, tr.raw[0].lon, TZ); } catch (e) { sun = null; }
     var ctx = { tr: tr, st: st, m: m, mSun: mSun, mRain: mRain, buf: b, rows: rows, sun: sun, startMin: startMin, arrSun: arrSun, arrRain: arrRain };
     LAST = ctx;
-    renderStatus(); renderSections(); renderSummary(ctx); renderStrip(ctx); renderProfile(ctx); renderTable(ctx); renderCopy(ctx);
+    renderStatus(); renderSections(); renderSummary(ctx); renderTeam(); renderStrip(ctx); renderProfile(ctx); renderTable(ctx); renderCopy(ctx);
     $('btnKm').textContent = hasKm() ? '移除公里點' : '每公里加點';
     save();
   }
@@ -1155,6 +1331,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     if (T.reversed) s.push('已反轉方向');
     if (T.range) s.push('只算 GPX ' + km(T.range[0]) + '–' + km(T.range[1]) + ' km');
     if (T.recorded) s.push('錄製軌跡，高度已平滑');
+    var drift = recDrift();
+    if (drift >= 100) s.push('含停下來時 GPS 飄移約 ' + km(drift) + ' km');
     if (T.track && T.track.zfix) s.push('高度依實測校正');
     var txt = s.join('｜');
     if (T.isSample) txt += '。選你的檔案後就會改算你的路線。';
@@ -1183,7 +1361,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   function secRun(q, terr, heavy, rain) {   // moving hours and real km of one section with a given terrain, load and weather
     var f = T.fullFix || T.full, a = Math.max(0, Math.min(f.total, q.a)), b = Math.max(a, Math.min(f.total, q.b));
     var sc = q.real && q.real > 0 && q.b - q.a > 1 ? q.real / (q.b - q.a) : 1;
-    var h = C.stretchHours(f, a, b, sc, terr, heavy, rain ? 'rain' : 'sun', PP), k = (b - a) * sc / 1000;
+    var h = C.stretchHours(f, a, b, sc, terr, heavy, rain ? 'rain' : 'sun', PM || MP()), k = (b - a) * sc / 1000;
     return { h: h, km: k, kmh: h > 0 ? k / h : 0 };
   }
   function renderSections() {
@@ -1222,11 +1400,11 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
      [false, 'rain', '輕裝・雨天', '無實測：雨天係數同重裝，輕裝加速同晴天']].forEach(function (g) {
       trs.push('<tr class="grp"><td colspan="6">' + g[2] + '<span class="basis">' + g[3] + '</span></td></tr>');
       C.TERRAIN_KEYS.forEach(function (k) {
-        var r = C.refSpeeds(k, g[1], PP, zRef, g[0]);
+        var r = C.refSpeeds(k, g[1], PM || MP(), zRef, g[0]);
         trs.push('<tr><td>' + TERR_SHORT[k] + '</td>' + [r.flat, r.up15, r.up30, r.dn15, r.dn30].map(function (v) { return '<td class="num">' + v.toFixed(1) + '</td>'; }).join('') + '</tr>');
       });
     });
-    $('spdRef').innerHTML = '<table class="spdtbl"><caption>每小時走幾公里（海拔約 ' + nf(zRef) + ' m 為本路線平均，只算走路）。<br><br>坡越陡水平速度越慢；雨天時間：一般步道約多 11%、林道約多 5%、樹根與泥濘多 17–30%（推估）。</caption>' +
+    $('spdRef').innerHTML = '<table class="spdtbl"><caption>每小時走幾公里（海拔約 ' + nf(zRef) + ' m 為本路線平均，只算走路）。<br><br>坡越陡水平速度越慢；雨天時間：一般步道約多 11%、林道約多 5%、樹根與泥濘多 17–30%（推估）。' + (teamIsOne() ? '' : '<br><br>已乘隊伍速度：' + teamTxt() + '。') + '</caption>' +
       '<thead><tr><th>地形</th><th class="num">平路</th><th class="num">上坡<br>15%</th><th class="num">上坡<br>30%</th><th class="num">下坡<br>15%</th><th class="num">下坡<br>30%</th></tr></thead>' +
       '<tbody>' + trs.join('') + '</tbody></table>';
     var zs = $('zStart');
@@ -1257,7 +1435,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     }
     $('tline').innerHTML = t.join('');
     $('scenLine').innerHTML = '天氣：<b>' + wxText() + '</b>（依各路段勾選）。<br><br>只算移動：全晴 ' + durZh(c.mSun.total * 60) + '，全雨 ' + durZh(c.mRain.total * 60) +
-      '。<br><br>途中停留：每小時走 ' + nf1(c.buf.walkH) + ' 分、停 ' + nf1(c.buf.stopH) + ' 分。';
+      '。<br><br>途中停留：每小時走 ' + nf1(c.buf.walkH) + ' 分、停 ' + nf1(c.buf.stopH) + ' 分。<br><br>隊伍速度：' + teamTxt() + (teamIsOne() ? '（基準）' : '') + '。';
   }
   function kpi(label, value, main, sub) { return '<div class="kpi' + (main ? ' main' : '') + '"><span class="k">' + label + '</span><span class="v">' + value + '</span>' + (sub ? '<span class="s">' + sub + '</span>' : '') + '</div>'; }
   function trow(label, value) { return '<div class="trow"><span>' + label + '</span><b>' + value + '</b></div>'; }
@@ -1393,6 +1571,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     L.push('・距離 ' + km(R(c.tr.total)) + ' km｜爬升 ' + nf(c.st.up) + ' m｜下降 ' + nf(c.st.dn) + ' m｜最高 ' + nf(c.st.zmax) + ' m');
     L.push('・移動時間 ' + durZh(c.m.total * 60) + '（全晴 ' + durZh(c.mSun.total * 60) + '／全雨 ' + durZh(c.mRain.total * 60) + '）');
     L.push('・途中停留：每小時走 ' + nf1(c.buf.walkH) + ' 分、停 ' + nf1(c.buf.stopH) + ' 分（休息、整裝、集合、等人等）');
+    if (!teamIsOne()) L.push('・隊伍速度：' + teamTxt() + '（1＝基準）');
     c.rows.forEach(function (r, i) {
       var zv = C.zAt(c.tr, r.cp.d), flag = '';
       if (i > 0) {
@@ -1410,10 +1589,10 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
 
   // ---------- inputs ----------
   var PMAP = [['pTobF', 'F'], ['pWTob', 'wTob'], ['pSunDown', 'sunDown'], ['pDinH', 'dinH'], ['pDinUp', 'dinUp'], ['pDinDown', 'dinDown'],
-              ['pAltPct', 'altPct'], ['pAltRef', 'altRef'], ['pFall', 'f'], ['pBody', 'bodyKg'], ['pLightKg', 'lightKg'], ['pRoadHF', 'roadHeavyF'], ['pRoadLU', 'roadLightUp'], ['pRoadLD', 'roadLightDown']];
+              ['pAltPct', 'altPct'], ['pAltRef', 'altRef'], ['pBody', 'bodyKg'], ['pLightKg', 'lightKg'], ['pRoadHF', 'roadHeavyF'], ['pRoadLU', 'roadLightUp'], ['pRoadLD', 'roadLightDown']];
   function applyInputs() {
     $('date').value = S.date; $('start').value = S.start; $('deadline').value = S.deadline;
-    $('stopH').value = S.stopH;
+    $('stopH').value = S.stopH; $('teamUp').value = S.teamUp; $('teamDn').value = S.teamDn;
     PMAP.forEach(function (pm) { $(pm[0]).value = PP[pm[1]]; });
     ['root', 'mud'].forEach(function (k) { ['Sun', 'Rain'].forEach(function (w) { for (var i = 0; i < 3; i++) $(k + w + i).value = PP.terr[k][w.toLowerCase()][i]; }); });
     ['trail', 'road'].forEach(function (k) { $(k + 'Rain0').value = PP.terr[k].rain[0]; });
@@ -1484,7 +1663,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       rebuild(false); setRangeInputs(); render();
     });
     $('btnRangeAll').addEventListener('click', function () { T.range = null; rebuild(false); setRangeInputs(); render(); });
-    ['date', 'start', 'deadline', 'stopH'].forEach(function (id) {
+    ['date', 'start', 'deadline', 'stopH', 'teamUp', 'teamDn'].forEach(function (id) {
       $(id).addEventListener('input', function () { S[id] = $(id).value; render(); });
     });
     PMAP.forEach(function (pm) { $(pm[0]).addEventListener('change', function () { PP[pm[1]] = numOr($(pm[0]).value, C.DEFAULTS[pm[1]]); render(); }); });
@@ -1500,6 +1679,13 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       $(k + 'Rain0').addEventListener('change', function () { PP.terr[k].rain[0] = Math.max(0.3, Math.min(1, numOr($(k + 'Rain0').value, C.DEFAULTS.terr[k].rain[0]))); applyInputs(); render(); });
     });
     $('btnResetP').addEventListener('click', function () { PP = clone(C.DEFAULTS); applyInputs(); render(); });
+    $('calOut').addEventListener('click', function (e) {   // v27: apply the calibration
+      var b = e.target.closest ? e.target.closest('[data-cal]') : null;
+      if (!b) return;
+      if (b.getAttribute('data-cal') === 'team') { S.teamUp = teamV(b.getAttribute('data-u')); S.teamDn = teamV(b.getAttribute('data-d')); }
+      else S.stopH = Math.min(45, Math.max(0, numOr(b.getAttribute('data-q'), 13)));
+      applyInputs(); render();
+    });
     $('btnAddSec').addEventListener('click', function () {
       var tot = T.full.total, lastB = T.secsFull.length ? Math.max.apply(null, T.secsFull.map(function (q) { return q.b; })) : 0;
       var a = lastB < tot - 50 ? lastB : 0;
@@ -1594,12 +1780,17 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       C.TERRAIN_KEYS.forEach(function (k) { if (!PP.terr[k]) PP.terr[k] = clone(C.DEFAULTS.terr[k]); PP.terr[k].name = C.DEFAULTS.terr[k].name; });   // names follow the code (v16: 樹根陡坡、林道)
       delete PP.terr.light;   // v16: 輕裝 is the per-section 重裝 checkbox
       delete PP.roadF;        // v18: 林道輕裝 uses roadLightUp / roadLightDown
+      if (isNum(PP.f) && Math.abs(+PP.f - 1) > 1e-6) {   // v27: 整體時間係數 (time x) → 隊伍速度 (speed x)
+        if (!(saved.S && isNum(saved.S.teamUp))) { S.teamUp = Math.round(100 / +PP.f) / 100; S.teamDn = S.teamUp; }
+        PP.f = 1;
+      }
     }
     applyInputs();
     var ok = false;
     if (saved && saved.track && saved.track.pts && saved.track.pts.length > 1) {
       try {
-        T.parsed = { name: saved.track.name, pts: saved.track.pts.map(function (a) { return { lat: a[0], lon: a[1], ele: a[2], t: null }; }), wpts: saved.track.wpts || [] };
+        var st0 = isNum(saved.track.t0) ? +saved.track.t0 : null;   // v27: record times
+        T.parsed = { name: saved.track.name, pts: saved.track.pts.map(function (a) { return { lat: a[0], lon: a[1], ele: a[2], t: st0 !== null && a.length > 3 && isNum(a[3]) ? st0 + a[3] * 1000 : null }; }), wpts: saved.track.wpts || [] };
         T.name = saved.track.name || ''; T.fileName = saved.fileName || ''; T.reversed = !!saved.reversed; T.range = saved.range || null;
         T.isSample = !!saved.isSample; T.warn = saved.warn || ''; T.suggest = saved.suggest || null; T.recorded = !!saved.recorded;
         T.secsFull = saved.secsFull || [];
