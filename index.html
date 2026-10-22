@@ -12,7 +12,7 @@
   --warn:#9a5a00; --warn-bg:#fff0d4; --crit:#a32632; --crit-bg:#fbe2e4;
   --night:rgba(22,32,26,.16); --dusk:rgba(22,32,26,.07);
   --b0:#08519d; --b1:#3186e9; --b2:#87bafc; --b3:#d8d7d4; --b4:#fd978f; --b5:#e24947; --b6:#9b0d1a;
-  --profile-line:#2f3833; --strip:#5b6a61; --t-root:#7a4b22; --t-mud:#8a8a3a; --t-trail:#c9cfc9; --t-light:#8fa7bd; --t-road:#c2a878;
+  --profile-line:#2f3833; --strip:#5b6a61; --t-root:#7a4b22; --t-mud:#8a8a3a; --t-trail:#c9cfc9; --t-road:#c2a878; --rain:#6b4fbb;
   --font-ui:"PingFang TC","Noto Sans TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
   --font-num:"Barlow Semi Condensed","Roboto Condensed","Arial Narrow",var(--font-ui);
   --r:10px;
@@ -23,7 +23,7 @@
   --warn:#f1b24f; --warn-bg:#3a2b0e; --crit:#ff8a93; --crit-bg:#3d161b;
   --night:rgba(0,0,0,.38); --dusk:rgba(0,0,0,.18);
   --b0:#3a78c8; --b1:#4f98ee; --b2:#94c3f8; --b3:#545b56; --b4:#f39c93; --b5:#ea5e5f; --b6:#c93545;
-  --profile-line:#dfe7e2; --strip:#9fb0a6; --t-root:#c58a52; --t-mud:#b9b65a; --t-trail:#3a443d; --t-light:#6f8aa3; --t-road:#a48c5e; color-scheme:dark;
+  --profile-line:#dfe7e2; --strip:#9fb0a6; --t-root:#c58a52; --t-mud:#b9b65a; --t-trail:#3a443d; --t-road:#a48c5e; --rain:#a58cf0; color-scheme:dark;
 }}
 :root[data-theme="dark"]{
   --bg:#0f1411; --surface:#172019; --ink:#e4ebe6; --ink2:#b2beb6; --muted:#87958c; --line:#2a352e; --soft:#1e2822;
@@ -31,7 +31,7 @@
   --warn:#f1b24f; --warn-bg:#3a2b0e; --crit:#ff8a93; --crit-bg:#3d161b;
   --night:rgba(0,0,0,.38); --dusk:rgba(0,0,0,.18);
   --b0:#3a78c8; --b1:#4f98ee; --b2:#94c3f8; --b3:#545b56; --b4:#f39c93; --b5:#ea5e5f; --b6:#c93545;
-  --profile-line:#dfe7e2; --strip:#9fb0a6; --t-root:#c58a52; --t-mud:#b9b65a; --t-trail:#3a443d; --t-light:#6f8aa3; --t-road:#a48c5e; color-scheme:dark;
+  --profile-line:#dfe7e2; --strip:#9fb0a6; --t-root:#c58a52; --t-mud:#b9b65a; --t-trail:#3a443d; --t-road:#a48c5e; --rain:#a58cf0; color-scheme:dark;
 }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.55;-webkit-text-size-adjust:100%}
@@ -105,6 +105,7 @@ td .del{min-width:28px}
 .del:hover{color:var(--crit);background:var(--crit-bg)}
 .copybox{width:100%;min-height:9rem;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.6rem}
 .about p,.about li{font-size:.88rem;color:var(--ink2);margin:.3rem 0}
+.about li{margin:0 0 1.55em}
 .about ul{padding-left:1.1rem;margin:.2rem 0}
 .drop{outline:2px dashed var(--accent);outline-offset:3px}
 @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important} }
@@ -116,8 +117,10 @@ td .del{min-width:28px}
 .seg input:focus-visible+label{outline:2px solid var(--accent);outline-offset:-2px}
 .seclist{display:grid;gap:8px;margin-top:4px}
 .secrow{border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg)}
-.sechead{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.sechead select{flex:1;min-height:38px;padding:.3rem .45rem}
+.sechead{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:6px}
+.sechead select{flex:1 1 180px;min-width:0;min-height:38px;padding:.3rem .45rem}
+.conds{display:inline-flex;gap:6px}
+@media (max-width:560px){ .sechead .del{order:2} .sechead .conds{order:3;flex:1 1 100%;padding-left:20px} }
 .secgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .secgrid label{display:grid;gap:2px;font-size:.72rem;color:var(--ink2);min-width:0}
 .secgrid input{min-height:38px;padding:.3rem .4rem;text-align:right;-moz-appearance:textfield;appearance:textfield}
@@ -129,6 +132,19 @@ td .del{min-width:28px}
 .pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px}
 .pgrid label{display:grid;gap:3px;font-size:.78rem;color:var(--ink2);min-width:0}
 .pgrid h3{grid-column:1/-1;margin:.4rem 0 0;font-size:.86rem;color:var(--ink)}
+.secspd{margin:6px 2px 0;font-size:.74rem;color:var(--ink2);line-height:1.45}
+.spdref{margin-top:2px}
+.spdref>summary{font-size:.84rem}
+.spdref>div{overflow-x:auto;margin-top:6px}
+.spdtbl tr.grp td{font-weight:600;color:var(--ink);background:var(--soft);font-size:.78rem;padding:4px 6px}
+.spdtbl tr.grp .basis{display:block;font-weight:400;color:var(--ink2);font-size:.72rem;line-height:1.35}
+.hv{display:inline-flex;align-items:center;gap:5px;font-size:.88rem;color:var(--ink);white-space:nowrap;cursor:pointer;min-height:38px;padding:0 4px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.hv input{width:18px;height:18px;min-height:0;margin:0;accent-color:var(--accent)}
+.lead{color:var(--ink2);font-size:.84rem;margin:0}
+.spdtbl{font-size:.8rem}
+.spdtbl caption{caption-side:top;text-align:left;font-size:.78rem;color:var(--ink2);padding:0 0 4px}
+.spdtbl th{white-space:normal;line-height:1.25}
+.spdtbl td{padding:5px 3px;font-variant-numeric:tabular-nums}
 </style>
 
 <main class="wrap">
@@ -166,34 +182,25 @@ td .del{min-width:28px}
       <h2 id="hSec">路段與地形</h2>
       <button class="btn" id="btnAddSec" type="button">新增路段</button>
     </div>
+    <p class="lead">選項後面的速度是該段的平均水平速度：坡度、海拔都已算進去，只算走路、不含休息。<br><br>勾「重裝」＝揹 13 kg 大背包，不勾＝輕裝。<br><br>勾「雨天」＝下雨或起霧、路濕，不勾＝晴天。</p>
     <div class="seclist" id="secBody"></div>
+    <details class="spdref" id="spdBox"><summary>各坡度的水平速度（參考）</summary><div id="spdRef"></div></details>
     <div class="inline" style="margin-top:8px"><label for="zStart">起點實測海拔（選填）</label><input type="number" id="zStart" step="1" inputmode="numeric" style="width:5.2rem"> m</div>
-    <p class="hint">GPX 常把小彎拉直，距離偏短；有實際里程就填，時間會照實際長度算。地圖規劃的路線也可能走錯稜線、高度不準：知道某段終點的實測海拔（GPS 紀錄、登山口標示）就填，中間的高度會按比例修正，空白就用 GPX 的值（灰字）。「濕滑樹根陡坡」「泥濘草徑」會降低速度，雨霧時降更多。「輕裝（不揹大背包）」用在行李另外運送的步道，速度會換算得比揹 13 kg 快；「產業道路輕裝」用在車能開的路（例如行李上菜車的路段），時間再乘 0.8。沒設定的部分當一般步道。</p>
+    <p class="hint">GPX 常把小彎拉直，距離偏短；有實際里程就填，時間會照實際長度算。<br><br>地圖規劃的路線也可能走錯稜線、高度不準。<br><br>知道某段終點的實測海拔（GPS 紀錄、登山口標示）就填，中間的高度會按比例修正；空白就用 GPX 的值（灰字）。<br><br>「樹根陡坡」用在樹根、碎石多、陡上陡下的步道，例如戒茂斯到新武呂溪。<br><br>「泥濘草徑」用在泥濘的草坡路。<br><br>這兩種會限制每小時能爬升與下降的高度，雨天再降。<br><br>「林道」用在林道路面，例如四季林道。<br><br>不勾「重裝」用在行李另外運送的路段，例如行李上菜車；速度會換算得比揹 13 kg 快，林道再快一些。<br><br>勾「雨天」代表整段持續下雨或起霧、路濕，每種地形都會變慢：一般步道時間約多 11%、林道約多 5%、樹根陡坡與泥濘草徑多 17–30%，都是推估。<br><br>沒設定的部分當一般步道、重裝、晴天。</p>
   </section>
 
   <div class="cols">
     <section class="card" aria-labelledby="hSet">
       <h2 id="hSet">設定</h2>
       <div class="form">
-        <div class="full field">天氣
-          <div class="seg" role="radiogroup" aria-label="天氣">
-            <input type="radio" name="wx" id="wxSun" value="sun"><label for="wxSun">晴天</label>
-            <input type="radio" name="wx" id="wxRain" value="rain"><label for="wxRain">雨天或起霧</label>
-          </div>
-        </div>
         <label for="date">出發日期<input type="date" id="date"></label>
         <label for="start">出發時間<input type="time" id="start"></label>
         <label for="deadline">最晚抵達（選填）<input type="time" id="deadline"></label>
-        <label for="tz">時區 UTC＋<input type="number" id="tz" step="0.5" min="-12" max="14" inputmode="decimal"></label>
         <label for="rest" class="full">休息（每移動 1 小時，分鐘）<input type="number" id="rest" min="0" step="0.5" inputmode="decimal"></label>
-        <div class="full field">轉換緩衝（每移動 1 小時，分鐘）
-          <div class="inline">晴天 <input type="number" id="transSun" min="0" step="0.5" inputmode="decimal"> 雨霧 <input type="number" id="transRain" min="0" step="0.5" inputmode="decimal"></div>
-        </div>
-        <div class="full field">轉換點整隊（每個轉換點，分鐘）
-          <div class="inline">晴天 <input type="number" id="pointSun" min="0" step="1" inputmode="numeric"> 雨霧 <input type="number" id="pointRain" min="0" step="1" inputmode="numeric"></div>
-        </div>
+        <label for="trans" class="full">轉換緩衝（每移動 1 小時，分鐘）<input type="number" id="trans" min="0" step="0.5" inputmode="decimal"></label>
+        <label for="point" class="full">轉換點整隊（每個轉換點，分鐘）<input type="number" id="point" min="0" step="1" inputmode="numeric"></label>
       </div>
-      <p class="hint">預設值取自 10/6：休息 8.3 分、短停 8.4 分（穿脫雨具、整隊）。10/20 乾燥天上坡實測和雨天相同，晴天也用 8.4 分。轉換點整隊為推估。</p>
+      <p class="hint">預設值取自 10/6：休息 8.3 分、轉換緩衝 8.4 分（穿脫雨具、整隊等短停）。<br><br>停留不分晴雨：10/6 雨天每移動 1 小時約停 19 分，10/20 晴天上坡約 21 分。<br><br>轉換點整隊為推估。<br><br>雨天只放慢走路速度，依各路段的「雨天」勾選。</p>
       <details>
         <summary>公式參數</summary>
         <div class="pgrid" id="pgrid" style="margin-top:8px">
@@ -204,24 +211,30 @@ td .del{min-width:28px}
           <label for="pDinH">DIN 水平 km/h<input type="number" id="pDinH" step="0.1" inputmode="decimal"></label>
           <label for="pDinUp">DIN 上升 m/h<input type="number" id="pDinUp" step="10" inputmode="numeric"></label>
           <label for="pDinDown">DIN 下降 m/h<input type="number" id="pDinDown" step="10" inputmode="numeric"></label>
-          <h3>濕滑樹根陡坡（係數／爬升上限／下降上限）</h3>
+          <h3>樹根陡坡（係數／重裝爬升上限／下降上限）</h3>
           <label for="rootSun0">晴 係數<input type="number" id="rootSun0" step="0.05" inputmode="decimal"></label>
           <label for="rootSun1">晴 爬升<input type="number" id="rootSun1" step="10" inputmode="numeric"></label>
           <label for="rootSun2">晴 下降<input type="number" id="rootSun2" step="10" inputmode="numeric"></label>
           <label for="rootRain0">雨霧 係數<input type="number" id="rootRain0" step="0.05" inputmode="decimal"></label>
           <label for="rootRain1">雨霧 爬升<input type="number" id="rootRain1" step="10" inputmode="numeric"></label>
           <label for="rootRain2">雨霧 下降<input type="number" id="rootRain2" step="10" inputmode="numeric"></label>
-          <h3>泥濘草徑（係數／爬升上限／下降上限）</h3>
+          <h3>雨天係數（速度倍數，推估）</h3>
+          <label for="trailRain0">一般步道<input type="number" id="trailRain0" step="0.01" inputmode="decimal"></label>
+          <label for="roadRain0">林道<input type="number" id="roadRain0" step="0.01" inputmode="decimal"></label>
+          <h3>泥濘草徑（係數／重裝爬升上限／下降上限）</h3>
           <label for="mudSun0">晴 係數<input type="number" id="mudSun0" step="0.05" inputmode="decimal"></label>
           <label for="mudSun1">晴 爬升<input type="number" id="mudSun1" step="10" inputmode="numeric"></label>
           <label for="mudSun2">晴 下降<input type="number" id="mudSun2" step="10" inputmode="numeric"></label>
           <label for="mudRain0">雨霧 係數<input type="number" id="mudRain0" step="0.05" inputmode="decimal"></label>
           <label for="mudRain1">雨霧 爬升<input type="number" id="mudRain1" step="10" inputmode="numeric"></label>
           <label for="mudRain2">雨霧 下降<input type="number" id="mudRain2" step="10" inputmode="numeric"></label>
-          <h3>輕裝（不揹大背包）</h3>
+          <h3>輕裝（沒勾重裝的路段）</h3>
           <label for="pBody">體重 kg<input type="number" id="pBody" step="1" inputmode="numeric"></label>
           <label for="pLightKg">輕裝負重 kg<input type="number" id="pLightKg" step="0.5" inputmode="decimal"></label>
-          <label for="pRoadF">產業道路時間×<input type="number" id="pRoadF" step="0.05" inputmode="decimal"></label>
+          <h3>林道（時間倍數）</h3>
+          <label for="pRoadHF">重裝×<input type="number" id="pRoadHF" step="0.01" inputmode="decimal"></label>
+          <label for="pRoadLU">輕裝上坡×<input type="number" id="pRoadLU" step="0.01" inputmode="decimal"></label>
+          <label for="pRoadLD">輕裝下坡×<input type="number" id="pRoadLD" step="0.01" inputmode="decimal"></label>
           <h3>高度與整體</h3>
           <label for="pAltPct">每千公尺慢 %<input type="number" id="pAltPct" step="0.5" inputmode="decimal"></label>
           <label for="pAltRef">高度基準 m<input type="number" id="pAltRef" step="50" inputmode="numeric"></label>
@@ -247,7 +260,7 @@ td .del{min-width:28px}
     </div>
     <div class="svgbox" id="profile"></div>
     <div class="legend" id="legend"></div>
-    <p class="hint">點一下剖面就會在那裡加一個檢查點。上緣數字是預計通過的整點時刻；灰底是日落後，深灰是天黑後。剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、藍灰色輕裝步道、沙色產業道路輕裝。</p>
+    <p class="hint">點一下剖面就會在那裡加一個檢查點。<br><br>上緣數字是預計通過的整點時刻；灰底是日落後，深灰是天黑後。<br><br>剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，下方紫線是雨天路段。</p>
   </section>
 
   <section class="card" aria-labelledby="hTbl">
@@ -264,7 +277,7 @@ td .del{min-width:28px}
         <tbody id="tbody"></tbody>
       </table>
     </div>
-    <p class="hint">停留填分鐘數。勾「轉換點」會自動加上整隊時間（例如林道轉步道的登山口）。點名稱可以改名。</p>
+    <p class="hint">停留填分鐘數。<br><br>勾「轉換點」會自動加上整隊時間，例如林道轉步道的登山口。<br><br>點名稱可以改名。</p>
   </section>
 
   <section class="card" aria-labelledby="hCopy">
@@ -279,15 +292,17 @@ td .del{min-width:28px}
   <details class="card about">
     <summary>模型怎麼算</summary>
     <ul>
-      <li>每 20 m 算兩種時間再各取一半。Tobler：距離 ÷（0.734 × 6 × e^(−3.5 × |S + 0.05|)）km/h，S 是坡度。DIN 33466：水平每小時 3.62 km、上升 468 m、下降 791 m，水平與垂直時間取較大者，再加上較小者的一半。距離用實際長度換算。</li>
-      <li>係數取自 10/6 班級揹 13 kg 的實測（陣雨、路濕），只用移動中的片段。四段步道每段誤差在 3% 以內；每次拿掉一段、用其他段校正再預測它，平均誤差 2.3%。</li>
-      <li>晴天：速度與轉換緩衝都和雨霧相同。下坡依據 10/18 舊寮山徑乾燥路面、揹 7 kg 實走：上山時間約為模型的 0.81 倍，下山走路段約 0.83 倍，比例一致。緩衝依據 10/20 四季林道乾燥天、揹 13 kg 上坡：每一站和雨霧版只差 0–3 分。晴雨只在樹根、泥濘路段與轉換點整隊有差別。</li>
-      <li>一般步道不設垂直速度上限。濕滑樹根陡坡：晴天速度 ×0.70、每小時最多爬 260 m、降 300 m；雨霧 ×0.60、爬 220 m、降 230 m。泥濘草徑：晴天 ×0.75，其餘同樹根。都是推估，可在「公式參數」修改。</li>
+      <li>每 20 m 算兩種時間再各取一半。<br><br>Tobler：距離 ÷（0.734 × 6 × e^(−3.5 × |S + 0.05|)）km/h，S 是坡度。<br><br>DIN 33466：水平每小時 3.62 km、上升 468 m、下降 791 m，水平與垂直時間取較大者，再加上較小者的一半。<br><br>距離用實際長度換算。</li>
+      <li>係數取自 10/6 班級揹 13 kg 的實測（陣雨、路濕），只用移動中的片段。<br><br>四段步道每段誤差在 3% 以內；每次拿掉一段、用其他段校正再預測它，平均誤差 2.3%。</li>
+      <li>晴天與雨天：晴天速度以 10/20–21 四季林道晴天實測為準（揹 13 kg、只算移動時間，上坡實際÷模型 0.95、下坡 0.99）。<br><br>10/6 草嶺古道、桃源谷是陣雨，結果也在同一水準（0.96、1.00），但兩天的路面也不同，分不出晴雨和路面各自的影響。<br><br>勾「雨天」代表整段持續下雨或起霧、路濕，依推估放慢：一般步道速度 ×0.90、林道 ×0.95，樹根陡坡與泥濘草徑見下一條；比 10/6 的陣雨保守 10–14%。<br><br>轉換緩衝與轉換點整隊不分晴雨：只算 10 分鐘以內的停留，10/6 雨天每移動 1 小時約停 19 分，10/20 晴天上坡約 21 分，10/21 晴天下坡只有約 6 分。<br><br>雨天係數可在「公式參數」修改。</li>
+      <li>一般步道與林道不設垂直速度上限。<br><br>樹根陡坡（樹根、碎石多，陡上陡下，例如戒茂斯到新武呂溪）揹重裝：晴天速度 ×0.70、每小時最多爬 260 m、降 300 m；雨天 ×0.60、爬 220 m、降 230 m，時間約多 17–30%。<br><br>泥濘草徑：晴天 ×0.75，其餘同樹根。<br><br>上限再依海拔下修，上坡與下坡各自套用。<br><br>樹根、泥濘都沒有班級實測，是推估，可在「公式參數」修改。</li>
+      <li>水平速度隨坡度變化很大：揹重裝在一般步道，平路每小時約 3.5 km，30% 的上坡只剩約 1.2 km。<br><br>所以「路段與地形」的選項標每一段按實際坡度算出的平均速度；勾不勾重裝、雨天或改參數都會跟著更新。</li>
       <li>高度：比 300 m 每高 1,000 m，上坡慢 6.3%、平路慢 3.2%、下坡慢 2.1%（依最大攝氧量隨高度下降的研究推估）。</li>
-      <li>輕裝路段（不揹大背包）：假設出力和揹 13 kg 時相同，用 Pandolf 能量公式換算成只揹 2 kg 的速度（體重以 50 kg 計）。16% 的上坡約快 22%，平路約快 15%；這個公式不適用陡下坡，下坡改用平路的算法，約快 16–18%。產業道路輕裝再乘 0.8：10/20 四季公墓停車處→紅柵欄（2.4 km、爬升 388 m）實際 63 分，乘 0.8 後估 64 分；10/21 原路下山實際 35 分，估 47 分，仍偏保守。都可在「公式參數」修改。</li>
-      <li>總時間＝移動時間 ×（1 ＋（休息＋轉換緩衝）÷ 60）＋各點停留＋轉換點整隊。10/6 步道段：短停 8 次、平均 4.2 分；休息 4 次、平均 8.3 分。</li>
-      <li>範例是 10/20 第 1 天實走：09:04 從四季公墓停車處起步（乘車段不列），紅柵欄（舊柵門）停 63 分取裝、入山儀式，途中午餐 25 分，加納富溪停 30 分，終點是巨木登山口後 450 m 的營地，當天 14:45 抵達。紅柵欄以前行李上菜車、學生不揹大背包，這段設成產業道路輕裝。距離與高度用 GPX 原值（當天 Garmin 實測高度和 GPX 相差 3 m 內）；巨木登山口到營地取自隨隊家長的 Garmin 軌跡，距離按 450 m 計。其餘沒有算進去：拍照、天候突變與隊伍狀況。</li>
-      <li>高度用檔案內的數值，每 20 m 取一點；錄製的軌跡（有時間記錄）先做 3 點平滑。填了實測海拔的段落，高度在兩個已知點之間按距離線性修正。日出、日落以起點座標、海平面計算。</li>
+      <li>沒勾「重裝」的路段（行李另外運送）：假設出力和揹 13 kg 時相同，用 Pandolf 能量公式換算成只揹 2 kg 的速度（體重以 50 kg 計）。<br><br>加速比例用一般步道的速度算，每種地形套同一比例：平路約快 15%，15% 上坡約快 22%，30% 上坡約快 24%；下坡用平路的算法，約快 18–27%。<br><br>樹根陡坡、泥濘草徑的爬升與下降上限也按同一比例放寬。<br><br>林道輕裝依 10/20–21 實測、只算移動時間再乘：上坡 ×0.92（停車處→紅柵欄 2.4 km、爬升 388 m：實際 57 分，模型 57 分），下坡 ×0.75（原路下山：實際 34 分，模型 35 分）。<br><br>輕裝走一般步道、樹根、泥濘都沒有班級實測。<br><br>都可在「公式參數」修改。</li>
+      <li>林道揹重裝：速度和一般步道相同（「林道重裝×」1.00）。<br><br>依據 10/20、10/21 四季林道揹 13 kg 實走，只算移動時間：上坡紅柵欄→廢棄護管所（3.3 km、爬升 468 m）實際 95 分、模型 100 分；下坡同段反向（下降 470 m）實際 72 分、模型 73 分。</li>
+      <li>總時間＝移動時間 ×（1 ＋（休息＋轉換緩衝）÷ 60）＋各點停留＋轉換點整隊。<br><br>10/6 步道段：短停 8 次、平均 4.2 分；休息 4 次、平均 8.3 分。</li>
+      <li>範例是 10/20 第 1 天實走：09:04 從四季公墓停車處起步（乘車段不列），紅柵欄（舊柵門）停 63 分取裝、入山儀式，途中午餐 25 分，加納富溪停 30 分，終點是巨木登山口後 450 m 的營地，當天 14:45 抵達。<br><br>紅柵欄以前行李上菜車、學生不揹大背包，這段設成林道、不勾重裝；紅柵欄到營地是林道、揹重裝；當天晴天，都不勾雨天。<br><br>範例估 14:58 抵達，比實際晚 13 分，其中 10 分在紅柵欄以前（估 10:17，實際 10:07）：林道輕裝那 63 分鐘實際只停 6 分，模型每移動 1 小時加 16.7 分的休息與緩衝。<br><br>距離與高度用 GPX 原值（當天 Garmin 實測高度和 GPX 相差 3 m 內）；巨木登山口到營地取自隨隊家長的 Garmin 軌跡，距離按 450 m 計。<br><br>其餘沒有算進去：拍照、天候突變與隊伍狀況。</li>
+      <li>高度用檔案內的數值，每 20 m 取一點；錄製的軌跡（有時間記錄）先做 3 點平滑。<br><br>填了實測海拔的段落，高度在兩個已知點之間按距離線性修正。<br><br>日出、日落以起點座標、海平面、台灣時間（UTC+8）計算。</li>
     </ul>
   </details>
 </main>
@@ -646,7 +661,7 @@ var CORE = (function () {
   }
 
   // ================= v3: youth loaded Tobler, weather, terrain, real distance =================
-  var TERRAIN_KEYS = ['trail', 'root', 'mud', 'light', 'road'];
+  var TERRAIN_KEYS = ['trail', 'root', 'mud', 'road'];   // v16: 重裝／輕裝 is a per-section flag (heavy), not a terrain
   // v4: half Tobler, half DIN 33466 (rates refit to the 10/6 class data); linear altitude correction
   var DEFAULTS = {
     F: 0.734,                                  // Tobler multiplier (10/6, rain, both directions)
@@ -656,13 +671,13 @@ var CORE = (function () {
     altRef: 300, altPct: 6.3,                  // uphill speed -6.3 % per 1,000 m above 300 m (flat 1/2, down 1/3)
     f: 1.00,                                   // overall time factor
     bodyKg: 50, lightKg: 2, calKg: 13,         // light sections: same effort (Pandolf 1977) with lightKg instead of the 13 kg calibration load
-    roadF: 0.8,                                // road (vehicle track) without the big pack: light time x0.8 (10/20 停車處→紅柵欄 uphill: 63 min actual)
+    roadHeavyF: 1.00,                          // 林道 with 13 kg: time x1.00 (四季林道 moving time, 10/20 up 95 vs model 100 min, 10/21 down 72 vs 73 min)
+    roadLightUp: 0.92, roadLightDown: 0.75,    // 林道 without the big pack: light time x0.92 uphill, x0.75 downhill (moving time 10/20 up 57 vs 62 min, 10/21 down 34 vs 46 min)
     terr: {
-      trail: { name: '一般步道', sun: [1.00, 0, 0], rain: [1.00, 0, 0] },           // 0 = no vertical cap
-      root:  { name: '濕滑樹根陡坡', sun: [0.70, 260, 300], rain: [0.60, 220, 230] },
-      mud:   { name: '泥濘草徑',     sun: [0.75, 260, 300], rain: [0.60, 220, 230] },
-      light: { name: '輕裝（不揹大背包）', sun: [1.00, 0, 0], rain: [1.00, 0, 0] },
-      road:  { name: '產業道路輕裝（車可通行、不揹大背包）', sun: [1.00, 0, 0], rain: [1.00, 0, 0] }
+      trail: { name: '一般步道', sun: [1.00, 0, 0], rain: [0.90, 0, 0] },           // 0 = no vertical cap; rain x0.90 assumed (continuous rain or fog, wet steps)
+      root:  { name: '樹根陡坡', sun: [0.70, 260, 300], rain: [0.60, 220, 230] },   // roots and rocks, steep up and down (e.g. 戒茂斯→新武呂溪); caps in m/h with 13 kg
+      mud:   { name: '泥濘草徑', sun: [0.75, 260, 300], rain: [0.60, 220, 230] },
+      road:  { name: '林道',     sun: [1.00, 0, 0], rain: [0.95, 0, 0] }             // forest road: roadHeavyF with 13 kg, roadLightUp / roadLightDown without; rain x0.95 assumed
     }
   };
   // ---- measured-elevation correction: knots at section ends (full-track GPX metres) ----
@@ -702,21 +717,23 @@ var CORE = (function () {
     o.zfix = true;
     return o;
   }
-  // sections: [{a,b (GPX m), real (m|null), terr}] -> normalised, gap-free, sorted
+  // sections: [{a,b (GPX m), real (m|null), terr, heavy (false = no big pack), rain (true = rain or fog)}] -> normalised, gap-free, sorted
+  function secTerr(q) { return TERRAIN_KEYS.indexOf(q.terr) >= 0 ? q.terr : 'trail'; }
+  function secHeavy(q) { return q.terr === 'light' ? false : q.heavy !== false; }   // v15 'light' terrain = trail without the big pack
   function normSections(total, secs) {
     var s = (secs || []).map(function (q) {
-      return { a: Math.max(0, Math.min(total, +q.a || 0)), b: Math.max(0, Math.min(total, +q.b || 0)), real: q.real, terr: TERRAIN_KEYS.indexOf(q.terr) >= 0 ? q.terr : 'trail' };
+      return { a: Math.max(0, Math.min(total, +q.a || 0)), b: Math.max(0, Math.min(total, +q.b || 0)), real: q.real, terr: secTerr(q), heavy: secHeavy(q), rain: q.rain === true };
     }).filter(function (q) { return q.b - q.a > 1; }).sort(function (p, q) { return p.a - q.a; });
     var out = [], cur = 0;
     s.forEach(function (q) {
       var a = Math.max(q.a, cur);
       if (q.b - a <= 1) return;
-      if (a > cur + 1) out.push({ a: cur, b: a, real: null, terr: 'trail' });
+      if (a > cur + 1) out.push({ a: cur, b: a, real: null, terr: 'trail', heavy: true, rain: false });
       var scale = (q.real && q.real > 0 && a === q.a) ? q.real / (q.b - q.a) : 1;
-      out.push({ a: a, b: q.b, real: (q.b - a) * scale, terr: q.terr });
+      out.push({ a: a, b: q.b, real: (q.b - a) * scale, terr: q.terr, heavy: q.heavy, rain: q.rain });
       cur = q.b;
     });
-    if (total > cur + 1) out.push({ a: cur, b: total, real: null, terr: 'trail' });
+    if (total > cur + 1) out.push({ a: cur, b: total, real: null, terr: 'trail', heavy: true, rain: false });
     var off = 0;
     out.forEach(function (q) { if (!(q.real > 0)) q.real = q.b - q.a; q.scale = q.real / (q.b - q.a); q.off = off; off += q.real; });
     return out;
@@ -745,35 +762,70 @@ var CORE = (function () {
     var vl = (-b + Math.sqrt(b * b + 4 * a * c)) / (2 * a);
     return vl > vh ? dx / (vl * 3600) : h;
   }
+  // hours for one step: dx real metres, dz metres, zm mean altitude, terrain key, rain flag, light (true = no big pack)
+  function stepHours(dx, dz, zm, terr, rain, P, light) {
+    if (terr === 'light') { terr = 'trail'; light = true; }
+    var S = dz / dx, t = (P.terr[terr] || P.terr.trail)[rain ? 'rain' : 'sun'];
+    var wT = Math.max(0, Math.min(1, P.wTob)), aK = (P.altPct || 0) / 100;
+    // altitude: uphill slower by altPct per 1,000 m above altRef; flat half of that, downhill a third
+    var a = Math.max(0, (zm - P.altRef) / 1000 * aK), fu = 1 - a, ff = 1 - a / 2, fd = 1 - a / 3;
+    var fAlt = S >= 0.05 ? fu : (S <= -0.05 ? fd : ff);
+    var dk = dx / 1000;
+    var tTob = dk / (P.F * tobler(S));                                   // Tobler
+    var th = dk / P.dinH, tv = dz > 0 ? dz / P.dinUp : -dz / P.dinDown;  // DIN 33466
+    var tDin = Math.max(th, tv) + 0.5 * Math.min(th, tv);
+    var h = wT * tTob + (1 - wT) * tDin;
+    if (!rain && dz < 0) h *= P.sunDown;
+    h = h / fAlt;                                                       // trail time with 13 kg
+    var r = 1;                                                          // speed ratio against that; light: same ratio on every terrain, also widens the vertical caps
+    if (light) {
+      var hl = lightHours(h, dx, S, P);                                 // Pandolf speed-up from the trail speed (avoids inflated ratios on slow terrain)
+      if (terr === 'road') hl *= dz < 0 ? (P.roadLightDown > 0 ? P.roadLightDown : 0.75) : (P.roadLightUp > 0 ? P.roadLightUp : 0.92);
+      if (hl > 0) r = h / hl;
+    } else if (terr === 'road') r = 1 / (P.roadHeavyF > 0 ? P.roadHeavyF : 1);
+    h = h / (t[0] * r);
+    var rc = Math.max(1, r);
+    if (dz > 0 && t[1] > 0) h = Math.max(h, dz / (t[1] * fu * rc));     // vertical caps (13 kg): up and down separately
+    else if (dz < 0 && t[2] > 0) h = Math.max(h, -dz / (t[2] * fd * rc));
+    return h * P.f;
+  }
+  // horizontal speeds (km/h) of one terrain at altitude zm on 0 %, +-15 % and +-30 % grades; heavy false = no big pack
+  function refSpeeds(terr, wx, P, zm, heavy) {
+    P = P || DEFAULTS;
+    var rain = wx === 'rain', dx = 100, light = heavy === false;
+    function at(S) { return dx / 1000 / stepHours(dx, S * dx, zm, terr, rain, P, light); }
+    return { flat: at(0), up15: at(0.15), up30: at(0.30), dn15: at(-0.15), dn30: at(-0.30) };
+  }
+  // moving hours of the stretch [a, b] (GPX m) of track tr with one terrain; scale = real / GPX length
+  function stretchHours(tr, a, b, scale, terr, heavy, wx, P) {
+    P = P || DEFAULTS;
+    a = Math.max(0, Math.min(tr.total, a)); b = Math.max(a, Math.min(tr.total, b));
+    var rain = wx === 'rain', light = heavy === false, sc = scale > 0 ? scale : 1, h = 0, xa = a, za = zAt(tr, a), x = tr.x;
+    for (var i = Math.max(0, Math.floor(a / STEP) - 1); i <= x.length && xa < b; i++) {
+      var xb = i < x.length ? Math.min(x[i], b) : b;
+      if (xb <= xa) continue;
+      var zb = zAt(tr, xb);
+      h += stepHours((xb - xa) * sc, zb - za, (za + zb) / 2, terr, rain, P, light);
+      xa = xb; za = zb;
+    }
+    return h;
+  }
   // returns {x (GPX m grid), cum (h at grid pts), total, xr (real m at grid pts), realTotal, edges, binCls, binRealGrade}
+  // wx: 'sun' or 'rain' forces the whole track; anything else uses each section's rain flag
   function runModelV3(tr, secs, wx, P) {
     P = P || DEFAULTS;
-    var rain = wx === 'rain';
-    var x = tr.x, z = tr.z, cum = [0], xr = [0];
-    var wT = Math.max(0, Math.min(1, P.wTob)), aK = (P.altPct || 0) / 100;
+    var x = tr.x, z = tr.z, cum = [0], xr = [0], rs = [false];
     for (var i = 1; i < x.length; i++) {
       var dxg = x[i] - x[i - 1];
-      if (dxg <= 0) { cum.push(cum[i - 1]); xr.push(xr[i - 1]); continue; }
       var mid = (x[i] + x[i - 1]) / 2, q = secAt(secs, mid);
-      var dx = dxg * q.scale, dz = z[i] - z[i - 1], S = dz / dx, zm = (z[i] + z[i - 1]) / 2;
-      var t = (P.terr[q.terr] || P.terr.trail)[rain ? 'rain' : 'sun'];
-      // altitude: uphill slower by altPct per 1,000 m above altRef; flat half of that, downhill a third
-      var a = Math.max(0, (zm - P.altRef) / 1000 * aK), fu = 1 - a, ff = 1 - a / 2, fd = 1 - a / 3;
-      var fAlt = S >= 0.05 ? fu : (S <= -0.05 ? fd : ff);
-      var dk = dx / 1000;
-      var tTob = dk / (P.F * tobler(S));                                   // Tobler
-      var th = dk / P.dinH, tv = dz > 0 ? dz / P.dinUp : -dz / P.dinDown;  // DIN 33466
-      var tDin = Math.max(th, tv) + 0.5 * Math.min(th, tv);
-      var h = wT * tTob + (1 - wT) * tDin;
-      if (!rain && dz < 0) h *= P.sunDown;
-      h = h / (t[0] * fAlt);
-      if (q.terr === 'light' || q.terr === 'road') h = lightHours(h, dx, S, P);
-      if (q.terr === 'road') h *= isFinite(P.roadF) && P.roadF > 0 ? P.roadF : 0.8;
-      if (dz > 0 && t[1] > 0) h = Math.max(h, dz / (t[1] * fu));
-      else if (dz < 0 && t[2] > 0) h = Math.max(h, -dz / (t[2] * fd));
-      cum.push(cum[i - 1] + h * P.f);
+      var rain = wx === 'rain' ? true : (wx === 'sun' ? false : q.rain === true);
+      rs.push(rain);
+      if (dxg <= 0) { cum.push(cum[i - 1]); xr.push(xr[i - 1]); continue; }
+      var dx = dxg * q.scale, dz = z[i] - z[i - 1], zm = (z[i] + z[i - 1]) / 2;
+      cum.push(cum[i - 1] + stepHours(dx, dz, zm, q.terr, rain, P, q.heavy === false));
       xr.push(xr[i - 1] + dx);
     }
+    rs[0] = rs.length > 1 ? rs[1] : false;
     // colour bins: 100 m of GPX distance, grade on real distance
     var edges = [], binCls = [];
     for (var e = 0; e < tr.total; e += BIN) edges.push(e);
@@ -784,43 +836,59 @@ var CORE = (function () {
       var g = 100 * (zAt(tr, edges[b + 1]) - zAt(tr, edges[b])) / ((rb - ra) || 1);
       binCls.push(gradeClass(g));
     }
-    return { x: x, cum: cum, xr: xr, total: cum[cum.length - 1], realTotal: xr[xr.length - 1], edges: edges, binCls: binCls };
+    return { x: x, cum: cum, xr: xr, rs: rs, total: cum[cum.length - 1], realTotal: xr[xr.length - 1], edges: edges, binCls: binCls };
   }
-  function movingAtV3(m, d) {
+  function interpAt(m, arr, d) {
     var x = m.x;
     if (d <= 0) return 0;
-    if (d >= x[x.length - 1]) return m.total;
+    if (d >= x[x.length - 1]) return arr[arr.length - 1];
     var i = Math.min(x.length - 2, Math.floor(d / STEP));
     while (i < x.length - 2 && x[i + 1] < d) i++;
     while (i > 0 && x[i] > d) i--;
     var t = (d - x[i]) / ((x[i + 1] - x[i]) || 1);
-    return m.cum[i] + (m.cum[i + 1] - m.cum[i]) * t;
+    return arr[i] + (arr[i + 1] - arr[i]) * t;
   }
-  // buf: {rest, trans (min per moving hour), point (min at transition checkpoints)}
+  function movingAtV3(m, d) { return interpAt(m, m.cum, d); }
+  // buf: {rest, transSun, transRain (min per moving hour), pointSun, pointRain (min at transition checkpoints)}
+  function bufK(buf, rain) { return 1 + ((+buf.rest || 0) + (+(rain ? buf.transRain : buf.transSun) || 0)) / 60; }
+  function applyBuffer(m, buf) {   // m.cumB: hours with rest and transition buffer, step by step in each step's weather
+    var cb = [0];
+    for (var i = 1; i < m.cum.length; i++) cb.push(cb[i - 1] + (m.cum[i] - m.cum[i - 1]) * bufK(buf, m.rs ? m.rs[i] : false));
+    m.cumB = cb; m.totalB = cb[cb.length - 1];
+    return m;
+  }
+  function bufferedAtV3(m, d) { return interpAt(m, m.cumB || m.cum, d); }
+  function rainAtV3(m, d) {   // weather of the stretch just ahead of distance d
+    var x = m.x, rs = m.rs || [];
+    for (var i = 1; i < x.length; i++) if (x[i] > d + 0.5) return !!rs[i];
+    return !!rs[rs.length - 1];
+  }
   function scheduleV3(cps, m, buf, startMin) {
-    var k = 1 + (buf.rest + buf.trans) / 60, rows = [], t = startMin, prev = 0;
+    if (!m.cumB) applyBuffer(m, buf);
+    var rows = [], t = startMin, prevMv = 0, prevB = 0;
     for (var i = 0; i < cps.length; i++) {
-      var cp = cps[i], mv = movingAtV3(m, cp.d) * 60, seg = i ? mv - prev : 0;
-      var arr = i ? t + seg * k : t;
-      var stop = Math.max(0, cp.stop || 0) + (cp.trans ? buf.point : 0);
-      rows.push({ cp: cp, seg: seg, rest: seg * (k - 1), arr: arr, dep: arr + stop, mv: mv, stop: stop });
-      t = arr + stop; prev = mv;
+      var cp = cps[i], mv = movingAtV3(m, cp.d) * 60, mb = bufferedAtV3(m, cp.d) * 60;
+      var seg = i ? mv - prevMv : 0, segB = i ? mb - prevB : 0, arr = i ? t + segB : t, wet = rainAtV3(m, cp.d);
+      var stop = Math.max(0, cp.stop || 0) + (cp.trans ? Math.max(0, +(wet ? buf.pointRain : buf.pointSun) || 0) : 0);
+      rows.push({ cp: cp, seg: seg, rest: segB - seg, arr: arr, dep: arr + stop, mv: mv, mb: mb, stop: stop, rain: wet });
+      t = arr + stop; prevMv = mv; prevB = mb;
     }
     return rows;
   }
   function clockAtV3(rows, m, buf, d) {
-    var k = 1 + (buf.rest + buf.trans) / 60, i = 0;
+    if (!m.cumB) applyBuffer(m, buf);
+    var i = 0;
     while (i < rows.length - 1 && rows[i + 1].cp.d <= d) i++;
     var r0 = rows[i];
     if (i === 0 && d <= r0.cp.d) return r0.arr;
     if (i === rows.length - 1) return r0.arr;
-    return r0.dep + (movingAtV3(m, d) * 60 - r0.mv) * k;
+    return r0.dep + (bufferedAtV3(m, d) * 60 - r0.mb);
   }
 
   return {
     DEFAULTS: DEFAULTS, TERRAIN_KEYS: TERRAIN_KEYS, normSections: normSections, gpx2real: gpx2real, real2gpx: real2gpx,
     zKnots: zKnots, deltaAt: deltaAt, applyZFix: applyZFix,
-    runModelV3: runModelV3, movingAtV3: movingAtV3, scheduleV3: scheduleV3, clockAtV3: clockAtV3,
+    runModelV3: runModelV3, movingAtV3: movingAtV3, scheduleV3: scheduleV3, clockAtV3: clockAtV3, stepHours: stepHours, refSpeeds: refSpeeds, stretchHours: stretchHours, applyBuffer: applyBuffer, bufferedAtV3: bufferedAtV3, rainAtV3: rainAtV3,
     PRESETS: PRESETS, BREAKS: BREAKS, STEP: STEP, BIN: BIN,
     hav: hav, parseTrackText: parseTrackText, buildTrack: buildTrack, reverseTrack: reverseTrack,
     zAt: zAt, stats: stats, tmod: tmod, runModel: runModel, movingAt: movingAt,
@@ -832,24 +900,25 @@ if (typeof module !== 'undefined') module.exports = CORE;
 
 </script>
 <script>
-var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [[24.487668, 121.430429, 878.7], [24.487754, 121.430535, 882.4], [24.4878, 121.430602, 884.2], [24.488018, 121.430915, 892.0], [24.488109, 121.431003, 894.2], [24.488144, 121.431023, 894.8], [24.488186, 121.431034, 895.3], [24.488226, 121.431035, 895.6], [24.488271, 121.431026, 895.8], [24.488491, 121.430936, 894.7], [24.488536, 121.430932, 894.7], [24.488599, 121.430944, 895.0], [24.488738, 121.43111, 897.5], [24.488766, 121.431168, 898.1], [24.488872, 121.431392, 900.1], [24.488917, 121.431565, 902.8], [24.488917, 121.431609, 903.7], [24.488907, 121.431657, 904.7], [24.488885, 121.43169, 905.6], [24.488852, 121.431717, 906.5], [24.488816, 121.431735, 907.2], [24.488784, 121.431742, 907.8], [24.488471, 121.431762, 912.0], [24.488361, 121.431777, 913.4], [24.488275, 121.431802, 914.2], [24.488212, 121.431844, 915.2], [24.488176, 121.431891, 916.4], [24.488078, 121.431994, 919.0], [24.487936, 121.432092, 921.1], [24.487865, 121.432114, 921.6], [24.487778, 121.432131, 922.3], [24.487552, 121.432198, 925.9], [24.487481, 121.432213, 927.1], [24.487379, 121.43221, 928.4], [24.48694, 121.432146, 934.1], [24.486861, 121.432126, 935.9], [24.486812, 121.432132, 937.4], [24.486774, 121.432159, 938.5], [24.486734, 121.43224, 939.7], [24.48673, 121.432276, 939.9], [24.486742, 121.432326, 940.0], [24.486791, 121.432431, 940.7], [24.487043, 121.432833, 948.0], [24.487061, 121.432904, 950.1], [24.487111, 121.433201, 960.3], [24.487131, 121.433253, 962.3], [24.48716, 121.433281, 963.4], [24.487226, 121.433303, 964.2], [24.487561, 121.433335, 967.6], [24.488272, 121.433231, 970.8], [24.4883, 121.433239, 971.6], [24.488317, 121.433262, 973.5], [24.488309, 121.433293, 975.7], [24.488285, 121.433316, 977.2], [24.488196, 121.433358, 979.5], [24.487285, 121.433612, 986.1], [24.487075, 121.433767, 992.1], [24.48692, 121.434011, 997.4], [24.486877, 121.434185, 1001.9], [24.486845, 121.434379, 1010.0], [24.486847, 121.434495, 1015.1], [24.486838, 121.434579, 1016.0], [24.486792, 121.434679, 1013.8], [24.486681, 121.434887, 1013.8], [24.486529, 121.435073, 1020.2], [24.486514, 121.435129, 1022.6], [24.486521, 121.435188, 1024.9], [24.48655, 121.43524, 1026.3], [24.486624, 121.435329, 1028.6], [24.486697, 121.435431, 1032.4], [24.486761, 121.435481, 1034.7], [24.486851, 121.435518, 1037.3], [24.487049, 121.435581, 1041.7], [24.48728, 121.43573, 1048.8], [24.48732, 121.435745, 1050.1], [24.487366, 121.435749, 1051.4], [24.48745, 121.43573, 1053.4], [24.487508, 121.435706, 1054.8], [24.487546, 121.435676, 1055.5], [24.48757, 121.435641, 1055.7], [24.487614, 121.435614, 1057.0], [24.487643, 121.435576, 1057.8], [24.487656, 121.435526, 1058.1], [24.487657, 121.435425, 1058.8], [24.487639, 121.435302, 1059.9], [24.487613, 121.434971, 1066.0], [24.487625, 121.434845, 1068.0], [24.487656, 121.434749, 1070.1], [24.487745, 121.434612, 1074.7], [24.487776, 121.434589, 1075.9], [24.487806, 121.434578, 1077.0], [24.487834, 121.434588, 1078.1], [24.487856, 121.434614, 1079.2], [24.487869, 121.434666, 1080.0], [24.48787, 121.434887, 1081.1], [24.487887, 121.434951, 1082.0], [24.488046, 121.435199, 1092.0], [24.488145, 121.435368, 1098.2], [24.4882, 121.435479, 1101.5], [24.488228, 121.435574, 1103.1], [24.488239, 121.435653, 1104.1], [24.488228, 121.435744, 1104.1], [24.488229, 121.435834, 1104.0], [24.488242, 121.43588, 1104.0], [24.488298, 121.435956, 1104.8], [24.488563, 121.436179, 1110.1], [24.488657, 121.436273, 1111.8], [24.48871, 121.436351, 1112.8], [24.488829, 121.43664, 1116.3], [24.48883, 121.436678, 1116.6], [24.488774, 121.436976, 1119.9], [24.488754, 121.437043, 1121.2], [24.488721, 121.437131, 1122.9], [24.488509, 121.437606, 1130.7], [24.488476, 121.437658, 1131.5], [24.488436, 121.437699, 1132.3], [24.488391, 121.437718, 1132.7], [24.488351, 121.43772, 1133.1], [24.488307, 121.437705, 1133.5], [24.488242, 121.437669, 1134.8], [24.488052, 121.437483, 1138.3], [24.48799, 121.437437, 1140.0], [24.487926, 121.437411, 1143.6], [24.487778, 121.437399, 1152.3], [24.487669, 121.437398, 1153.3], [24.487397, 121.437508, 1158.1], [24.487358, 121.437508, 1158.0], [24.487253, 121.437453, 1155.5], [24.487164, 121.437438, 1155.7], [24.487113, 121.437438, 1156.4], [24.486937, 121.43749, 1161.6], [24.486716, 121.437471, 1163.6], [24.486096, 121.437299, 1176.0], [24.485998, 121.437289, 1176.8], [24.485906, 121.437327, 1179.3], [24.485805, 121.437452, 1184.5], [24.485695, 121.437675, 1191.8], [24.485422, 121.438246, 1197.7], [24.485363, 121.438511, 1202.8], [24.485318, 121.438806, 1205.4], [24.485374, 121.439393, 1220.0], [24.485358, 121.439502, 1223.6], [24.485298, 121.439596, 1225.6], [24.48482, 121.440102, 1243.6], [24.484517, 121.440643, 1255.8], [24.48441, 121.440726, 1256.6], [24.484294, 121.440756, 1254.3], [24.484255, 121.440789, 1254.9], [24.484233, 121.440852, 1256.8], [24.484233, 121.440921, 1258.3], [24.484258, 121.440995, 1260.1], [24.484471, 121.441191, 1270.3], [24.484693, 121.441464, 1273.0], [24.484813, 121.441532, 1275.0], [24.484984, 121.441571, 1278.4], [24.485342, 121.441613, 1283.7], [24.485727, 121.441647, 1297.0], [24.48607, 121.441664, 1305.8], [24.48643, 121.441748, 1315.8], [24.48652, 121.441798, 1317.8], [24.48661, 121.441924, 1320.3], [24.486666, 121.442201, 1321.3], [24.486886, 121.44261, 1334.8], [24.48699, 121.442931, 1339.2], [24.487201, 121.443194, 1345.4], [24.487464, 121.443462, 1353.5], [24.48756, 121.443594, 1356.2], [24.487636, 121.443732, 1358.5], [24.487684, 121.443867, 1361.1], [24.487684, 121.444015, 1363.4], [24.487655, 121.444171, 1365.5], [24.48761, 121.444327, 1367.9], [24.487596, 121.444427, 1369.5], [24.487662, 121.444556, 1372.2], [24.48824, 121.444944, 1396.4], [24.488315, 121.445056, 1399.6], [24.488334, 121.445163, 1402.6], [24.488287, 121.445451, 1405.0], [24.488291, 121.445712, 1407.5], [24.488332, 121.445911, 1409.4], [24.488388, 121.446063, 1410.5], [24.488511, 121.446273, 1413.9], [24.488632, 121.446561, 1417.3], [24.488658, 121.44668, 1418.6], [24.488573, 121.447056, 1423.9], [24.488431, 121.447389, 1430.5], [24.488511, 121.447704, 1440.2], [24.488684, 121.447901, 1446.0], [24.488749, 121.448043, 1449.3], [24.488712, 121.448187, 1453.0], [24.488575, 121.448364, 1455.6], [24.488444, 121.448672, 1461.7], [24.48841, 121.448916, 1469.0], [24.4884, 121.449099, 1472.5], [24.488447, 121.449282, 1478.2], [24.488503, 121.449355, 1481.6], [24.48851, 121.449481, 1484.2], [24.488674, 121.449611, 1493.1], [24.488737, 121.449607, 1494.9], [24.488822, 121.449307, 1495.1], [24.488827, 121.44906, 1493.8], [24.488878, 121.449006, 1494.9], [24.488936, 121.448974, 1496.6], [24.488994, 121.448991, 1499.6], [24.48903, 121.449049, 1502.3], [24.489038, 121.449234, 1505.0], [24.489031, 121.449276, 1504.9], [24.489, 121.449844, 1512.3], [24.48851, 121.450303, 1528.4], [24.488262, 121.450591, 1532.0], [24.488084, 121.450984, 1535.7], [24.487913, 121.45125, 1546.2], [24.487782, 121.451762, 1557.4], [24.487795, 121.452272, 1561.0], [24.487702, 121.452578, 1564.5], [24.487609, 121.45261, 1565.1], [24.487535, 121.45256, 1566.9], [24.487401, 121.452415, 1572.4], [24.487319, 121.452396, 1574.0], [24.48718, 121.452499, 1575.7], [24.487116, 121.452704, 1573.9], [24.487096, 121.4528, 1571.8], [24.48701, 121.452855, 1572.8], [24.486773, 121.452812, 1586.2], [24.486672, 121.452942, 1588.7], [24.486616, 121.453312, 1590.4], [24.486469, 121.453621, 1598.2], [24.486355, 121.45384, 1602.2], [24.485872, 121.454442, 1611.6], [24.485859, 121.454585, 1613.7], [24.485906, 121.4547, 1613.8], [24.485908, 121.454882, 1614.8], [24.48577, 121.455016, 1616.9], [24.48546, 121.455095, 1619.5], [24.485352, 121.455092, 1621.2], [24.485135, 121.455164, 1621.8], [24.4849, 121.455117, 1623.0], [24.484747, 121.455201, 1620.5], [24.48468, 121.455357, 1616.9], [24.484535, 121.455491, 1615.3], [24.484295, 121.455568, 1619.7], [24.484212, 121.455662, 1620.5], [24.484177, 121.455905, 1620.3], [24.484185, 121.456136, 1619.9], [24.48407, 121.45622, 1625.0], [24.483526, 121.456288, 1627.8], [24.483298, 121.456335, 1628.5], [24.483082, 121.456397, 1630.1], [24.482941, 121.456579, 1630.1], [24.482903, 121.456811, 1630.4], [24.482842, 121.456944, 1630.7], [24.482671, 121.456977, 1635.2], [24.482437, 121.4572, 1641.6], [24.482352, 121.457334, 1642.0], [24.482231, 121.457381, 1644.1], [24.482018, 121.457417, 1647.1], [24.481853, 121.457523, 1650.9], [24.481948, 121.457956, 1651.1], [24.481879, 121.45822, 1655.8], [24.481869, 121.458464, 1660.0], [24.481941, 121.458724, 1659.4], [24.481899, 121.45884, 1659.7], [24.481726, 121.45888, 1662.7], [24.481557, 121.458866, 1669.2], [24.481166, 121.459019, 1675.2], [24.480836, 121.459063, 1679.4], [24.480502, 121.459074, 1685.5], [24.480136, 121.459196, 1686.7], [24.479909, 121.459199, 1692.7], [24.479782, 121.459159, 1697.7], [24.479637, 121.459234, 1699.5], [24.479523, 121.45946, 1701.2], [24.47948, 121.459716, 1705.7], [24.47945, 121.45985, 1706.4], [24.479392, 121.459998, 1707.1], [24.479218, 121.46016, 1711.3], [24.479092, 121.460163, 1714.8], [24.479054, 121.460149, 1715.8], [24.478949, 121.460176, 1716.1], [24.478843, 121.460186, 1717.0], [24.478715, 121.460209, 1717.4], [24.478565, 121.460218, 1717.7], [24.478431, 121.4602, 1717.8], [24.478325, 121.460194, 1717.9], [24.478293, 121.460207, 1717.5], [24.478267, 121.460219, 1717.2], [24.478207, 121.460325, 1714.4], [24.478049, 121.460447, 1713.0], [24.477951, 121.460496, 1712.6], [24.477856, 121.460511, 1713.7], [24.477752, 121.460576, 1714.0], [24.47763, 121.460789, 1705.5], [24.477364, 121.461017, 1709.8], [24.477225, 121.461165, 1712.5], [24.477153, 121.461335, 1711.5], [24.477127, 121.461495, 1708.6], [24.477078, 121.461639, 1707.2], [24.477085, 121.461719, 1702.6], [24.477064, 121.461767, 1700.5], [24.477015, 121.461791, 1701.0], [24.476856, 121.461828, 1702.9], [24.476733, 121.461915, 1698.7], [24.476646, 121.462006, 1696.9], [24.476571, 121.462096, 1697.4], [24.476539, 121.462219, 1698.2], [24.47657, 121.462322, 1698.7], [24.476654, 121.462504, 1699.9], [24.476716, 121.462622, 1697.7], [24.476731, 121.46275, 1698.1], [24.476769, 121.462897, 1697.7], [24.476851, 121.463004, 1693.5], [24.476862, 121.463112, 1693.7], [24.47686, 121.463271, 1694.3], [24.476822, 121.463518, 1697.1], [24.476858, 121.463696, 1694.6], [24.476853, 121.463883, 1694.7], [24.476781, 121.464326, 1689.3], [24.47673, 121.464527, 1687.6], [24.476693, 121.46477, 1682.3], [24.476615, 121.464932, 1681.9], [24.476609, 121.465034, 1680.8], [24.476632, 121.465153, 1680.7], [24.476674, 121.465292, 1682.2], [24.476693, 121.465349, 1683.2], [24.476728, 121.465393, 1684.5], [24.476756, 121.465426, 1685.8], [24.476831, 121.465384, 1687.1], [24.476859, 121.46523, 1684.2], [24.476992, 121.465059, 1682.7], [24.477089, 121.464952, 1682.2], [24.477201, 121.46491, 1683.7], [24.47733, 121.464945, 1687.7], [24.477484, 121.464956, 1690.8], [24.477616, 121.464914, 1692.9], [24.477734, 121.464923, 1697.2], [24.477776, 121.464906, 1697.7], [24.477851, 121.464836, 1702.0], [24.477962, 121.464837, 1702.4], [24.478074, 121.464843, 1703.0], [24.478167, 121.464835, 1703.4], [24.478266, 121.46482, 1705.4], [24.478216, 121.464722, 1706.2], [24.478135, 121.464597, 1706.8], [24.478165, 121.464454, 1707.2], [24.4782, 121.464341, 1707.2], [24.478167, 121.464181, 1707.4], [24.478144, 121.46408, 1707.8], [24.478184, 121.46397, 1708.2], [24.478222, 121.463845, 1708.8], [24.478206, 121.463688, 1709.4], [24.478273, 121.463533, 1709.8], [24.478366, 121.463507, 1710.4], [24.478458, 121.463452, 1710.8], [24.478582, 121.463449, 1711.4], [24.478626, 121.463474, 1711.6]], "wpts": [{"lat": 24.487668, "lon": 121.430429, "name": "四季公墓（停車處）"}, {"lat": 24.488317, "lon": 121.433262, "name": "新柵門"}, {"lat": 24.484258, "lon": 121.440995, "name": "紅柵欄（舊柵門）", "stop": 63}, {"lat": 24.488911, "lon": 121.449928, "name": "途中午餐", "stop": 25}, {"lat": 24.478293, "lon": 121.460207, "name": "廢棄護管所"}, {"lat": 24.476631, "lon": 121.46515, "name": "加納富溪", "stop": 30}, {"lat": 24.477776, "lon": 121.464906, "name": "巨木登山口"}, {"lat": 24.478626, "lon": 121.463474, "name": "營地"}], "sections": [{"a": 0, "b": 2408, "real": null, "terr": "road", "zEnd": null}, {"a": 2408, "b": 6467.6, "real": null, "terr": "trail", "zEnd": null}, {"a": 6467.6, "b": 6706.1, "real": 450, "terr": "trail", "zEnd": null}], "zStart": null, "weather": "sun", "date": "2026-10-20", "start": "09:04"};
+var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [[24.487668, 121.430429, 878.7], [24.487754, 121.430535, 882.4], [24.4878, 121.430602, 884.2], [24.488018, 121.430915, 892.0], [24.488109, 121.431003, 894.2], [24.488144, 121.431023, 894.8], [24.488186, 121.431034, 895.3], [24.488226, 121.431035, 895.6], [24.488271, 121.431026, 895.8], [24.488491, 121.430936, 894.7], [24.488536, 121.430932, 894.7], [24.488599, 121.430944, 895.0], [24.488738, 121.43111, 897.5], [24.488766, 121.431168, 898.1], [24.488872, 121.431392, 900.1], [24.488917, 121.431565, 902.8], [24.488917, 121.431609, 903.7], [24.488907, 121.431657, 904.7], [24.488885, 121.43169, 905.6], [24.488852, 121.431717, 906.5], [24.488816, 121.431735, 907.2], [24.488784, 121.431742, 907.8], [24.488471, 121.431762, 912.0], [24.488361, 121.431777, 913.4], [24.488275, 121.431802, 914.2], [24.488212, 121.431844, 915.2], [24.488176, 121.431891, 916.4], [24.488078, 121.431994, 919.0], [24.487936, 121.432092, 921.1], [24.487865, 121.432114, 921.6], [24.487778, 121.432131, 922.3], [24.487552, 121.432198, 925.9], [24.487481, 121.432213, 927.1], [24.487379, 121.43221, 928.4], [24.48694, 121.432146, 934.1], [24.486861, 121.432126, 935.9], [24.486812, 121.432132, 937.4], [24.486774, 121.432159, 938.5], [24.486734, 121.43224, 939.7], [24.48673, 121.432276, 939.9], [24.486742, 121.432326, 940.0], [24.486791, 121.432431, 940.7], [24.487043, 121.432833, 948.0], [24.487061, 121.432904, 950.1], [24.487111, 121.433201, 960.3], [24.487131, 121.433253, 962.3], [24.48716, 121.433281, 963.4], [24.487226, 121.433303, 964.2], [24.487561, 121.433335, 967.6], [24.488272, 121.433231, 970.8], [24.4883, 121.433239, 971.6], [24.488317, 121.433262, 973.5], [24.488309, 121.433293, 975.7], [24.488285, 121.433316, 977.2], [24.488196, 121.433358, 979.5], [24.487285, 121.433612, 986.1], [24.487075, 121.433767, 992.1], [24.48692, 121.434011, 997.4], [24.486877, 121.434185, 1001.9], [24.486845, 121.434379, 1010.0], [24.486847, 121.434495, 1015.1], [24.486838, 121.434579, 1016.0], [24.486792, 121.434679, 1013.8], [24.486681, 121.434887, 1013.8], [24.486529, 121.435073, 1020.2], [24.486514, 121.435129, 1022.6], [24.486521, 121.435188, 1024.9], [24.48655, 121.43524, 1026.3], [24.486624, 121.435329, 1028.6], [24.486697, 121.435431, 1032.4], [24.486761, 121.435481, 1034.7], [24.486851, 121.435518, 1037.3], [24.487049, 121.435581, 1041.7], [24.48728, 121.43573, 1048.8], [24.48732, 121.435745, 1050.1], [24.487366, 121.435749, 1051.4], [24.48745, 121.43573, 1053.4], [24.487508, 121.435706, 1054.8], [24.487546, 121.435676, 1055.5], [24.48757, 121.435641, 1055.7], [24.487614, 121.435614, 1057.0], [24.487643, 121.435576, 1057.8], [24.487656, 121.435526, 1058.1], [24.487657, 121.435425, 1058.8], [24.487639, 121.435302, 1059.9], [24.487613, 121.434971, 1066.0], [24.487625, 121.434845, 1068.0], [24.487656, 121.434749, 1070.1], [24.487745, 121.434612, 1074.7], [24.487776, 121.434589, 1075.9], [24.487806, 121.434578, 1077.0], [24.487834, 121.434588, 1078.1], [24.487856, 121.434614, 1079.2], [24.487869, 121.434666, 1080.0], [24.48787, 121.434887, 1081.1], [24.487887, 121.434951, 1082.0], [24.488046, 121.435199, 1092.0], [24.488145, 121.435368, 1098.2], [24.4882, 121.435479, 1101.5], [24.488228, 121.435574, 1103.1], [24.488239, 121.435653, 1104.1], [24.488228, 121.435744, 1104.1], [24.488229, 121.435834, 1104.0], [24.488242, 121.43588, 1104.0], [24.488298, 121.435956, 1104.8], [24.488563, 121.436179, 1110.1], [24.488657, 121.436273, 1111.8], [24.48871, 121.436351, 1112.8], [24.488829, 121.43664, 1116.3], [24.48883, 121.436678, 1116.6], [24.488774, 121.436976, 1119.9], [24.488754, 121.437043, 1121.2], [24.488721, 121.437131, 1122.9], [24.488509, 121.437606, 1130.7], [24.488476, 121.437658, 1131.5], [24.488436, 121.437699, 1132.3], [24.488391, 121.437718, 1132.7], [24.488351, 121.43772, 1133.1], [24.488307, 121.437705, 1133.5], [24.488242, 121.437669, 1134.8], [24.488052, 121.437483, 1138.3], [24.48799, 121.437437, 1140.0], [24.487926, 121.437411, 1143.6], [24.487778, 121.437399, 1152.3], [24.487669, 121.437398, 1153.3], [24.487397, 121.437508, 1158.1], [24.487358, 121.437508, 1158.0], [24.487253, 121.437453, 1155.5], [24.487164, 121.437438, 1155.7], [24.487113, 121.437438, 1156.4], [24.486937, 121.43749, 1161.6], [24.486716, 121.437471, 1163.6], [24.486096, 121.437299, 1176.0], [24.485998, 121.437289, 1176.8], [24.485906, 121.437327, 1179.3], [24.485805, 121.437452, 1184.5], [24.485695, 121.437675, 1191.8], [24.485422, 121.438246, 1197.7], [24.485363, 121.438511, 1202.8], [24.485318, 121.438806, 1205.4], [24.485374, 121.439393, 1220.0], [24.485358, 121.439502, 1223.6], [24.485298, 121.439596, 1225.6], [24.48482, 121.440102, 1243.6], [24.484517, 121.440643, 1255.8], [24.48441, 121.440726, 1256.6], [24.484294, 121.440756, 1254.3], [24.484255, 121.440789, 1254.9], [24.484233, 121.440852, 1256.8], [24.484233, 121.440921, 1258.3], [24.484258, 121.440995, 1260.1], [24.484471, 121.441191, 1270.3], [24.484693, 121.441464, 1273.0], [24.484813, 121.441532, 1275.0], [24.484984, 121.441571, 1278.4], [24.485342, 121.441613, 1283.7], [24.485727, 121.441647, 1297.0], [24.48607, 121.441664, 1305.8], [24.48643, 121.441748, 1315.8], [24.48652, 121.441798, 1317.8], [24.48661, 121.441924, 1320.3], [24.486666, 121.442201, 1321.3], [24.486886, 121.44261, 1334.8], [24.48699, 121.442931, 1339.2], [24.487201, 121.443194, 1345.4], [24.487464, 121.443462, 1353.5], [24.48756, 121.443594, 1356.2], [24.487636, 121.443732, 1358.5], [24.487684, 121.443867, 1361.1], [24.487684, 121.444015, 1363.4], [24.487655, 121.444171, 1365.5], [24.48761, 121.444327, 1367.9], [24.487596, 121.444427, 1369.5], [24.487662, 121.444556, 1372.2], [24.48824, 121.444944, 1396.4], [24.488315, 121.445056, 1399.6], [24.488334, 121.445163, 1402.6], [24.488287, 121.445451, 1405.0], [24.488291, 121.445712, 1407.5], [24.488332, 121.445911, 1409.4], [24.488388, 121.446063, 1410.5], [24.488511, 121.446273, 1413.9], [24.488632, 121.446561, 1417.3], [24.488658, 121.44668, 1418.6], [24.488573, 121.447056, 1423.9], [24.488431, 121.447389, 1430.5], [24.488511, 121.447704, 1440.2], [24.488684, 121.447901, 1446.0], [24.488749, 121.448043, 1449.3], [24.488712, 121.448187, 1453.0], [24.488575, 121.448364, 1455.6], [24.488444, 121.448672, 1461.7], [24.48841, 121.448916, 1469.0], [24.4884, 121.449099, 1472.5], [24.488447, 121.449282, 1478.2], [24.488503, 121.449355, 1481.6], [24.48851, 121.449481, 1484.2], [24.488674, 121.449611, 1493.1], [24.488737, 121.449607, 1494.9], [24.488822, 121.449307, 1495.1], [24.488827, 121.44906, 1493.8], [24.488878, 121.449006, 1494.9], [24.488936, 121.448974, 1496.6], [24.488994, 121.448991, 1499.6], [24.48903, 121.449049, 1502.3], [24.489038, 121.449234, 1505.0], [24.489031, 121.449276, 1504.9], [24.489, 121.449844, 1512.3], [24.48851, 121.450303, 1528.4], [24.488262, 121.450591, 1532.0], [24.488084, 121.450984, 1535.7], [24.487913, 121.45125, 1546.2], [24.487782, 121.451762, 1557.4], [24.487795, 121.452272, 1561.0], [24.487702, 121.452578, 1564.5], [24.487609, 121.45261, 1565.1], [24.487535, 121.45256, 1566.9], [24.487401, 121.452415, 1572.4], [24.487319, 121.452396, 1574.0], [24.48718, 121.452499, 1575.7], [24.487116, 121.452704, 1573.9], [24.487096, 121.4528, 1571.8], [24.48701, 121.452855, 1572.8], [24.486773, 121.452812, 1586.2], [24.486672, 121.452942, 1588.7], [24.486616, 121.453312, 1590.4], [24.486469, 121.453621, 1598.2], [24.486355, 121.45384, 1602.2], [24.485872, 121.454442, 1611.6], [24.485859, 121.454585, 1613.7], [24.485906, 121.4547, 1613.8], [24.485908, 121.454882, 1614.8], [24.48577, 121.455016, 1616.9], [24.48546, 121.455095, 1619.5], [24.485352, 121.455092, 1621.2], [24.485135, 121.455164, 1621.8], [24.4849, 121.455117, 1623.0], [24.484747, 121.455201, 1620.5], [24.48468, 121.455357, 1616.9], [24.484535, 121.455491, 1615.3], [24.484295, 121.455568, 1619.7], [24.484212, 121.455662, 1620.5], [24.484177, 121.455905, 1620.3], [24.484185, 121.456136, 1619.9], [24.48407, 121.45622, 1625.0], [24.483526, 121.456288, 1627.8], [24.483298, 121.456335, 1628.5], [24.483082, 121.456397, 1630.1], [24.482941, 121.456579, 1630.1], [24.482903, 121.456811, 1630.4], [24.482842, 121.456944, 1630.7], [24.482671, 121.456977, 1635.2], [24.482437, 121.4572, 1641.6], [24.482352, 121.457334, 1642.0], [24.482231, 121.457381, 1644.1], [24.482018, 121.457417, 1647.1], [24.481853, 121.457523, 1650.9], [24.481948, 121.457956, 1651.1], [24.481879, 121.45822, 1655.8], [24.481869, 121.458464, 1660.0], [24.481941, 121.458724, 1659.4], [24.481899, 121.45884, 1659.7], [24.481726, 121.45888, 1662.7], [24.481557, 121.458866, 1669.2], [24.481166, 121.459019, 1675.2], [24.480836, 121.459063, 1679.4], [24.480502, 121.459074, 1685.5], [24.480136, 121.459196, 1686.7], [24.479909, 121.459199, 1692.7], [24.479782, 121.459159, 1697.7], [24.479637, 121.459234, 1699.5], [24.479523, 121.45946, 1701.2], [24.47948, 121.459716, 1705.7], [24.47945, 121.45985, 1706.4], [24.479392, 121.459998, 1707.1], [24.479218, 121.46016, 1711.3], [24.479092, 121.460163, 1714.8], [24.479054, 121.460149, 1715.8], [24.478949, 121.460176, 1716.1], [24.478843, 121.460186, 1717.0], [24.478715, 121.460209, 1717.4], [24.478565, 121.460218, 1717.7], [24.478431, 121.4602, 1717.8], [24.478325, 121.460194, 1717.9], [24.478293, 121.460207, 1717.5], [24.478267, 121.460219, 1717.2], [24.478207, 121.460325, 1714.4], [24.478049, 121.460447, 1713.0], [24.477951, 121.460496, 1712.6], [24.477856, 121.460511, 1713.7], [24.477752, 121.460576, 1714.0], [24.47763, 121.460789, 1705.5], [24.477364, 121.461017, 1709.8], [24.477225, 121.461165, 1712.5], [24.477153, 121.461335, 1711.5], [24.477127, 121.461495, 1708.6], [24.477078, 121.461639, 1707.2], [24.477085, 121.461719, 1702.6], [24.477064, 121.461767, 1700.5], [24.477015, 121.461791, 1701.0], [24.476856, 121.461828, 1702.9], [24.476733, 121.461915, 1698.7], [24.476646, 121.462006, 1696.9], [24.476571, 121.462096, 1697.4], [24.476539, 121.462219, 1698.2], [24.47657, 121.462322, 1698.7], [24.476654, 121.462504, 1699.9], [24.476716, 121.462622, 1697.7], [24.476731, 121.46275, 1698.1], [24.476769, 121.462897, 1697.7], [24.476851, 121.463004, 1693.5], [24.476862, 121.463112, 1693.7], [24.47686, 121.463271, 1694.3], [24.476822, 121.463518, 1697.1], [24.476858, 121.463696, 1694.6], [24.476853, 121.463883, 1694.7], [24.476781, 121.464326, 1689.3], [24.47673, 121.464527, 1687.6], [24.476693, 121.46477, 1682.3], [24.476615, 121.464932, 1681.9], [24.476609, 121.465034, 1680.8], [24.476632, 121.465153, 1680.7], [24.476674, 121.465292, 1682.2], [24.476693, 121.465349, 1683.2], [24.476728, 121.465393, 1684.5], [24.476756, 121.465426, 1685.8], [24.476831, 121.465384, 1687.1], [24.476859, 121.46523, 1684.2], [24.476992, 121.465059, 1682.7], [24.477089, 121.464952, 1682.2], [24.477201, 121.46491, 1683.7], [24.47733, 121.464945, 1687.7], [24.477484, 121.464956, 1690.8], [24.477616, 121.464914, 1692.9], [24.477734, 121.464923, 1697.2], [24.477776, 121.464906, 1697.7], [24.477851, 121.464836, 1702.0], [24.477962, 121.464837, 1702.4], [24.478074, 121.464843, 1703.0], [24.478167, 121.464835, 1703.4], [24.478266, 121.46482, 1705.4], [24.478216, 121.464722, 1706.2], [24.478135, 121.464597, 1706.8], [24.478165, 121.464454, 1707.2], [24.4782, 121.464341, 1707.2], [24.478167, 121.464181, 1707.4], [24.478144, 121.46408, 1707.8], [24.478184, 121.46397, 1708.2], [24.478222, 121.463845, 1708.8], [24.478206, 121.463688, 1709.4], [24.478273, 121.463533, 1709.8], [24.478366, 121.463507, 1710.4], [24.478458, 121.463452, 1710.8], [24.478582, 121.463449, 1711.4], [24.478626, 121.463474, 1711.6]], "wpts": [{"lat": 24.487668, "lon": 121.430429, "name": "四季公墓（停車處）"}, {"lat": 24.488317, "lon": 121.433262, "name": "新柵門"}, {"lat": 24.484258, "lon": 121.440995, "name": "紅柵欄（舊柵門）", "stop": 63}, {"lat": 24.488911, "lon": 121.449928, "name": "途中午餐", "stop": 25}, {"lat": 24.478293, "lon": 121.460207, "name": "廢棄護管所"}, {"lat": 24.476631, "lon": 121.46515, "name": "加納富溪", "stop": 30}, {"lat": 24.477776, "lon": 121.464906, "name": "巨木登山口"}, {"lat": 24.478626, "lon": 121.463474, "name": "營地"}], "sections": [{"a": 0, "b": 2408, "real": null, "terr": "road", "heavy": false, "zEnd": null}, {"a": 2408, "b": 6467.6, "real": null, "terr": "road", "heavy": true, "zEnd": null}, {"a": 6467.6, "b": 6706.1, "real": 450, "terr": "road", "heavy": true, "zEnd": null}], "zStart": null, "weather": "sun", "date": "2026-10-20", "start": "09:04"};
 (function () {
   'use strict';
   var C = CORE;
   function $(id) { return document.getElementById(id); }
-  var LS_KEY = 'ctp.v41', LS_OLD = ['ctp.v40', 'ctp.v39', 'ctp.v38', 'ctp.v37', 'ctp.v36', 'ctp.v35', 'ctp.v34', 'ctp.v33', 'ctp.v32', 'ctp.v31', 'ctp.v3'];
+  var LS_KEY = 'ctp.v45', LS_OLD = ['ctp.v44', 'ctp.v43', 'ctp.v42', 'ctp.v41', 'ctp.v40', 'ctp.v39', 'ctp.v38', 'ctp.v37', 'ctp.v36', 'ctp.v35', 'ctp.v34', 'ctp.v33', 'ctp.v32', 'ctp.v31', 'ctp.v3'];
   var WD = ['日', '一', '二', '三', '四', '五', '六'];
   var KIND_PRI = { start: 0, end: 0, wpt: 1, peak: 2, turn: 2, user: 3, km: 4 };
   var BAND_LABEL = ['≤−20%', '−20～−12%', '−12～−5%', '−5～+5%', '+5～+12%', '+12～+20%', '≥+20%'];
-  var TERR_COLOR = { trail: '--t-trail', root: '--t-root', mud: '--t-mud', light: '--t-light', road: '--t-road' };
+  var TERR_COLOR = { trail: '--t-trail', root: '--t-root', mud: '--t-mud', road: '--t-road' };
   var WX_LABEL = { sun: '晴天', rain: '雨天或起霧' };
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
-  var S = { date: todayStr(), start: '07:30', deadline: '', tz: 8, wx: 'rain', rest: 8.3, transSun: 8.4, transRain: 8.4, pointSun: 10, pointRain: 15 };
+  var S = { date: todayStr(), start: '07:30', deadline: '', rest: 8.3, trans: 8.4, point: 10 };
+  var TZ = 8;   // 台灣時間 UTC+8 (v21: no time-zone input)
   var PP = clone(C.DEFAULTS);
   var T = { parsed: null, name: '', fileName: '', reversed: false, range: null, full: null, track: null, stats: null,
             secsFull: [], secs: null, cps: [], seq: 1, isSample: true, warn: '', suggest: null, recorded: false,
-            zStart: null, trackRaw: null };
+            zStart: null, trackRaw: null, fullFix: null };
   var LAST = null;
 
   // ---------- helpers ----------
@@ -890,10 +959,18 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
         var o = localStorage.getItem(LS_OLD[i]);
         if (!o) continue;
         o = JSON.parse(o);
-        if (['ctp.v40', 'ctp.v39', 'ctp.v38', 'ctp.v37', 'ctp.v36', 'ctp.v35', 'ctp.v34'].indexOf(LS_OLD[i]) < 0) delete o.PP;   // model changed in v4 (Tobler + DIN 33466): start from the new defaults
+        if (['ctp.v44', 'ctp.v43', 'ctp.v42', 'ctp.v41', 'ctp.v40', 'ctp.v39', 'ctp.v38', 'ctp.v37', 'ctp.v36', 'ctp.v35', 'ctp.v34'].indexOf(LS_OLD[i]) < 0) delete o.PP;   // model changed in v4 (Tobler + DIN 33466): start from the new defaults
+        if (o.PP && o.PP.terr) { delete o.PP.terr.trail; delete o.PP.terr.road; }   // v19: rain factors for 一般步道 and 林道 (not editable before)
         if (o.PP && Math.abs((+o.PP.sunDown) - 0.9) < 1e-9) o.PP.sunDown = C.DEFAULTS.sunDown;   // v38: old 0.9 default → 1.0 (10/18 dry descent)
         if (o.S && Math.abs((+o.S.transSun) - 4.2) < 1e-9) o.S.transSun = 8.4;   // v39: sunny buffer = rain (10/20 dry uphill matched the rain version)
-        if (o.isSample) { delete o.track; delete o.cps; delete o.secsFull; delete o.zStart; }   // sample route changed
+        (o.secsFull || []).forEach(function (q) {   // v16: 重裝／輕裝 is a per-section flag; old 輕裝 → 一般步道 without the big pack, old 產業道路輕裝 → 林道 without the big pack
+          if (q.heavy === undefined) q.heavy = !(q.terr === 'light' || q.terr === 'road');
+          if (q.terr === 'light') q.terr = 'trail';
+        });
+        var oldRain = !(o.S && o.S.wx === 'sun');   // v18: weather is a per-section checkbox (the old global default was rain)
+        (o.secsFull || []).forEach(function (q) { if (q.rain === undefined) q.rain = oldRain; });
+        o.migRain = oldRain;
+        if (o.isSample) { delete o.track; delete o.cps; delete o.secsFull; delete o.zStart; o.migRain = false; }   // sample route changed
         return o;
       }
       return null;
@@ -921,7 +998,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       var a = Math.max(q.a, r0), b = Math.min(q.b, r1);
       if (b - a <= 1) return;
       var realFull = q.real && q.real > 0 ? q.real : null;
-      out.push({ a: a - r0, b: b - r0, real: realFull ? realFull * (b - a) / (q.b - q.a) : null, terr: q.terr });
+      out.push({ a: a - r0, b: b - r0, real: realFull ? realFull * (b - a) / (q.b - q.a) : null, terr: q.terr, heavy: q.heavy !== false, rain: q.rain === true });
     });
     return C.normSections(T.track.total, out);
   }
@@ -943,6 +1020,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   function applyFix() {
     var knots = C.zKnots(T.full, T.secsFull, T.zStart);
     T.track = C.applyZFix(T.trackRaw, knots, T.range ? T.range[0] : 0);
+    T.fullFix = C.applyZFix(T.full, knots, 0);
     T.stats = C.stats(T.track);
   }
   function refreshSecs() { T.secs = curSections(); applyFix(); }
@@ -950,7 +1028,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     var knots = [];
     (T.secsFull || []).forEach(function (q) { if (isNum(q.zEnd)) knots.push([q.b, +q.zEnd]); });
     if (isNum(T.zStart)) knots.push([0, +T.zStart]);
-    T.secsFull = (T.secsFull || []).map(function (q) { return { a: Math.max(0, total - q.b), b: Math.min(total, total - q.a), real: q.real, terr: q.terr, zEnd: null }; })
+    T.secsFull = (T.secsFull || []).map(function (q) { return { a: Math.max(0, total - q.b), b: Math.min(total, total - q.a), real: q.real, terr: q.terr, heavy: q.heavy !== false, rain: q.rain === true, zEnd: null }; })
       .sort(function (p, q) { return p.a - q.a; });
     T.zStart = null;
     knots.forEach(function (k) {
@@ -960,7 +1038,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       if (hit) { hit.zEnd = k[1]; return; }
       var prevEnd = 0;
       T.secsFull.forEach(function (q) { if (q.b <= d && q.b > prevEnd) prevEnd = q.b; });
-      if (d - prevEnd > 1) T.secsFull.push({ a: prevEnd, b: d, real: null, terr: 'trail', zEnd: k[1] });
+      if (d - prevEnd > 1) T.secsFull.push({ a: prevEnd, b: d, real: null, terr: 'trail', heavy: true, rain: false, zEnd: k[1] });
     });
     T.secsFull.sort(function (p, q) { return p.a - q.a; });
   }
@@ -1019,8 +1097,21 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
 
   // ---------- model ----------
   function buf() {
-    var sun = S.wx === 'sun';
-    return { rest: Math.max(0, numOr(S.rest, 8.3)), trans: Math.max(0, numOr(sun ? S.transSun : S.transRain, 8.4)), point: Math.max(0, numOr(sun ? S.pointSun : S.pointRain, sun ? 10 : 15)) };
+    var tr = Math.max(0, numOr(S.trans, 8.4)), pt = Math.max(0, numOr(S.point, 10));   // the same for sun and rain (v20)
+    return { rest: Math.max(0, numOr(S.rest, 8.3)), trans: tr, point: pt, transSun: tr, transRain: tr, pointSun: pt, pointRain: pt };
+  }
+  function wxText() {   // weather of the current track from the section checkboxes
+    var rk = 0, tk = 0;
+    (T.secs || []).forEach(function (q) { tk += q.real; if (q.rain) rk += q.real; });
+    if (rk < 1) return '晴天';
+    if (rk >= tk - 1) return '雨天或起霧';
+    return '部分路段雨天（' + km(rk) + ' km）';
+  }
+  function fillGaps(rain) {   // plain sections over every part of the track that no section covers
+    var tot = T.full.total, cur = 0, add = [], s = T.secsFull.slice().sort(function (p, q) { return p.a - q.a; });
+    s.forEach(function (q) { if (q.a > cur + 1) add.push({ a: cur, b: q.a, real: null, terr: 'trail', heavy: true, rain: rain, zEnd: null }); cur = Math.max(cur, q.b); });
+    if (tot > cur + 1) add.push({ a: cur, b: tot, real: null, terr: 'trail', heavy: true, rain: rain, zEnd: null });
+    T.secsFull = s.concat(add).sort(function (p, q) { return p.a - q.a; });
   }
   function lightState(sun, min) {
     if (!sun || sun.rise === null || sun.set === null) return 0;
@@ -1032,16 +1123,25 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   }
 
   // ---------- render ----------
-  function render() {
+  var busy = false, again = false;
+  function render() {   // guard: rebuilding a list while one of its inputs is focused can fire a nested change event
+    if (busy) { again = true; return; }
+    busy = true;
+    try { renderNow(); } finally { busy = false; }
+    if (again) { again = false; render(); }
+  }
+  function renderNow() {
     if (!T.track) return;
     var tr = T.track, st = T.stats;
-    var mSun = C.runModelV3(tr, T.secs, 'sun', PP), mRain = C.runModelV3(tr, T.secs, 'rain', PP);
-    var m = S.wx === 'sun' ? mSun : mRain, b = buf();
+    var b = buf();
+    var m = C.applyBuffer(C.runModelV3(tr, T.secs, null, PP), b);
+    var mSun = C.applyBuffer(C.runModelV3(tr, T.secs, 'sun', PP), b), mRain = C.applyBuffer(C.runModelV3(tr, T.secs, 'rain', PP), b);
     var startMin = parseHM(S.start); if (startMin === null) startMin = 450;
     var rows = C.scheduleV3(T.cps, m, b, startMin);
+    var arrSun = C.scheduleV3(T.cps, mSun, b, startMin).pop().arr, arrRain = C.scheduleV3(T.cps, mRain, b, startMin).pop().arr;
     var sun = null;
-    try { sun = C.sunDay(S.date || todayStr(), tr.raw[0].lat, tr.raw[0].lon, numOr(S.tz, 8)); } catch (e) { sun = null; }
-    var ctx = { tr: tr, st: st, m: m, mSun: mSun, mRain: mRain, buf: b, rows: rows, sun: sun, startMin: startMin };
+    try { sun = C.sunDay(S.date || todayStr(), tr.raw[0].lat, tr.raw[0].lon, TZ); } catch (e) { sun = null; }
+    var ctx = { tr: tr, st: st, m: m, mSun: mSun, mRain: mRain, buf: b, rows: rows, sun: sun, startMin: startMin, arrSun: arrSun, arrRain: arrRain };
     LAST = ctx;
     renderStatus(); renderSections(); renderSummary(ctx); renderStrip(ctx); renderProfile(ctx); renderTable(ctx); renderCopy(ctx);
     $('btnKm').textContent = hasKm() ? '移除公里點' : '每公里加點';
@@ -1068,28 +1168,70 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     } else { w.hidden = true; w.innerHTML = ''; }
   }
 
+  var TERR_SHORT = { trail: '一般步道', root: '樹根陡坡', mud: '泥濘草徑', road: '林道' };
+  function refAlt() {   // mean altitude of the current track, to the nearest 100 m
+    var z = T.track && T.track.z;
+    if (!z || !z.length) return 1000;
+    var s = 0; for (var i = 0; i < z.length; i++) s += z[i];
+    return Math.round(s / z.length / 100) * 100;
+  }
+  function secUpDn(q) {   // gain / loss inside one section (full track, measured-elevation fix applied)
+    var f = T.fullFix || T.full, a = Math.max(0, Math.min(f.total, q.a)), b = Math.max(a, Math.min(f.total, q.b)), up = 0, dn = 0, prev = C.zAt(f, a);
+    for (var d = a + C.STEP; d < b + C.STEP; d += C.STEP) { var zz = C.zAt(f, Math.min(d, b)), dd = zz - prev; if (dd > 0) up += dd; else dn -= dd; prev = zz; }
+    return { up: up, dn: dn };
+  }
+  function secRun(q, terr, heavy, rain) {   // moving hours and real km of one section with a given terrain, load and weather
+    var f = T.fullFix || T.full, a = Math.max(0, Math.min(f.total, q.a)), b = Math.max(a, Math.min(f.total, q.b));
+    var sc = q.real && q.real > 0 && q.b - q.a > 1 ? q.real / (q.b - q.a) : 1;
+    var h = C.stretchHours(f, a, b, sc, terr, heavy, rain ? 'rain' : 'sun', PP), k = (b - a) * sc / 1000;
+    return { h: h, km: k, kmh: h > 0 ? k / h : 0 };
+  }
   function renderSections() {
     var act = document.activeElement && document.activeElement.id ? document.activeElement.id : null;
+    var zRef = refAlt(), b0 = buf();
     var html = [];
-    if (!T.secsFull.length) html.push('<p class="secempty">全段當一般步道，距離與高度用 GPX 原值。按「新增路段」設定實際里程、實測海拔或地形。</p>');
+    if (!T.secsFull.length) html.push('<p class="secempty">全段當一般步道、揹重裝、晴天，距離與高度用 GPX 原值。<br><br>按「新增路段」設定地形、重裝、雨天、實際里程或實測海拔。</p>');
     T.secsFull.forEach(function (q, i) {
-      var n = i + 1;
-      var opts = C.TERRAIN_KEYS.map(function (k) { return '<option value="' + k + '"' + (q.terr === k ? ' selected' : '') + '>' + PP.terr[k].name + '</option>'; }).join('');
+      var n = i + 1, heavy = q.heavy !== false, rain = q.rain === true, terr = C.TERRAIN_KEYS.indexOf(q.terr) >= 0 ? q.terr : 'trail', ud = secUpDn(q), cur = null;
+      var kk = 1 + (b0.rest + b0.trans) / 60;
+      var opts = C.TERRAIN_KEYS.map(function (k) {
+        var r = secRun(q, k, heavy, rain);
+        if (k === terr) cur = r;
+        return '<option value="' + k + '"' + (terr === k ? ' selected' : '') + '>' + PP.terr[k].name + '｜' + r.kmh.toFixed(1) + ' km/h</option>';
+      }).join('');
       html.push('<div class="secrow">' +
-        '<div class="sechead"><span class="tsw" style="background:var(' + TERR_COLOR[q.terr] + ')"></span>' +
-        '<select id="sxt-' + i + '" aria-label="第 ' + n + ' 段地形">' + opts + '</select>' +
+        '<div class="sechead"><span class="tsw" style="background:var(' + TERR_COLOR[terr] + ')"></span>' +
+        '<select id="sxt-' + i + '" aria-label="第 ' + n + ' 段地形，選項後是本段平均水平速度">' + opts + '</select>' +
+        '<span class="conds"><label class="hv" for="sxh-' + i + '"><input type="checkbox" id="sxh-' + i + '"' + (heavy ? ' checked' : '') + '>重裝</label>' +
+        '<label class="hv" for="sxw-' + i + '"><input type="checkbox" id="sxw-' + i + '"' + (rain ? ' checked' : '') + '>雨天</label></span>' +
         '<button class="del" type="button" data-sdel="' + i + '" aria-label="刪除第 ' + n + ' 段">×</button></div>' +
         '<div class="secgrid">' +
         '<label for="sxa-' + i + '">GPX 起 km<input type="number" step="0.01" min="0" inputmode="decimal" id="sxa-' + i + '" value="' + (Math.max(0, q.a) / 1000).toFixed(2) + '"></label>' +
         '<label for="sxb-' + i + '">GPX 迄 km<input type="number" step="0.01" min="0" inputmode="decimal" id="sxb-' + i + '" value="' + (q.b / 1000).toFixed(2) + '"></label>' +
         '<label for="sxr-' + i + '">實際 km<input type="number" step="0.1" min="0" inputmode="decimal" id="sxr-' + i + '" value="' + (q.real ? (q.real / 1000).toFixed(2) : '') + '" placeholder="同 GPX"></label>' +
         '<label for="sxz-' + i + '">終點海拔 m<input type="number" step="1" inputmode="numeric" id="sxz-' + i + '" value="' + (isNum(q.zEnd) ? Math.round(q.zEnd) : '') + '" placeholder="' + Math.round(C.zAt(T.full, Math.min(q.b, T.full.total))) + '"></label>' +
-        '</div></div>');
+        '</div>' +
+        '<p class="secspd">本段 ' + cur.km.toFixed(cur.km < 0.995 ? 2 : 1) + ' km，爬升 ' + nf(ud.up) + ' m、下降 ' + nf(ud.dn) + ' m。<br>' + (heavy ? '重裝' : '輕裝') + '、' + (rain ? '雨天' : '晴天') + '：走路 ' + durZh(cur.h * 60) + '，平均每小時 ' + cur.kmh.toFixed(1) + ' km；加上休息與轉換緩衝 ' + durZh(cur.h * 60 * kk) + '，約每小時 ' + (cur.kmh / kk).toFixed(1) + ' km。</p>' +
+        '</div>');
     });
     $('secBody').innerHTML = html.join('');
+    var trs = [];
+    [[true, 'sun', '重裝・晴天', '一般步道、林道：10/20–21 四季林道晴天實測；樹根、泥濘：推估'],
+     [true, 'rain', '重裝・雨天', '晴天速度乘雨天係數（推估）；10/6 草嶺古道、桃源谷陣雨實測比這組快 10–14%'],
+     [false, 'sun', '輕裝・晴天', '林道：10/20–21 實測；其餘依能量公式換算（推估）'],
+     [false, 'rain', '輕裝・雨天', '無實測：雨天係數同重裝，輕裝加速同晴天']].forEach(function (g) {
+      trs.push('<tr class="grp"><td colspan="6">' + g[2] + '<span class="basis">' + g[3] + '</span></td></tr>');
+      C.TERRAIN_KEYS.forEach(function (k) {
+        var r = C.refSpeeds(k, g[1], PP, zRef, g[0]);
+        trs.push('<tr><td>' + TERR_SHORT[k] + '</td>' + [r.flat, r.up15, r.up30, r.dn15, r.dn30].map(function (v) { return '<td class="num">' + v.toFixed(1) + '</td>'; }).join('') + '</tr>');
+      });
+    });
+    $('spdRef').innerHTML = '<table class="spdtbl"><caption>每小時走幾公里（海拔約 ' + nf(zRef) + ' m 為本路線平均，只算走路）。<br><br>坡越陡水平速度越慢；雨天時間：一般步道約多 11%、林道約多 5%、樹根與泥濘多 17–30%（推估）。</caption>' +
+      '<thead><tr><th>地形</th><th class="num">平路</th><th class="num">上坡<br>15%</th><th class="num">上坡<br>30%</th><th class="num">下坡<br>15%</th><th class="num">下坡<br>30%</th></tr></thead>' +
+      '<tbody>' + trs.join('') + '</tbody></table>';
     var zs = $('zStart');
     if (zs && document.activeElement !== zs) { zs.value = isNum(T.zStart) ? Math.round(T.zStart) : ''; zs.placeholder = Math.round(C.zAt(T.full, 0)); }
-    if (act && /^sx[abrtz]-/.test(act) && $(act)) $(act).focus();
+    if (act && /^sx[abrtzhw]-/.test(act) && $(act)) $(act).focus();
   }
 
   function renderSummary(c) {
@@ -1097,10 +1239,10 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     var k = [];
     k.push(kpi('距離', km(rt) + '<small> km</small>', false, Math.abs(rt - c.tr.total) > 50 ? 'GPX ' + km(c.tr.total) + ' km，已依實際里程校正' : '依 GPX 計算'));
     k.push(kpi('爬升', '+' + nf(c.st.up) + '<small> m</small>', false, '下降 ' + nf(c.st.dn) + ' m｜最高 ' + nf(c.st.zmax) + ' m'));
-    k.push(kpi('移動時間（' + (S.wx === 'sun' ? '晴' : '雨霧') + '）', dur(c.m.total * 60), true, '晴 ' + dur(c.mSun.total * 60) + '／雨霧 ' + dur(c.mRain.total * 60)));
+    k.push(kpi('移動時間', dur(c.m.total * 60), true, '全晴 ' + dur(c.mSun.total * 60) + '／全雨 ' + dur(c.mRain.total * 60)));
     k.push(kpi('抵達終點', hm(last.arr), false, '含休息與轉換共 ' + dur(total)));
     $('kpis').innerHTML = k.join('');
-    var t = [trow('出發', hm(c.startMin))];
+    var t = [trow('出發', hm(c.startMin)), trow('全晴／全雨抵達', hm(c.arrSun) + '／' + hm(c.arrRain))];
     if (c.sun) {
       t.push(trow('日出／日落', hhmmFromHours(c.sun.rise) + '／' + hhmmFromHours(c.sun.set)));
       t.push(trow('天黑（民用暮光結束）', hhmmFromHours(c.sun.dusk)));
@@ -1114,8 +1256,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       t.push(trow('最晚抵達 ' + hm(dl), diff >= 0 ? '<span class="chip ok">餘裕 ' + dur(diff) + '</span>' : '<span class="chip crit">晚 ' + dur(-diff) + '</span>'));
     }
     $('tline').innerHTML = t.join('');
-    $('scenLine').innerHTML = '目前：<b>' + WX_LABEL[S.wx] + '</b>。只算移動：晴天 ' + durZh(c.mSun.total * 60) + '，雨霧 ' + durZh(c.mRain.total * 60) +
-      '。休息 ' + c.buf.rest + ' 分、轉換緩衝 ' + c.buf.trans + ' 分（每移動 1 小時），轉換點整隊 ' + c.buf.point + ' 分。';
+    $('scenLine').innerHTML = '天氣：<b>' + wxText() + '</b>（依各路段勾選）。<br><br>只算移動：全晴 ' + durZh(c.mSun.total * 60) + '，全雨 ' + durZh(c.mRain.total * 60) +
+      '。<br><br>休息 ' + c.buf.rest + ' 分、轉換緩衝 ' + c.buf.trans + ' 分（每移動 1 小時），轉換點整隊 ' + c.buf.point + ' 分。';
   }
   function kpi(label, value, main, sub) { return '<div class="kpi' + (main ? ' main' : '') + '"><span class="k">' + label + '</span><span class="v">' + value + '</span>' + (sub ? '<span class="s">' + sub + '</span>' : '') + '</div>'; }
   function trow(label, value) { return '<div class="trow"><span>' + label + '</span><b>' + value + '</b></div>'; }
@@ -1180,8 +1322,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     // terrain strip
     var ty = Tp + ph + 3;
     T.secs.forEach(function (q) {
-      var xa = sx(q.off), xb = sx(q.off + q.real);
-      o.push('<rect x="' + xa.toFixed(1) + '" y="' + ty + '" width="' + Math.max(1, xb - xa).toFixed(1) + '" height="6" style="fill:var(' + TERR_COLOR[q.terr] + ')"></rect>');
+      var xa = sx(q.off), xb = sx(q.off + q.real), lt = q.heavy === false;   // light sections: half-height bar
+      o.push('<rect x="' + xa.toFixed(1) + '" y="' + (lt ? ty + 1.5 : ty) + '" width="' + Math.max(1, xb - xa).toFixed(1) + '" height="' + (lt ? 3 : 6) + '" style="fill:var(' + (TERR_COLOR[q.terr] || '--t-trail') + ')"></rect>');
+      if (q.rain) o.push('<rect x="' + xa.toFixed(1) + '" y="' + (ty + 8) + '" width="' + Math.max(1, xb - xa).toFixed(1) + '" height="2.5" style="fill:var(--rain)"></rect>');
     });
     var xs = niceStep(D / 1000, W < 520 ? 4 : 7);
     for (var kx = 0; kx <= D / 1000 + 1e-9; kx += xs) {
@@ -1208,7 +1351,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     box._geom = { L: L, pw: pw, D: D };
     var lg = [];
     for (var g = 0; g < 7; g++) lg.push('<span><i class="sw" style="background:var(--b' + g + ')"></i>' + BAND_LABEL[g] + '</span>');
-    lg.push('<span><i class="sw" style="background:var(--t-root)"></i>樹根陡坡</span>', '<span><i class="sw" style="background:var(--t-mud)"></i>泥濘草徑</span>');
+    lg.push('<span><i class="sw" style="background:var(--t-root)"></i>樹根陡坡</span>', '<span><i class="sw" style="background:var(--t-mud)"></i>泥濘草徑</span>', '<span><i class="sw" style="background:var(--t-road)"></i>林道</span>', '<span><i class="sw" style="background:var(--rain)"></i>雨天路段</span>');
     $('legend').innerHTML = lg.join('');
   }
 
@@ -1241,9 +1384,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     var p = (S.date || todayStr()).split('-').map(Number), d = new Date(p[0], p[1] - 1, p[2]), dl = parseHM(S.deadline);
     var L = [];
     L.push('班級步程試算｜' + (T.name || '路線') + (T.reversed ? '（反向）' : ''));
-    L.push('・' + (S.date || todayStr()) + '（' + WD[d.getDay()] + '）出發 ' + hm(c.startMin) + '｜' + WX_LABEL[S.wx]);
+    L.push('・' + (S.date || todayStr()) + '（' + WD[d.getDay()] + '）出發 ' + hm(c.startMin) + '｜' + wxText());
     L.push('・距離 ' + km(R(c.tr.total)) + ' km｜爬升 ' + nf(c.st.up) + ' m｜下降 ' + nf(c.st.dn) + ' m｜最高 ' + nf(c.st.zmax) + ' m');
-    L.push('・移動時間 晴天 ' + durZh(c.mSun.total * 60) + '／雨霧 ' + durZh(c.mRain.total * 60));
+    L.push('・移動時間 ' + durZh(c.m.total * 60) + '（全晴 ' + durZh(c.mSun.total * 60) + '／全雨 ' + durZh(c.mRain.total * 60) + '）');
     L.push('・休息 ' + c.buf.rest + ' 分、轉換緩衝 ' + c.buf.trans + ' 分（每移動 1 小時），轉換點整隊 ' + c.buf.point + ' 分');
     c.rows.forEach(function (r, i) {
       var zv = C.zAt(c.tr, r.cp.d), flag = '';
@@ -1262,13 +1405,13 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
 
   // ---------- inputs ----------
   var PMAP = [['pTobF', 'F'], ['pWTob', 'wTob'], ['pSunDown', 'sunDown'], ['pDinH', 'dinH'], ['pDinUp', 'dinUp'], ['pDinDown', 'dinDown'],
-              ['pAltPct', 'altPct'], ['pAltRef', 'altRef'], ['pFall', 'f'], ['pBody', 'bodyKg'], ['pLightKg', 'lightKg'], ['pRoadF', 'roadF']];
+              ['pAltPct', 'altPct'], ['pAltRef', 'altRef'], ['pFall', 'f'], ['pBody', 'bodyKg'], ['pLightKg', 'lightKg'], ['pRoadHF', 'roadHeavyF'], ['pRoadLU', 'roadLightUp'], ['pRoadLD', 'roadLightDown']];
   function applyInputs() {
-    $('date').value = S.date; $('start').value = S.start; $('deadline').value = S.deadline; $('tz').value = S.tz;
-    $('rest').value = S.rest; $('transSun').value = S.transSun; $('transRain').value = S.transRain; $('pointSun').value = S.pointSun; $('pointRain').value = S.pointRain;
-    $('wxSun').checked = S.wx === 'sun'; $('wxRain').checked = S.wx !== 'sun';
+    $('date').value = S.date; $('start').value = S.start; $('deadline').value = S.deadline;
+    $('rest').value = S.rest; $('trans').value = S.trans; $('point').value = S.point;
     PMAP.forEach(function (pm) { $(pm[0]).value = PP[pm[1]]; });
     ['root', 'mud'].forEach(function (k) { ['Sun', 'Rain'].forEach(function (w) { for (var i = 0; i < 3; i++) $(k + w + i).value = PP.terr[k][w.toLowerCase()][i]; }); });
+    ['trail', 'road'].forEach(function (k) { $(k + 'Rain0').value = PP.terr[k].rain[0]; });
   }
   function setRangeInputs() {
     var r = T.range || [0, T.full.total];
@@ -1309,7 +1452,6 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     T.zStart = isNum(SAMPLE.zStart) ? +SAMPLE.zStart : null;
     if (SAMPLE.date) S.date = SAMPLE.date;
     if (SAMPLE.start) S.start = SAMPLE.start;
-    if (SAMPLE.weather) S.wx = SAMPLE.weather;
     applyInputs();
     rebuild(false);
   }
@@ -1337,10 +1479,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       rebuild(false); setRangeInputs(); render();
     });
     $('btnRangeAll').addEventListener('click', function () { T.range = null; rebuild(false); setRangeInputs(); render(); });
-    ['date', 'start', 'deadline', 'tz', 'rest', 'transSun', 'transRain', 'pointSun', 'pointRain'].forEach(function (id) {
+    ['date', 'start', 'deadline', 'rest', 'trans', 'point'].forEach(function (id) {
       $(id).addEventListener('input', function () { S[id] = $(id).value; render(); });
     });
-    ['wxSun', 'wxRain'].forEach(function (id) { $(id).addEventListener('change', function () { if ($(id).checked) { S.wx = $(id).value; render(); } }); });
     PMAP.forEach(function (pm) { $(pm[0]).addEventListener('change', function () { PP[pm[1]] = numOr($(pm[0]).value, C.DEFAULTS[pm[1]]); render(); }); });
     ['root', 'mud'].forEach(function (k) {
       ['Sun', 'Rain'].forEach(function (w) {
@@ -1350,15 +1491,18 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
         })(i);
       });
     });
+    ['trail', 'road'].forEach(function (k) {
+      $(k + 'Rain0').addEventListener('change', function () { PP.terr[k].rain[0] = Math.max(0.3, Math.min(1, numOr($(k + 'Rain0').value, C.DEFAULTS.terr[k].rain[0]))); applyInputs(); render(); });
+    });
     $('btnResetP').addEventListener('click', function () { PP = clone(C.DEFAULTS); applyInputs(); render(); });
     $('btnAddSec').addEventListener('click', function () {
       var tot = T.full.total, lastB = T.secsFull.length ? Math.max.apply(null, T.secsFull.map(function (q) { return q.b; })) : 0;
       var a = lastB < tot - 50 ? lastB : 0;
-      T.secsFull.push({ a: a, b: tot, real: null, terr: 'trail', zEnd: null });
+      T.secsFull.push({ a: a, b: tot, real: null, terr: 'trail', heavy: true, rain: false, zEnd: null });
       rebuild(true); render();
     });
     $('secBody').addEventListener('change', function (e) {
-      var m = (e.target.id || '').match(/^sx([abrtz])-(\d+)$/);
+      var m = (e.target.id || '').match(/^sx([abrtzhw])-(\d+)$/);
       if (!m) return;
       var q = T.secsFull[+m[2]]; if (!q) return;
       var v = e.target.value;
@@ -1366,6 +1510,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       else if (m[1] === 'b') q.b = Math.min(T.full.total, numOr(v, T.full.total / 1000) * 1000);
       else if (m[1] === 'r') q.real = v === '' ? null : Math.max(0, numOr(v, 0) * 1000) || null;
       else if (m[1] === 'z') q.zEnd = (v === '' || !isNum(v)) ? null : Math.round(+v);
+      else if (m[1] === 'h') q.heavy = !!e.target.checked;
+      else if (m[1] === 'w') q.rain = !!e.target.checked;
       else q.terr = v;
       if (q.b < q.a) { var t = q.a; q.a = q.b; q.b = t; }
       T.secsFull.sort(function (p, r) { return p.a - r.a; });
@@ -1429,11 +1575,18 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
 
   function init() {
     var saved = loadSaved();
-    if (saved && saved.S) Object.keys(S).forEach(function (k) { if (saved.S[k] !== undefined && saved.S[k] !== null) S[k] = saved.S[k]; });
+    if (saved && saved.S) {
+      var os = saved.S;   // v20: one buffer and one regroup time for sun and rain
+      if (os.trans === undefined && (isNum(os.transSun) || isNum(os.transRain))) os.trans = Math.max(isNum(os.transSun) ? +os.transSun : 0, isNum(os.transRain) ? +os.transRain : 0);
+      if (os.point === undefined && isNum(os.pointSun)) os.point = +os.pointSun;
+      Object.keys(S).forEach(function (k) { if (os[k] !== undefined && os[k] !== null) S[k] = os[k]; });
+    }
     if (saved && saved.PP && saved.PP.terr && saved.PP.dinH !== undefined) {
       PP = saved.PP;
       Object.keys(C.DEFAULTS).forEach(function (k) { if (PP[k] === undefined) PP[k] = clone(C.DEFAULTS[k]); });
-      C.TERRAIN_KEYS.forEach(function (k) { if (!PP.terr[k]) PP.terr[k] = clone(C.DEFAULTS.terr[k]); });
+      C.TERRAIN_KEYS.forEach(function (k) { if (!PP.terr[k]) PP.terr[k] = clone(C.DEFAULTS.terr[k]); PP.terr[k].name = C.DEFAULTS.terr[k].name; });   // names follow the code (v16: 樹根陡坡、林道)
+      delete PP.terr.light;   // v16: 輕裝 is the per-section 重裝 checkbox
+      delete PP.roadF;        // v18: 林道輕裝 uses roadLightUp / roadLightDown
     }
     applyInputs();
     var ok = false;
@@ -1445,6 +1598,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
         T.secsFull = saved.secsFull || [];
         T.zStart = isNum(saved.zStart) ? +saved.zStart : null;
         rebuild(true);
+        if (saved.migRain) { fillGaps(true); refreshSecs(); }   // v18: keep the old whole-route rain setting
         if (saved.cps && saved.cps.length >= 2) {
           T.cps = saved.cps.filter(function (c) { return c.d <= T.track.total + 1; });
           T.seq = saved.seq || 1 + Math.max.apply(null, T.cps.map(function (c) { return c.id || 0; }));
