@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>班級步程試算</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -258,7 +258,7 @@ td .del{min-width:28px}
     </div>
     <div class="svgbox" id="profile"></div>
     <div class="legend" id="legend"></div>
-    <p class="hint">點一下剖面就會在那裡加一個檢查點。<br><br>上緣數字是預計通過的整點時刻；灰底是日落後，深灰是天黑後。<br><br>剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，下方紫線是雨天路段。</p>
+    <p class="hint">點一下剖面就會在那裡加一個檢查點；檢查點從起點 0 開始編號。<br><br>上緣數字是預計通過的整點時刻；灰底是日落後，深灰是天黑後。<br><br>剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，下方紫線是雨天路段。</p>
   </section>
 
   <section class="card" aria-labelledby="hTbl">
@@ -1326,11 +1326,15 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       o.push('<rect x="' + xa.toFixed(1) + '" y="' + (lt ? ty + 1.5 : ty) + '" width="' + Math.max(1, xb - xa).toFixed(1) + '" height="' + (lt ? 3 : 6) + '" style="fill:var(' + (TERR_COLOR[q.terr] || '--t-trail') + ')"></rect>');
       if (q.rain) o.push('<rect x="' + xa.toFixed(1) + '" y="' + (ty + 8) + '" width="' + Math.max(1, xb - xa).toFixed(1) + '" height="2.5" style="fill:var(--rain)"></rect>');
     });
-    var xs = niceStep(D / 1000, W < 520 ? 4 : 7);
-    for (var kx = 0; kx <= D / 1000 + 1e-9; kx += xs) {
+    var Dk = D / 1000, ppk = pw / Math.max(Dk, 1e-9);                     // pixels per km
+    var lab = ppk >= 16 ? 1 : (ppk * 2 >= 16 ? 2 : (ppk * 5 >= 16 ? 5 : 10));  // label every km when there is room
+    var tk = Dk <= 80 ? 1 : lab, fs = ppk >= 24 || lab > 1 ? 11 : 10;
+    for (var kx = 0; kx <= Dk + 1e-9; kx += tk) {
       var px = sx(kx * 1000).toFixed(1);
-      o.push('<text x="' + px + '" y="' + (H - 8) + '" text-anchor="middle" font-size="11">' + (+kx.toFixed(2)) + (kx === 0 ? ' km' : '') + '</text>');
+      o.push('<line x1="' + px + '" x2="' + px + '" y1="' + (ty + 12) + '" y2="' + (ty + 16) + '" style="stroke:var(--muted);stroke-width:1"></line>');
+      if (Math.round(kx) % lab === 0) o.push('<text x="' + px + '" y="' + (H - 8) + '" text-anchor="middle" font-size="' + fs + '">' + Math.round(kx) + '</text>');
     }
+    o.push('<text x="' + (L - 10) + '" y="' + (H - 8) + '" text-anchor="end" font-size="11">km</text>');
     var lastHour = Math.floor(clocks[0] / 60), lastLabelX = -99;
     for (var q2 = 1; q2 < clocks.length; q2++) {
       var hr = Math.floor(clocks[q2] / 60);
@@ -1344,7 +1348,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     c.rows.forEach(function (r, idx) {
       var cx = sx(R(r.cp.d)), cy = sy(C.zAt(tr, r.cp.d));
       o.push('<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="8.5" style="fill:var(--ink);stroke:var(--surface);stroke-width:1.5"></circle>');
-      o.push('<text x="' + cx.toFixed(1) + '" y="' + (cy + 3.8).toFixed(1) + '" text-anchor="middle" font-size="10.5" style="fill:var(--surface);font-weight:700">' + (idx + 1) + '</text>');
+      o.push('<text x="' + cx.toFixed(1) + '" y="' + (cy + 3.8).toFixed(1) + '" text-anchor="middle" font-size="10.5" style="fill:var(--surface);font-weight:700">' + idx + '</text>');
     });
     o.push('<rect x="' + L + '" y="' + (Tp - 14) + '" width="' + pw + '" height="' + (ph + 14) + '" style="fill:transparent;cursor:crosshair"></rect>');
     box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="高度剖面，依坡度分色，標出檢查點、整點時刻與地形">' + o.join('') + '</svg>';
@@ -1368,12 +1372,12 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       var meta = km(R(cp.d)) + ' km｜' + nf(zv) + ' m' + (first ? '' : '<br>移動 ' + dur(r.seg) + (r.rest >= 1 ? '＋途中停留 ' + Math.round(r.rest) + ' 分' : ''));
       var transBox = '';   // v23: transition regroups are part of the hourly stop
       html.push('<tr>' +
-        '<td><span class="idx">' + (i + 1) + '</span></td>' +
-        '<td class="cpname"><input class="nm" id="nm-' + cp.id + '" value="' + esc(cp.name) + '" aria-label="第 ' + (i + 1) + ' 點名稱"><div class="meta">' + meta + chips + '</div>' + transBox + '</td>' +
+        '<td><span class="idx">' + i + '</span></td>' +
+        '<td class="cpname"><input class="nm" id="nm-' + cp.id + '" value="' + esc(cp.name) + '" aria-label="第 ' + i + ' 點名稱"><div class="meta">' + meta + chips + '</div>' + transBox + '</td>' +
         '<td class="num"><span class="t">' + (first ? '—' : hm(r.arr)) + '</span></td>' +
-        '<td class="num">' + (last ? '' : '<input class="stop" type="number" min="0" step="5" inputmode="numeric" id="st-' + cp.id + '" value="' + (cp.stop || 0) + '" aria-label="第 ' + (i + 1) + ' 點停留分鐘">') + '</td>' +
+        '<td class="num">' + (last ? '' : '<input class="stop" type="number" min="0" step="5" inputmode="numeric" id="st-' + cp.id + '" value="' + (cp.stop || 0) + '" aria-label="第 ' + i + ' 點停留分鐘">') + '</td>' +
         '<td class="num"><span class="t">' + (last ? '—' : (first || r.stop > 0 ? hm(r.dep) : '')) + '</span></td>' +
-        '<td>' + (cp.kind === 'start' || cp.kind === 'end' ? '' : '<button class="del" type="button" data-del="' + cp.id + '" aria-label="刪除第 ' + (i + 1) + ' 點">×</button>') + '</td>' +
+        '<td>' + (cp.kind === 'start' || cp.kind === 'end' ? '' : '<button class="del" type="button" data-del="' + cp.id + '" aria-label="刪除第 ' + i + ' 點">×</button>') + '</td>' +
         '</tr>');
     });
     $('tbody').innerHTML = html.join('');
@@ -1396,7 +1400,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
         if (dl !== null && r.arr > dl) flag += '（超過最晚抵達）';
       }
       var tt = i === 0 ? '出發 ' + hm(r.dep) : '抵達 ' + hm(r.arr) + (r.stop > 0 && i < c.rows.length - 1 ? '，停 ' + Math.round(r.stop) + ' 分' : '');
-      L.push('・' + (i + 1) + ' ' + r.cp.name + '　' + km(R(r.cp.d)) + ' km　' + nf(zv) + ' m　' + tt + flag);
+      L.push('・' + i + ' ' + r.cp.name + '　' + km(R(r.cp.d)) + ' km　' + nf(zv) + ' m　' + tt + flag);
     });
     if (c.sun) L.push('・日出 ' + hhmmFromHours(c.sun.rise) + '｜日落 ' + hhmmFromHours(c.sun.set) + '｜天黑 ' + hhmmFromHours(c.sun.dusk));
     L.push('・各點停留只算表內填的分鐘；起登前集合、拍照、天候與隊伍狀況另計。');
