@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>班級步程試算</title>
+<title>步程試算</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
@@ -150,7 +150,7 @@ td .del{min-width:28px}
 <main class="wrap">
   <header>
     <div class="eyebrow">10/6 實測校正 · 揹重 13 kg</div>
-    <h1>班級步程試算</h1>
+    <h1>步程試算</h1>
     <p class="sub">Tobler 與 DIN 33466 各半的混合公式，用 10/6 班級揹 13 kg 的實測校正，10/20–21 四季林道實走再修正：含途中停留、地形與高度修正（每小時走 47 分、停 13 分）。</p>
   </header>
 
@@ -258,7 +258,7 @@ td .del{min-width:28px}
     </div>
     <div class="svgbox" id="profile"></div>
     <div class="legend" id="legend"></div>
-    <p class="hint">點一下剖面就會在那裡加一個檢查點；檢查點從起點 0 開始編號。<br><br>上緣數字是預計通過的整點時刻；灰底是日落後，深灰是天黑後。<br><br>剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，下方紫線是雨天路段。</p>
+    <p class="hint">點一下剖面就會在那裡加一個檢查點；檢查點從起點 0 開始編號。<br><br>上緣「時刻」那一排是預計經過的整點，例如 10 代表 10:00 會走到那條虛線的位置。<br><br>灰底是日落後，深灰是天黑後。<br><br>剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，下方紫線是雨天路段。</p>
   </section>
 
   <section class="card" aria-labelledby="hTbl">
@@ -1336,6 +1336,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     }
     o.push('<text x="' + (L - 10) + '" y="' + (H - 8) + '" text-anchor="end" font-size="11">km</text>');
     var lastHour = Math.floor(clocks[0] / 60), lastLabelX = -99;
+    o.push('<text x="' + (L - 10) + '" y="' + (Tp - 10) + '" text-anchor="end" font-size="11">時刻</text>');   // the top row is clock hours
     for (var q2 = 1; q2 < clocks.length; q2++) {
       var hr = Math.floor(clocks[q2] / 60);
       if (hr > lastHour) {
@@ -1387,7 +1388,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   function renderCopy(c) {
     var p = (S.date || todayStr()).split('-').map(Number), d = new Date(p[0], p[1] - 1, p[2]), dl = parseHM(S.deadline);
     var L = [];
-    L.push('班級步程試算｜' + (T.name || '路線') + (T.reversed ? '（反向）' : ''));
+    L.push('步程試算｜' + (T.name || '路線') + (T.reversed ? '（反向）' : ''));
     L.push('・' + (S.date || todayStr()) + '（' + WD[d.getDay()] + '）出發 ' + hm(c.startMin) + '｜' + wxText());
     L.push('・距離 ' + km(R(c.tr.total)) + ' km｜爬升 ' + nf(c.st.up) + ' m｜下降 ' + nf(c.st.dn) + ' m｜最高 ' + nf(c.st.zmax) + ' m');
     L.push('・移動時間 ' + durZh(c.m.total * 60) + '（全晴 ' + durZh(c.mSun.total * 60) + '／全雨 ' + durZh(c.mRain.total * 60) + '）');
