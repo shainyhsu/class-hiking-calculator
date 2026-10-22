@@ -217,7 +217,7 @@ td .del{min-width:28px}
       <details class="calbox" id="calBox">
         <summary>怎麼定倍數：用 GPS 紀錄校準</summary>
         <div class="calbody">
-          <p class="hint">最準的方法是用同一群人最近一次的 GPS 紀錄來算。<br><br>1. 載入那次的 GPX，要有時間紀錄，手機 App 或手錶錄的都可以。<br><br>搭車、在停車場或營地走動的部分，先用「只算其中一段」裁掉。<br><br>2. 在「路段與地形」照那天的實況設定地形、重裝、雨天。<br><br>3. 下面會比對實際走路的時間（停下來的時間已扣掉）和模型，算出兩個倍數，按「套用」。<br><br>4. 再載入要去的路線，倍數會保留。<br><br>例：上坡實際走了 2 小時，模型算 1 小時 48 分，倍數＝108 ÷ 120＝0.9。<br><br>紀錄最好上坡、下坡各有 1 小時以上，路況也和要去的路線相近。<br><br>隊伍以最慢的人為準，要用最慢的那位也在的紀錄。<br><br>沒有紀錄只能猜：寧可填慢一點，並先訂好最晚折返時間。</p>
+          <p class="hint">最準的方法是用同一群人最近一次的 GPS 紀錄來算。<br><br>1. 載入那次的 GPX，要有時間紀錄，手機 App 或手錶錄的都可以。<br><br>搭車、在停車場或營地走動的部分，先用「只算其中一段」裁掉。<br><br>2. 在「路段與地形」照那天的實況設定地形、重裝、雨天。<br><br>那天揹的不是 13 kg 時（例如 10 kg），不勾重裝，到「公式參數」把「輕裝負重」改成那天的重量；校準完，再改回這次要揹的重量。<br><br>3. 下面會比對實際走路的時間（停下來的時間已扣掉）和模型，算出兩個倍數，按「套用」。<br><br>4. 再載入要去的路線，倍數會保留。<br><br>例：上坡實際走了 2 小時，模型算 1 小時 48 分，倍數＝108 ÷ 120＝0.9。<br><br>紀錄最好上坡、下坡各有 1 小時以上，路況也和要去的路線相近。<br><br>隊伍以最慢的人為準，要用最慢的那位也在的紀錄。<br><br>沒有紀錄只能猜：寧可填慢一點，並先訂好最晚折返時間。</p>
           <div id="calOut"></div>
         </div>
       </details>
@@ -1247,13 +1247,13 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   }
   function renderCal() {
     var box = $('calOut'), G = calGrid();
-    if (!G) { box.innerHTML = '<p class="calmsg">目前的路線沒有時間紀錄，還不能校準。<br><br>載入一筆有時間的 GPX，這裡就會算出建議的倍數。</p>'; return; }
-    if (T.reversed) { box.innerHTML = '<p class="calmsg">路線已反轉，但紀錄是照原方向走的。<br><br>按「反轉方向」轉回來，才能校準。</p>'; return; }
+    if (!G) { setHTML(box, '<p class="calmsg">目前的路線沒有時間紀錄，還不能校準。<br><br>載入一筆有時間的 GPX，這裡就會算出建議的倍數。</p>'); return; }
+    if (T.reversed) { setHTML(box, '<p class="calmsg">路線已反轉，但紀錄是照原方向走的。<br><br>按「反轉方向」轉回來，才能校準。</p>'); return; }
     var r = C.calibrate(T.track, T.secs, PP, G, T.range ? T.range[0] : 0), act = r.actUp + r.actDn, mod = r.modUp + r.modDn;
-    if (act < 10) { box.innerHTML = '<p class="calmsg">這段紀錄幾乎沒有走路的時間，無法校準。</p>'; return; }
+    if (act < 10) { setHTML(box, '<p class="calmsg">這段紀錄幾乎沒有走路的時間，無法校準。</p>'); return; }
     var su = r.actUp >= 15 ? r.modUp / r.actUp : null, sd = r.actDn >= 15 ? r.modDn / r.actDn : null, h = [];
     function row(lab, a, mm, v) { return '<tr><td>' + lab + '</td><td class="num">' + dur(a) + '</td><td class="num">' + dur(mm) + '</td><td class="num">' + (v === null ? '太少' : '×' + v.toFixed(2)) + '</td></tr>'; }
-    h.push('<p class="calmsg">比較這筆紀錄' + (T.range ? '（GPX ' + km(T.range[0]) + '–' + km(T.range[1]) + ' km）' : '') + '實際走路的時間和模型（倍數 1）。<br><br>算出來的是錄這筆軌跡那群人的倍數。' +
+    h.push('<p class="calmsg">比較這筆紀錄' + (T.range ? '（GPX ' + km(T.range[0]) + '–' + km(T.range[1]) + ' km）' : '') + '實際走路的時間和模型（倍數 1）。<br><br>算出來的是錄這筆軌跡那群人的倍數。<br><br>比較用的負重：勾重裝的路段 ' + nf1(+PP.calKg || 13) + ' kg，沒勾的 ' + nf1(isNum(PP.lightKg) ? +PP.lightKg : 2) + ' kg（「公式參數」的「輕裝負重」）。' +
       (r.still >= 100 ? '<br><br>紀錄裡約 ' + km(r.still) + ' km 是停下來時 GPS 飄移或極慢移動的距離，比較時已排除。' : '') + '</p>');
     h.push('<table class="caltbl"><thead><tr><th></th><th class="num">實際走路</th><th class="num">模型</th><th class="num">倍數</th></tr></thead><tbody>' +
       row('上坡與平路', r.actUp, r.modUp, su) + row('下坡', r.actDn, r.modDn, sd) + row('整段', act, mod, mod / act) + '</tbody></table>');
@@ -1273,8 +1273,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       '<button class="btn ghost" type="button" data-cal="stop" data-q="' + qq + '">套用停留 ' + nf1(qq) + ' 分</button>' +
       (r.longs.length ? '<button class="btn ghost" type="button" data-cal="stop" data-q="' + qqa + '">套用停留 ' + nf1(qqa) + ' 分（含較長的）</button>' : '') + '</div>');
     h.push('<p class="hint">倍數＝模型時間 ÷ 實際走路時間；大於 1 代表比基準快。<br><br>「太少」代表那個方向走不到 15 分鐘，套用時維持目前的值。<br><br>下坡指比 −5% 陡的路段。<br><br>套用前先確認「路段與地形」照那天的實況設定，例如那天沒揹大背包就不勾重裝。</p>');
-    box.innerHTML = h.join('');
+    setHTML(box, h.join(''));
   }
+  function setHTML(el, html) { if (el._html !== html) { el.innerHTML = html; el._html = html; } }
   function wxText() {   // weather of the current track from the section checkboxes
     var rk = 0, tk = 0;
     (T.secs || []).forEach(function (q) { tk += q.real; if (q.rain) rk += q.real; });
