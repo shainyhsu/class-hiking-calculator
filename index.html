@@ -5,10 +5,11 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
-/* Layout: phone-first field card — one column (檔案 → 設定 → 摘要 → 剖面 → 時間表); two columns only for settings + summary on wide screens */
+/* Layout: phone-first field card — one column (檔案 → 剖面 → 路段 → 設定・摘要 → 時間表); two columns only for settings + summary on wide screens */
 :root{
   --bg:#f2f4f1; --surface:#ffffff; --ink:#16201a; --ink2:#4a574f; --muted:#7a877f; --line:#d8ded9; --soft:#eaeeea;
   --accent:#0c6a5d; --accent-ink:#ffffff; --accent-soft:#dcefe9;
+  --accent-hover:#09584d; --accent-line:#a3cdc3; --ctl-line:#c2cbc4; --shadow:rgba(22,32,26,.08);
   --warn:#9a5a00; --warn-bg:#fff0d4; --crit:#a32632; --crit-bg:#fbe2e4;
   --night:rgba(22,32,26,.16); --dusk:rgba(22,32,26,.07);
   --b0:#08519d; --b1:#3186e9; --b2:#87bafc; --b3:#d8d7d4; --b4:#fd978f; --b5:#e24947; --b6:#9b0d1a;
@@ -20,6 +21,7 @@
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#0f1411; --surface:#172019; --ink:#e4ebe6; --ink2:#b2beb6; --muted:#87958c; --line:#2a352e; --soft:#1e2822;
   --accent:#5cc4b2; --accent-ink:#0b1512; --accent-soft:#18332d;
+  --accent-hover:#7fd6c7; --accent-line:#2f6a5f; --ctl-line:#3b4a41; --shadow:rgba(0,0,0,.45);
   --warn:#f1b24f; --warn-bg:#3a2b0e; --crit:#ff8a93; --crit-bg:#3d161b;
   --night:rgba(0,0,0,.38); --dusk:rgba(0,0,0,.18);
   --b0:#3a78c8; --b1:#4f98ee; --b2:#94c3f8; --b3:#545b56; --b4:#f39c93; --b5:#ea5e5f; --b6:#c93545;
@@ -28,6 +30,7 @@
 :root[data-theme="dark"]{
   --bg:#0f1411; --surface:#172019; --ink:#e4ebe6; --ink2:#b2beb6; --muted:#87958c; --line:#2a352e; --soft:#1e2822;
   --accent:#5cc4b2; --accent-ink:#0b1512; --accent-soft:#18332d;
+  --accent-hover:#7fd6c7; --accent-line:#2f6a5f; --ctl-line:#3b4a41; --shadow:rgba(0,0,0,.45);
   --warn:#f1b24f; --warn-bg:#3a2b0e; --crit:#ff8a93; --crit-bg:#3d161b;
   --night:rgba(0,0,0,.38); --dusk:rgba(0,0,0,.18);
   --b0:#3a78c8; --b1:#4f98ee; --b2:#94c3f8; --b3:#545b56; --b4:#f39c93; --b5:#ea5e5f; --b6:#c93545;
@@ -35,7 +38,7 @@
 }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.55;-webkit-text-size-adjust:100%}
-.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:18px 40px;display:grid;gap:14px}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:18px 96px;display:grid;gap:14px}
 h1,h2{margin:0;text-wrap:balance}
 h1{font-size:1.45rem;letter-spacing:.02em}
 h2{font-size:1.02rem}
@@ -45,10 +48,31 @@ h2{font-size:1.02rem}
 .cols{display:grid;gap:14px}
 @media (min-width:760px){ .cols{grid-template-columns:1fr 1fr;align-items:start} }
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.btn{font:inherit;font-size:.93rem;border:1px solid var(--line);background:var(--soft);color:var(--ink);padding:.5rem .85rem;border-radius:8px;cursor:pointer;line-height:1.2;display:inline-flex;align-items:center;gap:.35rem;min-height:40px}
-.btn:hover{border-color:var(--muted)}
-.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
-.btn.ghost{background:transparent}
+/* controls: one button language. Actions sit beside what they change (left edge, end of a list), never alone at the far right */
+.btn{font:inherit;font-size:.93rem;font-weight:600;border:1px solid var(--ctl-line);background:var(--surface);color:var(--ink);padding:.5rem .9rem;border-radius:9px;cursor:pointer;line-height:1.2;display:inline-flex;align-items:center;justify-content:center;gap:.45rem;min-height:42px;box-shadow:0 1px 2px var(--shadow);transition:border-color .15s,color .15s,background-color .15s}
+.btn svg{width:16px;height:16px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn:active{transform:translateY(1px);box-shadow:none}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover);color:var(--accent-ink)}
+.btn.ghost{background:transparent;box-shadow:none;color:var(--ink2);border-color:var(--line);font-weight:500}
+.btn.ghost:hover{color:var(--accent);border-color:var(--accent)}
+.btn.add{width:100%;min-height:46px;background:var(--accent-soft);color:var(--accent);border-color:var(--accent-line);box-shadow:none}
+.btn.add:hover{border-color:var(--accent);color:var(--accent)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tools .hint{margin:0}
+/* disclosures look like rows you can open: chevron on the left, the whole row is the target */
+details.disc>summary{list-style:none;display:flex;align-items:center;gap:.55rem;min-height:44px;padding:.5rem .8rem;border:1px solid var(--ctl-line);border-radius:9px;background:var(--surface);color:var(--ink);font-weight:600;font-size:.9rem;box-shadow:0 1px 2px var(--shadow);transition:border-color .15s,color .15s}
+details.disc>summary::-webkit-details-marker{display:none}
+details.disc>summary::before,.about>summary::before{content:"";flex:none;width:.42rem;height:.42rem;border-right:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:rotate(-45deg);margin:0 .2rem 0 .1rem;transition:transform .15s}
+details.disc[open]>summary::before,.about[open]>summary::before{transform:rotate(45deg) translate(-1px,-1px)}
+details.disc>summary:hover{border-color:var(--accent);color:var(--accent)}
+details.disc>summary .dsub{margin-left:auto;font-weight:400;font-size:.78rem;color:var(--muted)}
+details.disc[open]>summary{margin-bottom:10px}
+@media (max-width:430px){ details.disc>summary .dsub{display:none} }
+.about>summary{list-style:none;display:flex;align-items:center;gap:.55rem;cursor:pointer;font-weight:700;font-size:1.02rem;color:var(--ink);min-height:32px}
+.about>summary::-webkit-details-marker{display:none}
+.about>summary:hover{color:var(--accent)}
 .btn:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .status{margin:0;color:var(--ink2);font-size:.9rem}
 .error{margin:0;color:var(--crit);background:var(--crit-bg);border-radius:8px;padding:.55rem .7rem;font-size:.9rem}
@@ -62,6 +86,7 @@ input[type=number]{font-family:var(--font-num);font-weight:600}
 .inline input{width:4.6rem}
 .hint{color:var(--muted);font-size:.8rem;margin:0}
 details>summary{cursor:pointer;color:var(--ink2);font-size:.9rem}
+#profile svg{cursor:crosshair}
 /* summary */
 .kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 @media (min-width:520px){ .kpis{grid-template-columns:repeat(4,minmax(0,1fr))} }
@@ -97,12 +122,22 @@ td .t{font-family:var(--font-num);font-weight:600;font-size:.98rem;font-variant-
 td .meta{font-size:.76rem;color:var(--muted);font-variant-numeric:tabular-nums}
 td .nm{font-size:.92rem;padding:.3rem .4rem;min-height:34px;background:transparent;border-color:transparent}
 td .nm:hover,td .nm:focus{border-color:var(--line);background:var(--bg)}
-td .stop{width:2.7rem;min-height:34px;padding:.25rem .3rem;text-align:right}
+td .stop{width:3.3rem;min-height:34px;padding:.25rem .35rem;text-align:right;-moz-appearance:textfield;appearance:textfield}
+td .stop::-webkit-outer-spin-button,td .stop::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 td.cpname{min-width:6.4rem}
 td .del{min-width:28px}
 .idx{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--surface);font-family:var(--font-num);font-weight:700;font-size:.8rem}
-.del{border:none;background:transparent;color:var(--muted);font-size:1.15rem;cursor:pointer;min-width:32px;min-height:32px;border-radius:6px}
-.del:hover{color:var(--crit);background:var(--crit-bg)}
+.del{display:inline-grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid var(--ctl-line);border-radius:8px;background:var(--surface);color:var(--ink2);cursor:pointer;transition:border-color .15s,color .15s,background-color .15s}
+.del svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.del:hover{color:var(--crit);border-color:var(--crit);background:var(--crit-bg)}
+/* live result: pinned to the bottom while the summary card is off screen */
+.livebar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 14px;margin:0;border:0;border-top:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.88rem;cursor:pointer;padding-top:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom, 0px));padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));box-shadow:0 -2px 12px var(--shadow)}
+.livebar .lb{display:inline-flex;align-items:baseline;gap:5px}
+.livebar .lb-k{color:var(--ink2);font-size:.78rem}
+.livebar b{font-family:var(--font-num);font-weight:600;font-size:1.14rem;font-variant-numeric:tabular-nums}
+.livebar .lb-go{display:inline-flex;align-items:center;gap:3px;color:var(--accent);font-size:.8rem;font-weight:600}
+.livebar .lb-go svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.livebar:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
 .copybox{width:100%;min-height:9rem;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.6rem}
 .about p,.about li{font-size:.88rem;color:var(--ink2);margin:.3rem 0}
 .about li{margin:0 0 1.55em}
@@ -117,15 +152,33 @@ td .del{min-width:28px}
 .seg input:focus-visible+label{outline:2px solid var(--accent);outline-offset:-2px}
 .seclist{display:grid;gap:8px;margin-top:4px}
 .secrow{border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg)}
-.sechead{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:6px}
-.sechead select{flex:1 1 180px;min-width:0;min-height:38px;padding:.3rem .45rem}
-.conds{display:inline-flex;gap:6px}
-@media (max-width:560px){ .sechead .del{order:2} .sechead .conds{order:3;flex:1 1 100%;padding-left:20px} }
+.secrow{display:grid;gap:8px}
+.sectop{display:flex;align-items:center;gap:8px;min-height:36px}
+.secno{font-weight:700;font-size:.92rem;color:var(--ink)}
+.secrange{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.sectop .btn{margin-left:auto}
+/* terrain: every choice visible with its speed, one tap to pick (radio chips instead of a dropdown) */
+.terrs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;border:0;margin:0;padding:0;min-width:0}
+@media (min-width:640px){ .terrs{grid-template-columns:repeat(4,minmax(0,1fr))} }
+.tchip{position:relative;display:flex;align-items:center;gap:6px;min-height:40px;padding:.3rem .6rem;border:1px solid var(--ctl-line);border-radius:999px;background:var(--surface);color:var(--ink2);font-size:.86rem;cursor:pointer;min-width:0;transition:border-color .15s,background-color .15s,color .15s}
+.tchip input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.tchip .tn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.tchip .tv{margin-left:auto;font-family:var(--font-num);font-weight:600;font-size:.92rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tchip .tv small{font-family:var(--font-ui);font-weight:400;font-size:.68rem;color:var(--muted);margin-left:2px}
+.tchip .tsw{margin-right:0;flex:none;box-shadow:inset 0 0 0 1px var(--ctl-line)}
+.tchip:hover{border-color:var(--accent)}
+.tchip:has(input:checked){background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.tchip:has(input:checked) .tv small{color:var(--accent)}
+.tchip:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+.conds{display:flex;flex-wrap:wrap;gap:6px}
+.btn.sm{min-height:36px;padding:.3rem .7rem;font-size:.84rem}
+.btn.danger:hover{color:var(--crit);border-color:var(--crit);background:var(--crit-bg)}
 .secgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
 .secgrid label{display:grid;gap:2px;font-size:.72rem;color:var(--ink2);min-width:0}
 .secgrid input{min-height:38px;padding:.3rem .4rem;text-align:right;-moz-appearance:textfield;appearance:textfield}
 .secgrid input::-webkit-outer-spin-button,.secgrid input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .secempty{color:var(--muted);font-size:.84rem;margin:.2rem 0}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .tsw{display:inline-block;width:12px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
 .ck{display:inline-flex;align-items:center;gap:4px;font-size:.74rem;color:var(--ink2);margin-top:2px;cursor:pointer}
 .ck input{width:16px;height:16px;min-height:0;margin:0}
@@ -134,11 +187,13 @@ td .del{min-width:28px}
 .pgrid h3{grid-column:1/-1;margin:.4rem 0 0;font-size:.86rem;color:var(--ink)}
 .secspd{margin:6px 2px 0;font-size:.74rem;color:var(--ink2);line-height:1.45}
 .spdref{margin-top:2px}
-.spdref>summary{font-size:.84rem}
+.spdref>summary{font-size:.88rem}
 .spdref>div{overflow-x:auto;margin-top:6px}
 .spdtbl tr.grp td{font-weight:600;color:var(--ink);background:var(--soft);font-size:.78rem;padding:4px 6px}
 .spdtbl tr.grp .basis{display:block;font-weight:400;color:var(--ink2);font-size:.72rem;line-height:1.35}
-.hv{display:inline-flex;align-items:center;gap:5px;font-size:.88rem;color:var(--ink);white-space:nowrap;cursor:pointer;min-height:38px;padding:0 4px;border:1px solid var(--line);border-radius:8px;background:var(--surface)}
+.hv{display:inline-flex;align-items:center;gap:6px;font-size:.88rem;color:var(--ink2);white-space:nowrap;cursor:pointer;min-height:38px;padding:0 .6rem 0 .45rem;border:1px solid var(--ctl-line);border-radius:999px;background:var(--surface);transition:border-color .15s,background-color .15s,color .15s}
+.hv:hover{border-color:var(--accent)}
+.hv:has(input:checked){background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
 .hv input{width:18px;height:18px;min-height:0;margin:0;accent-color:var(--accent)}
 .lead{color:var(--ink2);font-size:.84rem;margin:0}
 .spdtbl{font-size:.8rem}
@@ -154,6 +209,37 @@ td .del{min-width:28px}
 .caltbl{font-size:.84rem}
 .caltbl td{padding:5px 3px;font-variant-numeric:tabular-nums}
 .caltbl td.num{font-family:var(--font-num);font-weight:600;white-space:nowrap}
+[hidden]{display:none!important}
+/* v31: profile tools, draggable section boundaries, own-record calibration */
+.proftools{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.proftools .pt-k{font-size:.84rem;color:var(--ink2)}
+.profmsg{margin:0;font-size:.84rem;color:var(--accent);font-weight:600}
+.profmsg:empty{display:none}
+#profile.split svg{cursor:col-resize}
+#profile .bd{cursor:ew-resize;touch-action:none}
+#profile .bd:focus{outline:none}
+#profile .bd-hit{fill:transparent}
+#profile .bd-line{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:4 3}
+#profile .bd-knob{fill:var(--surface);stroke:var(--accent);stroke-width:1.5}
+#profile .bd-grip{fill:none;stroke:var(--accent);stroke-width:1.3;stroke-linecap:round}
+#profile .bd:hover .bd-knob,#profile .bd:focus-visible .bd-knob,#profile .bd.dragging .bd-knob{fill:var(--accent)}
+#profile .bd:hover .bd-grip,#profile .bd:focus-visible .bd-grip,#profile .bd.dragging .bd-grip{stroke:var(--accent-ink)}
+#profile .bd:focus-visible .bd-line,#profile .bd.dragging .bd-line{stroke-dasharray:none;stroke-width:2}
+#profile .tip rect{fill:var(--ink)}
+#profile .tip text{fill:var(--surface);font-weight:600}
+#profile .cutg{stroke:var(--accent);stroke-width:1.5;stroke-dasharray:2 2;pointer-events:none}
+#profile .tip{pointer-events:none}
+#profile .stag rect{fill:var(--surface);stroke:var(--accent-line)}
+#profile .stag text{fill:var(--accent);font-weight:700}
+#profile .strip-hit{fill:transparent;cursor:pointer}
+.secrow{transition:border-color .2s,box-shadow .2s}
+.secrow.flash{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.calbanner{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0;padding:.6rem .75rem;border:1px solid var(--accent-line);border-radius:9px;background:var(--accent-soft);color:var(--ink);font-size:.88rem}
+.calbanner .cb-t{flex:1 1 14rem;min-width:0}
+.calbanner .row{gap:6px}
+.sw.dash{background:repeating-linear-gradient(90deg,var(--ink2) 0 4px,transparent 4px 7px)}
+.sw.bdl{width:4px;background:var(--accent)}
+.calkg input{width:4.6rem}
 </style>
 
 <main class="wrap">
@@ -166,36 +252,55 @@ td .del{min-width:28px}
   <section class="card" id="fileCard" aria-labelledby="hFile">
     <h2 id="hFile">路線檔案</h2>
     <div class="row">
-      <label class="btn primary" for="file">選擇 GPX／KML 檔</label>
+      <label class="btn primary" for="file"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9 1.75H4.5A1.75 1.75 0 0 0 2.75 3.5v9a1.75 1.75 0 0 0 1.75 1.75h7a1.75 1.75 0 0 0 1.75-1.75V6z"/><path d="M9 1.75V6h4.25"/><path d="M8 12V8.25M6.4 9.85 8 8.25l1.6 1.6"/></svg>選擇 GPX／KML 檔</label>
       <input type="file" id="file" hidden>
-      <button class="btn" id="btnReverse" type="button">反轉方向</button>
-      <button class="btn ghost" id="btnSample" type="button">載入範例</button>
+      <button class="btn" id="btnReverse" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 5.25h9.5M10 2.75l2.5 2.5L10 7.75"/><path d="M13 10.75H3.5M6 8.25l-2.5 2.5L6 13.25"/></svg>反轉方向</button>
+      <button class="btn" id="btnSample" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 4.5c-1.2-1-2.9-1.5-5.25-1.5v9.5c2.35 0 4.05.5 5.25 1.5 1.2-1 2.9-1.5 5.25-1.5V3C10.9 3 9.2 3.5 8 4.5z"/><path d="M8 4.5V14"/></svg>載入範例</button>
     </div>
     <p class="status" id="fileStatus"></p>
+    <div class="calbanner" id="calBanner" hidden></div>
     <p class="error" id="fileError" hidden></p>
     <p class="warnbox" id="fileWarn" hidden></p>
-    <details id="rangeBox">
-      <summary>只算其中一段</summary>
+    <details id="rangeBox" class="disc">
+      <summary>只算其中一段<span class="dsub">裁掉搭車段</span></summary>
       <div class="inline" style="margin-top:8px">
         從 <input id="rFrom" type="number" step="0.1" min="0" inputmode="decimal"> km 到
         <input id="rTo" type="number" step="0.1" min="0" inputmode="decimal"> km（GPX 里程）
-        <button class="btn" id="btnRange" type="button">套用</button>
+        <button class="btn" id="btnRange" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8.5 3.2 3.1L13 4.6"/></svg>套用</button>
         <button class="btn ghost" id="btnRangeAll" type="button">全段</button>
       </div>
       <p class="hint">軌跡含搭車段或前後多錄的部分時，用這裡裁掉。</p>
     </details>
   </section>
 
-  <section class="card" aria-labelledby="hSec">
-    <div class="row" style="justify-content:space-between">
-      <h2 id="hSec">路段與地形</h2>
-      <button class="btn" id="btnAddSec" type="button">新增路段</button>
+  <section class="card" aria-labelledby="hProf">
+    <h2 id="hProf">高度剖面</h2>
+    <div>
+      <div class="hint" style="margin-bottom:4px">1:1 實際比例（距離已依實際里程校正）</div>
+      <div class="svgbox" id="strip"></div>
     </div>
-    <p class="lead">選項後面的速度是該段的平均水平速度：坡度、海拔、隊伍速度都已算進去，只算走路、不含停留。<br><br>勾「重裝」＝揹 13 kg 大背包，不勾＝輕裝。<br><br>勾「雨天」＝下雨或起霧、路濕，不勾＝晴天。</p>
+    <div class="proftools">
+      <span class="pt-k" id="pmLabel">點一下剖面</span>
+      <div class="seg" role="radiogroup" aria-labelledby="pmLabel">
+        <input type="radio" name="pmode" id="pmCp" value="cp" checked><label for="pmCp">加檢查點</label>
+        <input type="radio" name="pmode" id="pmSplit" value="split"><label for="pmSplit">切路段</label>
+      </div>
+    </div>
+    <div class="svgbox" id="profile"></div>
+    <p class="profmsg" id="profMsg" aria-live="polite"></p>
+    <div class="legend" id="legend"></div>
+    <p class="hint">點一下剖面：選「加檢查點」就在那裡加一個檢查點，檢查點從起點 0 開始編號；選「切路段」就在那裡把路段切成兩段，新的一段沿用原本的設定。<br><br>綠色虛線是路段分界，左右拖拉下方的把手就能移動。<br><br>點一下把手後，也能用方向鍵微調：每次 20 m，按住 Shift 每次 100 m。<br><br>剖面底部的小方框是路段編號；點剖面下方的地形細條，會跳到那一段的設定。<br><br>上緣「時刻」那一排是預計經過的整點，例如 10 代表 10:00 會走到那條虛線的位置。<br><br>灰底是日落後，深灰是天黑後。<br><br>剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，斷斷續續的是跑的路段，下方紫線是雨天路段。</p>
+  </section>
+
+  <section class="card" aria-labelledby="hSec">
+    <h2 id="hSec">路段與地形</h2>
+    <p class="lead">地形後面的數字是該段的平均水平速度（km/h）：坡度、海拔、隊伍速度都已算進去，只算移動、不含停留；點一下就換地形。<br><br>勾「重裝」＝揹 13 kg 大背包，不勾＝輕裝。<br><br>勾「雨天」＝下雨或起霧、路濕，不勾＝晴天。<br><br>勾「跑」＝這段用跑的（輕裝），用跑步的速度與「跑步速度」倍數。<br><br>分界直接在上面的高度剖面拖拉；要多切一段，在剖面選「切路段」再點要切的位置。</p>
     <div class="seclist" id="secBody"></div>
-    <details class="spdref" id="spdBox"><summary>各坡度的水平速度（參考）</summary><div id="spdRef"></div></details>
+    <button class="btn add" id="btnAddSec" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>新增路段</button>
+    <p class="profmsg" id="secMsg" aria-live="polite"></p>
+    <details class="spdref disc" id="spdBox"><summary>各坡度的水平速度（參考）<span class="dsub">平路、±15%、±30%</span></summary><div id="spdRef"></div></details>
     <div class="inline" style="margin-top:8px"><label for="zStart">起點實測海拔（選填）</label><input type="number" id="zStart" step="1" inputmode="numeric" style="width:5.2rem"> m</div>
-    <p class="hint">GPX 常把小彎拉直，距離偏短；有實際里程就填，時間會照實際長度算。<br><br>地圖規劃的路線也可能走錯稜線、高度不準。<br><br>知道某段終點的實測海拔（GPS 紀錄、登山口標示）就填，中間的高度會按比例修正；空白就用 GPX 的值（灰字）。<br><br>「樹根陡坡」用在樹根、碎石多、陡上陡下的步道，例如戒茂斯到新武呂溪。<br><br>「泥濘草徑」用在泥濘的草坡路。<br><br>這兩種會限制每小時能爬升與下降的高度，雨天再降。<br><br>「林道」用在林道路面，例如四季林道。<br><br>不勾「重裝」用在行李另外運送的路段，例如行李上菜車；速度會換算得比揹 13 kg 快，林道再快一些。<br><br>勾「雨天」代表整段持續下雨或起霧、路濕，每種地形都會變慢：一般步道時間約多 11%、林道約多 5%、樹根陡坡與泥濘草徑多 17–30%，都是推估。<br><br>沒設定的部分當一般步道、重裝、晴天。</p>
+    <p class="hint">「新增路段」把最後一段從中間切成兩段；「刪除」把這段併入前一段（第 1 段併入第 2 段）。<br><br>GPX 常把小彎拉直，距離偏短；有實際里程就填，時間會照實際長度算。<br><br>地圖規劃的路線也可能走錯稜線、高度不準。<br><br>知道某段終點的實測海拔（GPS 紀錄、登山口標示）就填，中間的高度會按比例修正；空白就用 GPX 的值（灰字）。<br><br>「樹根陡坡」用在樹根、碎石多、陡上陡下的步道，例如戒茂斯到新武呂溪。<br><br>「泥濘草徑」用在泥濘的草坡路。<br><br>這兩種會限制每小時能爬升與下降的高度，雨天再降。<br><br>「林道」用在林道路面，例如四季林道。<br><br>不勾「重裝」用在行李另外運送的路段，例如行李上菜車；速度會換算得比揹 13 kg 快，林道再快一些。<br><br>勾「雨天」代表整段持續下雨或起霧、路濕，每種地形都會變慢：一般步道時間約多 11%、林道約多 5%、樹根陡坡與泥濘草徑多 17–30%，都是推估。<br><br>沒設定的部分當一般步道、重裝、晴天。</p>
   </section>
 
   <div class="cols">
@@ -214,15 +319,23 @@ td .del{min-width:28px}
       </div>
       <p class="teamnote" id="teamNote"></p>
       <p class="hint">只調人的差別：體能、年紀、經驗。<br><br>有沒有揹大背包、晴雨、地形、停下來的時間，各有自己的設定，不要重複算進倍數。<br><br>填 1.2＝比基準快 20%，走路時間少約 17%；填 0.8＝慢 20%，走路時間多 25%。<br><br>下坡分開填：年紀較大或膝蓋不好的人，陡下坡常比上坡慢得多；比 −5% 陡的下坡用「下坡」倍數。</p>
-      <details class="calbox" id="calBox">
+      <div class="teamrow" id="runRow" hidden>
+        <span>跑步速度（倍數；只用在勾「跑」的路段；1＝平地每小時 <span id="runFlatTxt">8</span> km）</span>
+        <div class="inline"><label for="runUp">上坡與平路 ×</label><input type="number" id="runUp" min="0.3" max="2.5" step="0.05" inputmode="decimal"><label for="runDn">下坡 ×</label><input type="number" id="runDn" min="0.3" max="2.5" step="0.05" inputmode="decimal"></div>
+        <p class="teamnote" id="runNote"></p>
+      </div>
+      <details class="calbox disc" id="calBox">
         <summary>怎麼定倍數：用 GPS 紀錄校準</summary>
         <div class="calbody">
-          <p class="hint">最準的方法是用同一群人最近一次的 GPS 紀錄來算。<br><br>1. 載入那次的 GPX，要有時間紀錄，手機 App 或手錶錄的都可以。<br><br>搭車、在停車場或營地走動的部分，先用「只算其中一段」裁掉。<br><br>2. 在「路段與地形」照那天的實況設定地形、重裝、雨天。<br><br>那天揹的不是 13 kg 時（例如 10 kg），不勾重裝，到「公式參數」把「輕裝負重」改成那天的重量；校準完，再改回這次要揹的重量。<br><br>3. 下面會比對實際走路的時間（停下來的時間已扣掉）和模型，算出兩個倍數，按「套用」。<br><br>4. 再載入要去的路線，倍數會保留。<br><br>例：上坡實際走了 2 小時，模型算 1 小時 48 分，倍數＝108 ÷ 120＝0.9。<br><br>紀錄最好上坡、下坡各有 1 小時以上，路況也和要去的路線相近。<br><br>隊伍以最慢的人為準，要用最慢的那位也在的紀錄。<br><br>沒有紀錄只能猜：寧可填慢一點，並先訂好最晚折返時間。</p>
+          <div class="row"><label class="btn primary" for="calFile"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9 1.75H4.5A1.75 1.75 0 0 0 2.75 3.5v9a1.75 1.75 0 0 0 1.75 1.75h7a1.75 1.75 0 0 0 1.75-1.75V6z"/><path d="M9 1.75V6h4.25"/><path d="M8 12V8.25M6.4 9.85 8 8.25l1.6 1.6"/></svg>載入自己的紀錄</label><input type="file" id="calFile" hidden></div>
+          <p class="error" id="calError" hidden></p>
+          <p class="hint">用自己（或同一群人）最近一次、有時間紀錄的 GPX 來算，手機 App 或手錶錄的都可以。<br><br>1. 按「載入自己的紀錄」選那次的 GPX。要去的路線會先收起來，路段與檢查點都保留；一次只算一筆，後載入的取代前一筆，不會疊加。<br><br>2. 在「路段與地形」照那天的實況設定地形、重裝、雨天；用跑的路段勾「跑」。搭車、在停車場或營地走動的部分，用「只算其中一段」裁掉。<br><br>3. 那天沒勾重裝的路段揹幾公斤，填在下面。<br><br>4. 下面會比對實際移動的時間（停下來的時間已扣掉）和模型，算出倍數，按「套用」。<br><br>5. 按「回到」那顆按鈕，回到要去的路線，倍數會保留。<br><br>直接在最上面載入有時間紀錄的 GPX 也能校準，但會取代目前的路線。<br><br>載入別人的紀錄，算出來的是那個人的倍數；隊伍以最慢的人為準，要用最慢的那位也在的紀錄。<br><br>例：上坡實際走了 2 小時，模型算 1 小時 48 分，倍數＝108 ÷ 120＝0.9。<br><br>紀錄最好上坡、下坡各有 1 小時以上，路況也和要去的路線相近。<br><br>沒有紀錄只能猜：寧可填慢一點，並先訂好最晚折返時間。</p>
+          <div class="inline calkg"><label for="calKg">紀錄那天沒勾重裝的路段揹</label><input type="number" id="calKg" min="0" max="30" step="0.5" inputmode="decimal"> kg<span class="hint">空白＝用「公式參數」的輕裝負重</span></div>
           <div id="calOut"></div>
         </div>
       </details>
-      <details>
-        <summary>公式參數</summary>
+      <details class="disc">
+        <summary>公式參數<span class="dsub">進階</span></summary>
         <div class="pgrid" id="pgrid" style="margin-top:8px">
           <h3>Tobler 與 DIN 33466（一般步道）</h3>
           <label for="pTobF">Tobler 係數 F<input type="number" id="pTobF" step="0.01" inputmode="decimal"></label>
@@ -251,6 +364,10 @@ td .del{min-width:28px}
           <h3>輕裝（沒勾重裝的路段）</h3>
           <label for="pBody">體重 kg<input type="number" id="pBody" step="1" inputmode="numeric"></label>
           <label for="pLightKg">輕裝負重 kg<input type="number" id="pLightKg" step="0.5" inputmode="decimal"></label>
+          <label for="pLightDnMax">下坡最多快×<input type="number" id="pLightDnMax" step="0.05" min="1" inputmode="decimal"></label>
+          <h3>跑（勾「跑」的路段）</h3>
+          <label for="pRunFlat">平地跑速 km/h<input type="number" id="pRunFlat" step="0.5" min="3" inputmode="decimal"></label>
+          <label for="pRunCapX">樹根、泥濘上限×<input type="number" id="pRunCapX" step="0.1" min="1" inputmode="decimal"></label>
           <h3>林道（時間倍數）</h3>
           <label for="pRoadHF">重裝×<input type="number" id="pRoadHF" step="0.01" inputmode="decimal"></label>
           <label for="pRoadLU">輕裝上坡×<input type="number" id="pRoadLU" step="0.01" inputmode="decimal"></label>
@@ -259,7 +376,7 @@ td .del{min-width:28px}
           <label for="pAltPct">每千公尺慢 %<input type="number" id="pAltPct" step="0.5" inputmode="decimal"></label>
           <label for="pAltRef">高度基準 m<input type="number" id="pAltRef" step="50" inputmode="numeric"></label>
         </div>
-        <div class="row" style="margin-top:8px"><button class="btn ghost" id="btnResetP" type="button">恢復預設參數</button></div>
+        <div class="row" style="margin-top:8px"><button class="btn ghost" id="btnResetP" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.9 8a5.1 5.1 0 1 0 1.5-3.6"/><path d="M2.75 2.5v3.1h3.1"/></svg>恢復預設參數</button></div>
       </details>
     </section>
 
@@ -271,24 +388,11 @@ td .del{min-width:28px}
     </section>
   </div>
 
-  <section class="card" aria-labelledby="hProf">
-    <h2 id="hProf">高度剖面</h2>
-    <div>
-      <div class="hint" style="margin-bottom:4px">1:1 實際比例（距離已依實際里程校正）</div>
-      <div class="svgbox" id="strip"></div>
-    </div>
-    <div class="svgbox" id="profile"></div>
-    <div class="legend" id="legend"></div>
-    <p class="hint">點一下剖面就會在那裡加一個檢查點；檢查點從起點 0 開始編號。<br><br>上緣「時刻」那一排是預計經過的整點，例如 10 代表 10:00 會走到那條虛線的位置。<br><br>灰底是日落後，深灰是天黑後。<br><br>剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，下方紫線是雨天路段。</p>
-  </section>
-
   <section class="card" aria-labelledby="hTbl">
-    <div class="row" style="justify-content:space-between">
-      <h2 id="hTbl">時間表</h2>
-      <div class="row">
-        <button class="btn" id="btnKm" type="button">每公里加點</button>
-        <button class="btn ghost" id="btnClear" type="button">清除自訂點</button>
-      </div>
+    <h2 id="hTbl">時間表</h2>
+    <div class="tools">
+      <button class="btn" id="btnKm" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.75 11.75h12.5"/><path d="M3 11.75V8.5M8 11.75V8.5M13 11.75V8.5"/><path d="M5.5 11.75v-1.5M10.5 11.75v-1.5"/><path d="M3 4.25h10"/></svg><span id="btnKmLabel">每公里加點</span></button>
+      <button class="btn ghost" id="btnClear" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.25 13.25h7"/><path d="M3.2 9.3 8.7 3.8a1.5 1.5 0 0 1 2.1 0l1.4 1.4a1.5 1.5 0 0 1 0 2.1L7.1 12.4a1.8 1.8 0 0 1-1.3.55H4.6a1 1 0 0 1-.7-.3l-.7-.7a1.4 1.4 0 0 1 0-1.95z"/></svg>清除自訂點</button>
     </div>
     <div class="tblwrap">
       <table>
@@ -300,16 +404,16 @@ td .del{min-width:28px}
   </section>
 
   <section class="card" aria-labelledby="hCopy">
-    <div class="row" style="justify-content:space-between">
-      <h2 id="hCopy">純文字時間表</h2>
-      <button class="btn primary" id="btnCopy" type="button">複製</button>
+    <h2 id="hCopy">純文字時間表</h2>
+    <div class="tools">
+      <button class="btn primary" id="btnCopy" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.25" y="5.25" width="8.25" height="8.25" rx="1.5"/><path d="M10.75 5.25V3.75a1.25 1.25 0 0 0-1.25-1.25h-6A1.25 1.25 0 0 0 2.25 3.75v6A1.25 1.25 0 0 0 3.5 11h1.75"/></svg>複製全文</button>
+      <p class="hint" id="copyMsg" aria-live="polite"></p>
     </div>
     <textarea class="copybox" id="copyText" readonly aria-label="純文字時間表"></textarea>
-    <p class="hint" id="copyMsg"></p>
   </section>
 
   <details class="card about">
-    <summary>模型怎麼算</summary>
+    <summary>模型怎麼算<span class="hint" style="margin-left:auto;font-weight:400">公式、資料來源、限制</span></summary>
     <ul>
       <li>每 20 m 算兩種時間再各取一半。<br><br>Tobler：距離 ÷（0.734 × 6 × e^(−3.5 × |S + 0.05|)）km/h，S 是坡度。<br><br>DIN 33466：水平每小時 3.62 km、上升 468 m、下降 791 m，水平與垂直時間取較大者，再加上較小者的一半。<br><br>距離用實際長度換算。</li>
       <li>係數取自 10/6 班級揹 13 kg 的實測（陣雨、路濕），只用移動中的片段。<br><br>四段步道每段誤差在 3% 以內；每次拿掉一段、用其他段校正再預測它，平均誤差 2.3%。</li>
@@ -317,14 +421,21 @@ td .del{min-width:28px}
       <li>一般步道與林道不設垂直速度上限。<br><br>樹根陡坡（樹根、碎石多，陡上陡下，例如戒茂斯到新武呂溪）揹重裝：晴天速度 ×0.70、每小時最多爬 260 m、降 300 m；雨天 ×0.60、爬 220 m、降 230 m，時間約多 17–30%。<br><br>泥濘草徑：晴天 ×0.75，其餘同樹根。<br><br>上限再依海拔下修，上坡與下坡各自套用。<br><br>樹根、泥濘都沒有班級實測，是推估，可在「公式參數」修改。</li>
       <li>水平速度隨坡度變化很大：揹重裝在一般步道，平路每小時約 3.5 km，30% 的上坡只剩約 1.2 km。<br><br>所以「路段與地形」的選項標每一段按實際坡度算出的平均速度；勾不勾重裝、雨天或改參數都會跟著更新。</li>
       <li>高度：比 300 m 每高 1,000 m，上坡慢 6.3%、平路慢 3.2%、下坡慢 2.1%（依最大攝氧量隨高度下降的研究推估）。</li>
-      <li>沒勾「重裝」的路段（行李另外運送）：假設出力和揹 13 kg 時相同，用 Pandolf 能量公式換算成只揹 2 kg 的速度（體重以 50 kg 計）。<br><br>加速比例用一般步道的速度算，每種地形套同一比例：平路約快 15%，15% 上坡約快 22%，30% 上坡約快 24%；下坡用平路的算法，約快 18–27%。<br><br>樹根陡坡、泥濘草徑的爬升與下降上限也按同一比例放寬。<br><br>林道輕裝依 10/20–21 實測、只算移動時間再乘：上坡 ×0.92（停車處→紅柵欄 2.4 km、爬升 388 m：實際 57 分，模型 57 分），下坡 ×0.75（原路下山：實際 34 分，模型 35 分）。<br><br>輕裝走一般步道、樹根、泥濘都沒有班級實測。<br><br>都可在「公式參數」修改。</li>
+      <li>沒勾「重裝」的路段（行李另外運送）：假設出力和揹 13 kg 時相同，用 Pandolf 能量公式換算成只揹 2 kg 的速度（體重以 50 kg 計）。<br><br>加速比例用一般步道的速度算，每種地形套同一比例：平路約快 15%，15% 上坡約快 22%，30% 上坡約快 24%；下坡用平路的算法，約快 15–25%。<br><br>下坡最多快 25%：陡下坡的快慢取決於落腳與煞車，不是體力；能量公式在慢速時會把減掉的負重全換成速度，比 −40% 陡的下坡會算到快 40–60%，所以設上限（「公式參數」可改）。<br><br>樹根陡坡、泥濘草徑的爬升與下降上限也按同一比例放寬。<br><br>林道輕裝依 10/20–21 實測、只算移動時間再乘：上坡 ×0.92（停車處→紅柵欄 2.4 km、爬升 388 m：實際 57 分，模型 57 分），下坡 ×0.75（原路下山：實際 34 分，模型 35 分）。<br><br>輕裝走一般步道、樹根、泥濘都沒有班級實測。<br><br>都可在「公式參數」修改。</li>
       <li>林道揹重裝：速度和一般步道相同（「林道重裝×」1.00）。<br><br>依據 10/20、10/21 四季林道揹 13 kg 實走，只算移動時間：上坡紅柵欄→廢棄護管所（3.3 km、爬升 468 m）實際 95 分、模型 100 分；下坡同段反向（下降 470 m）實際 72 分、模型 73 分。</li>
       <li>總時間＝走路時間 × 60 ÷（60 − 每小時停留）＋各點停留。<br><br>預設每小時停 13 分，等於每小時走 47 分：走 47 分鐘的路要花 1 小時。<br><br>13 分取自 10/6 步道段：休息 4 次、平均 8.3 分；短停 8 次、平均 4.2 分，合計約佔總時間的 22%。<br><br>集合、整隊、等人都算在這裡，不另外加。</li>
-      <li>隊伍速度：每 20 m 的走路時間 ÷ 倍數；比 −5% 陡的下坡用「下坡」倍數，其餘用「上坡與平路」。<br><br>樹根陡坡、泥濘草徑的爬升與下降上限也一起乘上倍數。<br><br>基準 1＝10/6、10/20–21 的八年級學生實測。<br><br>校準時把紀錄每 5 秒取一點，前後各 60 秒的淨位移換算不到每小時 0.6 km 就算停下來，其餘算走路。<br><br>走路的時間依當時的位置分到每 20 m，再和倍數 1 的模型比：倍數＝模型時間 ÷ 實際走路時間。<br><br>10 分鐘以內的停留換算成「途中停留」每小時幾分；更長的（午餐、儀式）只列出來，不算進去。</li>
+      <li>隊伍速度：每 20 m 的走路時間 ÷ 倍數；比 −5% 陡的下坡用「下坡」倍數，其餘用「上坡與平路」。<br><br>樹根陡坡、泥濘草徑的爬升與下降上限也一起乘上倍數。<br><br>基準 1＝10/6、10/20–21 的八年級學生實測。<br><br>校準時把紀錄每 5 秒取一點，前後各 60 秒的淨位移換算不到每小時 0.6 km 就算停下來，其餘算走路。<br><br>走路的時間依當時的位置分到每 20 m，再和倍數 1 的模型比：倍數＝模型時間 ÷ 實際走路時間。<br><br>10 分鐘以內的停留換算成「途中停留」每小時幾分；更長的（午餐、儀式）只列出來，不算進去。<br><br>跑的路段改用「跑步速度」倍數；校準時跑和走分開算，跑的部分有 5 分鐘以上才算倍數。</li>
+      <li>勾「跑」的路段：配速隨坡度的變化用 Kay（2012）分析 91 場上坡、15 場下坡賽事紀錄擬合的曲線（四次式；比 −26% 或 +32% 更陡時用文中的二次式延伸），只取形狀，快慢由「平地跑速」與「跑步速度」倍數決定。<br><br>平地每小時 8 km 時：−10% 下坡約 9.3 km、−20% 約 7.5 km、−30% 約 5.2 km（每小時下降約 1,550 m）；+10% 上坡約 5.3 km、+20% 約 3.4 km（每小時爬升約 680 m）。<br><br>高度、雨天、地形係數同走路；樹根陡坡、泥濘草徑的爬升與下降上限放寬 2.5 倍，是推估、沒有實測。<br><br>跑的路段不看重裝，負重當輕裝。<br><br>Kay 的資料裡比賽每多 1 小時，配速慢約 16%，這裡沒有算；跑很久的路段，平地跑速填慢一點，或用自己長跑的紀錄校準。</li>
       <li>範例是 10/20 第 1 天實走：09:04 從四季公墓停車處起步（乘車段不列），紅柵欄（舊柵門）停 63 分取裝、入山儀式，途中午餐 25 分，加納富溪停 30 分，終點是巨木登山口後 450 m 的營地，當天 14:45 抵達。<br><br>紅柵欄以前行李上菜車、學生不揹大背包，這段設成林道、不勾重裝；紅柵欄到營地是林道、揹重裝；當天晴天，都不勾雨天。<br><br>範例估 14:57 抵達（隊伍速度 ×1），比實際晚 12 分，其中 10 分在紅柵欄以前（估 10:17，實際 10:07）：林道輕裝那 63 分鐘實際只停 6 分，模型每小時停 13 分。<br><br>距離與高度用 GPX 原值（當天 Garmin 實測高度和 GPX 相差 3 m 內）；巨木登山口到營地取自隨隊家長的 Garmin 軌跡，距離按 450 m 計。<br><br>其餘沒有算進去：拍照、天候突變與隊伍狀況。</li>
       <li>高度用檔案內的數值，每 20 m 取一點；錄製的軌跡（有時間記錄）先做 3 點平滑。<br><br>填了實測海拔的段落，高度在兩個已知點之間按距離線性修正。<br><br>日出、日落以起點座標、海平面、台灣時間（UTC+8）計算。</li>
     </ul>
   </details>
+  <button type="button" class="livebar" id="liveBar" hidden aria-label="目前結果，點一下看摘要">
+    <span class="lb"><span class="lb-k">抵達</span><b id="lbArr">--:--</b></span>
+    <span class="lb"><span class="lb-k">走路</span><b id="lbMv">-:--</b></span>
+    <span class="chip ok" id="lbLight">日落前</span>
+    <span class="lb-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 9.75 8 5.75l4 4"/></svg>摘要</span>
+  </button>
 </main>
 
 <script>
@@ -691,6 +802,8 @@ var CORE = (function () {
     altRef: 300, altPct: 6.3,                  // uphill speed -6.3 % per 1,000 m above 300 m (flat 1/2, down 1/3)
     f: 1.00,                                   // overall time factor (v27: kept at 1; the team speed teamUp / teamDn is a setting)
     bodyKg: 50, lightKg: 2, calKg: 13,         // light sections: same effort (Pandolf 1977) with lightKg instead of the 13 kg calibration load
+    lightDnMax: 1.25,                          // v31: on descents the lighter pack makes you at most x1.25 faster (footing and braking limit steep descents, not effort)
+    runFlat: 8, runCapX: 2.5,                  // v31 跑: flat running speed km/h; vertical caps of 樹根陡坡／泥濘草徑 x2.5 when running (assumed, no data)
     roadHeavyF: 1.00,                          // 林道 with 13 kg: time x1.00 (四季林道 moving time, 10/20 up 95 vs model 100 min, 10/21 down 72 vs 73 min)
     roadLightUp: 0.92, roadLightDown: 0.75,    // 林道 without the big pack: light time x0.92 uphill, x0.75 downhill (moving time 10/20 up 57 vs 62 min, 10/21 down 34 vs 46 min)
     terr: {
@@ -742,18 +855,18 @@ var CORE = (function () {
   function secHeavy(q) { return q.terr === 'light' ? false : q.heavy !== false; }   // v15 'light' terrain = trail without the big pack
   function normSections(total, secs) {
     var s = (secs || []).map(function (q) {
-      return { a: Math.max(0, Math.min(total, +q.a || 0)), b: Math.max(0, Math.min(total, +q.b || 0)), real: q.real, terr: secTerr(q), heavy: secHeavy(q), rain: q.rain === true };
+      return { a: Math.max(0, Math.min(total, +q.a || 0)), b: Math.max(0, Math.min(total, +q.b || 0)), real: q.real, terr: secTerr(q), heavy: q.run === true ? false : secHeavy(q), rain: q.rain === true, run: q.run === true };
     }).filter(function (q) { return q.b - q.a > 1; }).sort(function (p, q) { return p.a - q.a; });
     var out = [], cur = 0;
     s.forEach(function (q) {
       var a = Math.max(q.a, cur);
       if (q.b - a <= 1) return;
-      if (a > cur + 1) out.push({ a: cur, b: a, real: null, terr: 'trail', heavy: true, rain: false });
+      if (a > cur + 1) out.push({ a: cur, b: a, real: null, terr: 'trail', heavy: true, rain: false, run: false });
       var scale = (q.real && q.real > 0 && a === q.a) ? q.real / (q.b - q.a) : 1;
-      out.push({ a: a, b: q.b, real: (q.b - a) * scale, terr: q.terr, heavy: q.heavy, rain: q.rain });
+      out.push({ a: a, b: q.b, real: (q.b - a) * scale, terr: q.terr, heavy: q.heavy, rain: q.rain, run: q.run });
       cur = q.b;
     });
-    if (total > cur + 1) out.push({ a: cur, b: total, real: null, terr: 'trail', heavy: true, rain: false });
+    if (total > cur + 1) out.push({ a: cur, b: total, real: null, terr: 'trail', heavy: true, rain: false, run: false });
     var off = 0;
     out.forEach(function (q) { if (!(q.real > 0)) q.real = q.b - q.a; q.scale = q.real / (q.b - q.a); q.off = off; off += q.real; });
     return out;
@@ -782,9 +895,29 @@ var CORE = (function () {
     var vl = (-b + Math.sqrt(b * b + 4 * a * c)) / (2 * a);
     return vl > vh ? dx / (vl * 3600) : h;
   }
-  // hours for one step: dx real metres, dz metres, zm mean altitude, terrain key, rain flag, light (true = no big pack)
-  function stepHours(dx, dz, zm, terr, rain, P, light) {
+  // v31 跑: Kay A. (2012) Pace and critical gradient for hill runners, J Quant Anal Sports 8(4), 91 uphill + 15 downhill race records.
+  // Duration-adjusted record pace (s per horizontal m) at gradient m: quartic (eq. 4) between the critical gradients, the paper's
+  // quadratic extensions beyond them. Only the shape is used (pace / flat pace); the flat speed is personal (runFlat x runUp / runDn).
+  function kayPace(m) {
+    if (m < -0.2617) return 0.1151 + 0.0061 * m + 1.6802 * m * m;
+    if (m > 0.3152) return 0.0314 + 1.7544 * m + 0.3162 * m * m;
+    return 0.1707 + m * (0.5656 + m * (3.2209 + m * (-0.3211 - 4.3635 * m)));
+  }
+  function runHours(dx, dz, zm, terr, rain, P) {
+    var S = dz / dx, t = (P.terr[terr] || P.terr.trail)[rain ? 'rain' : 'sun'];
+    var aK = (P.altPct || 0) / 100, a = Math.max(0, (zm - P.altRef) / 1000 * aK), fu = 1 - a, ff = 1 - a / 2, fd = 1 - a / 3;
+    var fAlt = S >= 0.05 ? fu : (S <= -0.05 ? fd : ff);
+    var h = dx / 1000 / (P.runFlat > 0 ? P.runFlat : 8) * kayPace(S) / 0.1707 / (fAlt * t[0]);   // terrain and rain factor as walking
+    var cx = P.runCapX > 0 ? P.runCapX : 2.5;                            // 樹根陡坡／泥濘草徑: walking caps (13 kg) x runCapX
+    if (dz > 0 && t[1] > 0) h = Math.max(h, dz / (t[1] * cx * fu));
+    else if (dz < 0 && t[2] > 0) h = Math.max(h, -dz / (t[2] * cx * fd));
+    var v = S <= -0.05 ? P.runDn : P.runUp;                            // running factor, kept apart from the walking team speed
+    return h * (P.f > 0 ? P.f : 1) / (v > 0 ? v : 1);
+  }
+  // hours for one step: dx real metres, dz metres, zm mean altitude, terrain key, rain flag, light (true = no big pack), run (true = 跑)
+  function stepHours(dx, dz, zm, terr, rain, P, light, run) {
     if (terr === 'light') { terr = 'trail'; light = true; }
+    if (run) return runHours(dx, dz, zm, terr, rain, P);
     var S = dz / dx, t = (P.terr[terr] || P.terr.trail)[rain ? 'rain' : 'sun'];
     var wT = Math.max(0, Math.min(1, P.wTob)), aK = (P.altPct || 0) / 100;
     // altitude: uphill slower by altPct per 1,000 m above altRef; flat half of that, downhill a third
@@ -800,6 +933,7 @@ var CORE = (function () {
     var r = 1;                                                          // speed ratio against that; light: same ratio on every terrain, also widens the vertical caps
     if (light) {
       var hl = lightHours(h, dx, S, P);                                 // Pandolf speed-up from the trail speed (avoids inflated ratios on slow terrain)
+      if (dz < 0) hl = Math.max(hl, h / (P.lightDnMax > 0 ? P.lightDnMax : 1.25));   // v31: Pandolf's load term turns into speed at slow paces (x1.4-1.6 on steep descents); cap it
       if (terr === 'road') hl *= dz < 0 ? (P.roadLightDown > 0 ? P.roadLightDown : 0.75) : (P.roadLightUp > 0 ? P.roadLightUp : 0.92);
       if (hl > 0) r = h / hl;
     } else if (terr === 'road') r = 1 / (P.roadHeavyF > 0 ? P.roadHeavyF : 1);
@@ -811,14 +945,14 @@ var CORE = (function () {
     return h * P.f / (v > 0 ? v : 1);
   }
   // horizontal speeds (km/h) of one terrain at altitude zm on 0 %, +-15 % and +-30 % grades; heavy false = no big pack
-  function refSpeeds(terr, wx, P, zm, heavy) {
+  function refSpeeds(terr, wx, P, zm, heavy, run) {
     P = P || DEFAULTS;
     var rain = wx === 'rain', dx = 100, light = heavy === false;
-    function at(S) { return dx / 1000 / stepHours(dx, S * dx, zm, terr, rain, P, light); }
+    function at(S) { return dx / 1000 / stepHours(dx, S * dx, zm, terr, rain, P, light, run === true); }
     return { flat: at(0), up15: at(0.15), up30: at(0.30), dn15: at(-0.15), dn30: at(-0.30) };
   }
   // moving hours of the stretch [a, b] (GPX m) of track tr with one terrain; scale = real / GPX length
-  function stretchHours(tr, a, b, scale, terr, heavy, wx, P) {
+  function stretchHours(tr, a, b, scale, terr, heavy, wx, P, run) {
     P = P || DEFAULTS;
     a = Math.max(0, Math.min(tr.total, a)); b = Math.max(a, Math.min(tr.total, b));
     var rain = wx === 'rain', light = heavy === false, sc = scale > 0 ? scale : 1, h = 0, xa = a, za = zAt(tr, a), x = tr.x;
@@ -826,7 +960,7 @@ var CORE = (function () {
       var xb = i < x.length ? Math.min(x[i], b) : b;
       if (xb <= xa) continue;
       var zb = zAt(tr, xb);
-      h += stepHours((xb - xa) * sc, zb - za, (za + zb) / 2, terr, rain, P, light);
+      h += stepHours((xb - xa) * sc, zb - za, (za + zb) / 2, terr, rain, P, light, run === true);
       xa = xb; za = zb;
     }
     return h;
@@ -835,18 +969,18 @@ var CORE = (function () {
   // wx: 'sun' or 'rain' forces the whole track; anything else uses each section's rain flag
   function runModelV3(tr, secs, wx, P) {
     P = P || DEFAULTS;
-    var x = tr.x, z = tr.z, cum = [0], xr = [0], rs = [false];
+    var x = tr.x, z = tr.z, cum = [0], xr = [0], rs = [false], rn = [false];
     for (var i = 1; i < x.length; i++) {
       var dxg = x[i] - x[i - 1];
       var mid = (x[i] + x[i - 1]) / 2, q = secAt(secs, mid);
       var rain = wx === 'rain' ? true : (wx === 'sun' ? false : q.rain === true);
-      rs.push(rain);
+      rs.push(rain); rn.push(q.run === true);
       if (dxg <= 0) { cum.push(cum[i - 1]); xr.push(xr[i - 1]); continue; }
       var dx = dxg * q.scale, dz = z[i] - z[i - 1], zm = (z[i] + z[i - 1]) / 2;
-      cum.push(cum[i - 1] + stepHours(dx, dz, zm, q.terr, rain, P, q.heavy === false));
+      cum.push(cum[i - 1] + stepHours(dx, dz, zm, q.terr, rain, P, q.heavy === false, q.run === true));
       xr.push(xr[i - 1] + dx);
     }
-    rs[0] = rs.length > 1 ? rs[1] : false;
+    rs[0] = rs.length > 1 ? rs[1] : false; rn[0] = rn.length > 1 ? rn[1] : false;
     // colour bins: 100 m of GPX distance, grade on real distance
     var edges = [], binCls = [];
     for (var e = 0; e < tr.total; e += BIN) edges.push(e);
@@ -857,7 +991,7 @@ var CORE = (function () {
       var g = 100 * (zAt(tr, edges[b + 1]) - zAt(tr, edges[b])) / ((rb - ra) || 1);
       binCls.push(gradeClass(g));
     }
-    return { x: x, cum: cum, xr: xr, rs: rs, total: cum[cum.length - 1], realTotal: xr[xr.length - 1], edges: edges, binCls: binCls };
+    return { x: x, cum: cum, xr: xr, rs: rs, rn: rn, total: cum[cum.length - 1], realTotal: xr[xr.length - 1], edges: edges, binCls: binCls };
   }
   function interpAt(m, arr, d) {
     var x = m.x;
@@ -946,7 +1080,7 @@ var CORE = (function () {
     P = P || DEFAULTS; off = off || 0;
     var P1 = {};
     Object.keys(P).forEach(function (key) { P1[key] = P[key]; });
-    P1.teamUp = 1; P1.teamDn = 1;
+    P1.teamUp = 1; P1.teamDn = 1; P1.runUp = 1; P1.runDn = 1;
     var m = runModelV3(tr, secs, null, P1), x = m.x, n = x.length, i;
     var movD = new Float64Array(n), actS = new Float64Array(n);
     function stepOf(v) {
@@ -974,18 +1108,21 @@ var CORE = (function () {
       }
     }
     if (cur) runs.push(cur);
-    var modUp = 0, modDn = 0, actUp = 0, actDn = 0, still = 0;
+    var modUp = 0, modDn = 0, actUp = 0, actDn = 0, rModUp = 0, rModDn = 0, rActUp = 0, rActDn = 0, still = 0;
     for (i = 1; i < n; i++) {
       var len = x[i] - x[i - 1], share = len > 0 ? Math.min(1, movD[i] / len) : 0, dh = (m.cum[i] - m.cum[i - 1]) * share, dxr = m.xr[i] - m.xr[i - 1];
       still += len * (1 - share);
-      if (dxr > 0 && (tr.z[i] - tr.z[i - 1]) / dxr <= -0.05) { modDn += dh; actDn += actS[i]; } else { modUp += dh; actUp += actS[i]; }
+      var down = dxr > 0 && (tr.z[i] - tr.z[i - 1]) / dxr <= -0.05;
+      if (m.rn[i]) { if (down) { rModDn += dh; rActDn += actS[i]; } else { rModUp += dh; rActUp += actS[i]; } }   // v31: 跑 sections apart
+      else if (down) { modDn += dh; actDn += actS[i]; } else { modUp += dh; actUp += actS[i]; }
     }
     var shortMin = 0, shortN = 0, longs = [];
     runs.forEach(function (r) {
       var mn = (r[1] - r[0] + 1) * st / 60;
       if (mn >= 10) longs.push({ t: G.t[r[0]], min: mn }); else { shortMin += mn; shortN++; }
     });
-    return { modUp: modUp * 60, modDn: modDn * 60, actUp: actUp / 60, actDn: actDn / 60, shortMin: shortMin, shortN: shortN, longs: longs,
+    return { modUp: modUp * 60, modDn: modDn * 60, actUp: actUp / 60, actDn: actDn / 60,
+             runModUp: rModUp * 60, runModDn: rModDn * 60, runActUp: rActUp / 60, runActDn: rActDn / 60, shortMin: shortMin, shortN: shortN, longs: longs,
              still: still, elapsed: first === null ? 0 : (last - first) / 60, first: first, last: last };
   }
 
@@ -997,7 +1134,7 @@ var CORE = (function () {
     hav: hav, parseTrackText: parseTrackText, buildTrack: buildTrack, reverseTrack: reverseTrack,
     zAt: zAt, stats: stats, tmod: tmod, runModel: runModel, movingAt: movingAt,
     schedule: schedule, clockAt: clockAt, projectWpts: projectWpts, autoPoints: autoPoints,
-    sunDay: sunDay, gradeClass: gradeClass, timeGrid: timeGrid, calibrate: calibrate
+    sunDay: sunDay, gradeClass: gradeClass, timeGrid: timeGrid, calibrate: calibrate, kayPace: kayPace
   };
 })();
 if (typeof module !== 'undefined') module.exports = CORE;
@@ -1017,13 +1154,14 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   var WX_LABEL = { sun: '晴天', rain: '雨天或起霧' };
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
-  var S = { date: todayStr(), start: '07:30', deadline: '', stopH: 13, teamUp: 1, teamDn: 1 };
+  var S = { date: todayStr(), start: '07:30', deadline: '', stopH: 13, teamUp: 1, teamDn: 1, runUp: 1, runDn: 1, calKg: '' };
   var TZ = 8;   // 台灣時間 UTC+8 (v21: no time-zone input)
   var PP = clone(C.DEFAULTS);
   var T = { parsed: null, name: '', fileName: '', reversed: false, range: null, full: null, track: null, stats: null,
             secsFull: [], secs: null, cps: [], seq: 1, isSample: true, warn: '', suggest: null, recorded: false,
-            zStart: null, trackRaw: null, fullFix: null, calFor: null, calG: null };
+            zStart: null, trackRaw: null, fullFix: null, calFor: null, calG: null, stash: null };
   var LAST = null, PM = null;   // PM: model parameters with the team speed (v27)
+  var PMODE = 'cp', BDS = [], DRAG = null, SUPPRESS = false;   // v31: profile click mode, section boundaries on screen, boundary drag
 
   // ---------- helpers ----------
   function pad(n) { return String(n).padStart(2, '0'); }
@@ -1052,7 +1190,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       localStorage.setItem(LS_KEY, JSON.stringify({
         S: S, PP: PP, isSample: T.isSample, recorded: T.recorded, fileName: T.fileName, reversed: T.reversed, range: T.range,
         warn: T.warn, suggest: T.suggest, secsFull: T.secsFull, cps: T.cps, seq: T.seq, zStart: T.zStart,
-        track: T.parsed ? packTrack(T.parsed) : null
+        track: T.parsed ? packTrack(T.parsed) : null, stash: T.stash
       }));
     } catch (e) { /* storage unavailable: page still works */ }
   }
@@ -1061,6 +1199,35 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     pr.pts.forEach(function (p) { if (p.t !== null && p.t !== undefined && isFinite(p.t) && (t0 === null || p.t < t0)) t0 = p.t; });
     return { name: pr.name, t0: t0, wpts: pr.wpts || [],
              pts: pr.pts.map(function (p) { return t0 !== null && p.t !== null && p.t !== undefined && isFinite(p.t) ? [p.lat, p.lon, p.ele, Math.round((p.t - t0) / 1000)] : [p.lat, p.lon, p.ele]; }) };
+  }
+  function unpackTrack(tk) {
+    var st0 = isNum(tk.t0) ? +tk.t0 : null;
+    return { name: tk.name, pts: tk.pts.map(function (a) { return { lat: a[0], lon: a[1], ele: a[2], t: st0 !== null && a.length > 3 && isNum(a[3]) ? st0 + a[3] * 1000 : null }; }), wpts: tk.wpts || [] };
+  }
+  // v31: the planned route is put aside while an own record is loaded for calibration
+  function snapRoute() {
+    return { track: packTrack(T.parsed), name: T.name, fileName: T.fileName, reversed: T.reversed, range: T.range, isSample: T.isSample, warn: T.warn,
+             suggest: T.suggest, recorded: T.recorded, secsFull: clone(T.secsFull), cps: clone(T.cps), seq: T.seq, zStart: T.zStart };
+  }
+  function restoreRoute(o) {
+    T.parsed = unpackTrack(o.track);
+    T.name = o.name || o.track.name || ''; T.fileName = o.fileName || ''; T.reversed = !!o.reversed; T.range = o.range || null;
+    T.isSample = !!o.isSample; T.warn = o.warn || ''; T.suggest = o.suggest || null; T.recorded = !!o.recorded;
+    T.secsFull = o.secsFull || []; T.zStart = isNum(o.zStart) ? +o.zStart : null;
+    rebuild(true);
+    if (o.cps && o.cps.length >= 2) {
+      T.cps = o.cps.filter(function (c) { return c.d <= T.track.total + 1; });
+      T.seq = o.seq || 1 + Math.max.apply(null, T.cps.map(function (c) { return c.id || 0; }));
+    } else initCps();
+  }
+  function stashName() { var o = T.stash; return o ? (o.isSample ? '範例' : (o.name || o.fileName || '原本的路線')) : ''; }
+  function backToStash() {
+    if (!T.stash) return;
+    var o = T.stash, nm = stashName();
+    T.stash = null; S.calKg = '';
+    restoreRoute(o);
+    setRangeInputs(); hideError(); applyInputs(); render();
+    say('profMsg', '已回到「' + nm + '」，倍數保留。');
   }
   function loadSaved() {
     try {
@@ -1109,7 +1276,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       var a = Math.max(q.a, r0), b = Math.min(q.b, r1);
       if (b - a <= 1) return;
       var realFull = q.real && q.real > 0 ? q.real : null;
-      out.push({ a: a - r0, b: b - r0, real: realFull ? realFull * (b - a) / (q.b - q.a) : null, terr: q.terr, heavy: q.heavy !== false, rain: q.rain === true });
+      out.push({ a: a - r0, b: b - r0, real: realFull ? realFull * (b - a) / (q.b - q.a) : null, terr: q.terr, heavy: q.heavy !== false, rain: q.rain === true, run: q.run === true });
     });
     return C.normSections(T.track.total, out);
   }
@@ -1139,7 +1306,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     var knots = [];
     (T.secsFull || []).forEach(function (q) { if (isNum(q.zEnd)) knots.push([q.b, +q.zEnd]); });
     if (isNum(T.zStart)) knots.push([0, +T.zStart]);
-    T.secsFull = (T.secsFull || []).map(function (q) { return { a: Math.max(0, total - q.b), b: Math.min(total, total - q.a), real: q.real, terr: q.terr, heavy: q.heavy !== false, rain: q.rain === true, zEnd: null }; })
+    T.secsFull = (T.secsFull || []).map(function (q) { return { a: Math.max(0, total - q.b), b: Math.min(total, total - q.a), real: q.real, terr: q.terr, heavy: q.heavy !== false, rain: q.rain === true, run: q.run === true, zEnd: null }; })
       .sort(function (p, q) { return p.a - q.a; });
     T.zStart = null;
     knots.forEach(function (k) {
@@ -1149,7 +1316,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       if (hit) { hit.zEnd = k[1]; return; }
       var prevEnd = 0;
       T.secsFull.forEach(function (q) { if (q.b <= d && q.b > prevEnd) prevEnd = q.b; });
-      if (d - prevEnd > 1) T.secsFull.push({ a: prevEnd, b: d, real: null, terr: 'trail', heavy: true, rain: false, zEnd: k[1] });
+      if (d - prevEnd > 1) T.secsFull.push({ a: prevEnd, b: d, real: null, terr: 'trail', heavy: true, rain: false, run: false, zEnd: k[1] });
     });
     T.secsFull.sort(function (p, q) { return p.a - q.a; });
   }
@@ -1170,6 +1337,74 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     });
     return { fast: fast, best: best };
   }
+
+  // ---------- section boundaries (v31) ----------
+  function newSec(a, b) { return { a: a, b: b, real: null, terr: 'trail', heavy: true, rain: false, run: false, zEnd: null }; }
+  function sortSecs() { T.secsFull.sort(function (p, q) { return p.a - q.a; }); }
+  function bounds() {   // boundaries on the full track: d, l = section ending there (or -1), r = section starting there (or -1)
+    var s = T.secsFull, tot = T.full.total, out = [];
+    s.forEach(function (q, i) {
+      if (q.b >= tot - 1) return;
+      var j = -1;
+      s.forEach(function (p, k) { if (k !== i && j < 0 && Math.abs(p.a - q.b) < 1) j = k; });
+      out.push({ d: q.b, l: i, r: j });
+    });
+    s.forEach(function (p, k) { if (p.a > 1 && !out.some(function (o) { return o.r === k; })) out.push({ d: p.a, l: -1, r: k }); });
+    return out.sort(function (x, y) { return x.d - y.d; });
+  }
+  function clampBd(bd, d) {
+    var s = T.secsFull, lo = 20, hi = T.full.total - 20;
+    if (bd.l >= 0) lo = Math.max(lo, s[bd.l].a + 20);
+    if (bd.r >= 0) hi = Math.min(hi, s[bd.r].b - 20);
+    if (T.range) { lo = Math.max(lo, T.range[0] + 1); hi = Math.min(hi, T.range[1] - 1); }
+    return hi < lo ? bd.d : Math.max(lo, Math.min(hi, d));
+  }
+  function moveBd(bd, d) {   // the 實際 km of both sides keeps its ratio to the GPX length
+    var s = T.secsFull;
+    if (bd.l >= 0) { var q = s[bd.l], sp = q.b - q.a; if (q.real > 0 && sp > 0) q.real = q.real * (d - q.a) / sp; q.b = d; }
+    if (bd.r >= 0) { var p = s[bd.r], sp2 = p.b - p.a; if (p.real > 0 && sp2 > 0) p.real = p.real * (p.b - d) / sp2; p.a = d; }
+    sortSecs();
+  }
+  function splitAt(d, where, cpName) {   // d: full-track GPX m; the new section keeps the settings of the one it cuts
+    var s = T.secsFull, tot = T.full.total, i = -1;
+    if (!cpName) d = Math.round(d / 10) * 10;
+    if (!s.length) s.push(newSec(0, tot));
+    s.forEach(function (q, k) { if (i < 0 && q.a + 20 <= d && d <= q.b - 20) i = k; });
+    if (i < 0) {
+      if (s.some(function (q) { return q.a - 20 < d && d < q.b + 20; })) { say(where, '這裡離分界太近，點遠一點的位置。'); return; }
+      var lo = 0, hi = tot;
+      s.forEach(function (q) { if (q.b <= d && q.b > lo) lo = q.b; if (q.a >= d && q.a < hi) hi = q.a; });
+      s.push(newSec(lo, d), newSec(d, hi));
+    } else {
+      var q = s[i], sp = q.b - q.a, n = clone(q);
+      if (q.real > 0) { n.real = q.real * (q.b - d) / sp; q.real = q.real * (d - q.a) / sp; }
+      n.a = d; q.b = d; n.zEnd = q.zEnd; q.zEnd = null;
+      s.splice(i + 1, 0, n);
+    }
+    sortSecs(); refreshSecs(); render();
+    var k2 = -1; T.secsFull.forEach(function (q, k) { if (Math.abs(q.a - d) < 1) k2 = k; });
+    say(where, '已在' + (cpName ? '「' + cpName + '」（GPX ' + (d / 1000).toFixed(2) + ' km）' : ' GPX ' + (d / 1000).toFixed(2) + ' km ') + '切開：第 ' + k2 + '、' + (k2 + 1) + ' 段。拖拉分界可以微調，地形在下面「路段與地形」設定。');
+  }
+  function mergeSec(i) {   // 刪除 = this stretch takes the settings of the section before it (the first one: after it)
+    var s = T.secsFull, q = s[i], prev = -1, next = -1;
+    if (!q) return '';
+    s.forEach(function (p, k) { if (k !== i && prev < 0 && Math.abs(p.b - q.a) < 1) prev = k; if (k !== i && next < 0 && Math.abs(p.a - q.b) < 1) next = k; });
+    function rl(p) { return p.real > 0 ? p.real : p.b - p.a; }
+    var msg;
+    if (prev >= 0) {
+      var p = s[prev], hasR = p.real > 0 || q.real > 0, nr = rl(p) + rl(q);
+      msg = '第 ' + (i + 1) + ' 段已併入第 ' + (prev + 1) + ' 段。' + (isNum(p.zEnd) ? '原分界的實測海拔 ' + Math.round(p.zEnd) + ' m 已移除。' : '');
+      p.b = q.b; p.real = hasR ? nr : null; p.zEnd = q.zEnd;
+    } else if (next >= 0) {
+      var nx = s[next], hasR2 = nx.real > 0 || q.real > 0, nr2 = rl(q) + rl(nx);
+      msg = '第 ' + (i + 1) + ' 段已併入下一段。' + (isNum(q.zEnd) ? '原分界的實測海拔 ' + Math.round(q.zEnd) + ' m 已移除。' : '');
+      nx.a = q.a; nx.real = hasR2 ? nr2 : null;
+    } else msg = '已刪除第 ' + (i + 1) + ' 段：這段改當一般步道、重裝、晴天。';
+    s.splice(i, 1);
+    sortSecs();
+    return msg;
+  }
+  function say(id, txt) { var el = $(id); if (el) el.textContent = txt || ''; }
 
   // ---------- checkpoints ----------
   function addCp(p) {
@@ -1217,7 +1452,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   function MP() {   // model parameters with the team speed
     var p = {};
     Object.keys(PP).forEach(function (k) { p[k] = PP[k]; });
-    p.f = 1; p.teamUp = teamV(S.teamUp); p.teamDn = teamV(S.teamDn);
+    p.f = 1; p.teamUp = teamV(S.teamUp); p.teamDn = teamV(S.teamDn); p.runUp = teamV(S.runUp); p.runDn = teamV(S.runDn);
     return p;
   }
   function f2(v) { return String(Math.round(v * 100) / 100); }
@@ -1226,6 +1461,11 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     var u = teamV(S.teamUp), d = teamV(S.teamDn);
     return Math.abs(u - d) < 1e-9 ? '×' + f2(u) : '上坡與平路 ×' + f2(u) + '、下坡 ×' + f2(d);
   }
+  function runIsOne() { return Math.abs(teamV(S.runUp) - 1) < 1e-9 && Math.abs(teamV(S.runDn) - 1) < 1e-9; }
+  function hasRun() { return (T.secsFull || []).some(function (q) { return q.run === true; }); }
+  function runFlat() { return +PP.runFlat > 0 ? +PP.runFlat : 8; }
+  function runTxt() { var u = teamV(S.runUp), d = teamV(S.runDn); return Math.abs(u - d) < 1e-9 ? '×' + f2(u) : '上坡與平路 ×' + f2(u) + '、下坡 ×' + f2(d); }
+  function calKg() { var v = S.calKg; return isNum(v) && +v >= 0 && +v < 60 ? +v : null; }
   function slowTxt(v) { var p = Math.round((1 / v - 1) * 100); return p === 0 ? '走路時間不變' : (p > 0 ? '走路時間多 ' + p + '%' : '走路時間少 ' + (-p) + '%'); }
   function calGrid() {
     if (!T.parsed || !T.recorded) return null;
@@ -1243,36 +1483,68 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   function renderTeam() {
     var u = teamV(S.teamUp), d = teamV(S.teamDn);
     $('teamNote').textContent = teamIsOne() ? '目前 ×1：和基準一樣。' : '上坡與平路 ×' + f2(u) + '：' + slowTxt(u) + '；下坡 ×' + f2(d) + '：' + slowTxt(d) + '。';
+    var ru = teamV(S.runUp), rd = teamV(S.runDn);   // v31: running factor row
+    $('runRow').hidden = !(hasRun() || !runIsOne());
+    $('runFlatTxt').textContent = nf1(runFlat());
+    $('runNote').textContent = runIsOne() ? '目前 ×1：平地每小時 ' + nf1(runFlat()) + ' km 的跑者。' : '上坡與平路 ×' + f2(ru) + '：' + slowTxt(ru).replace('走路', '跑步') + '；下坡 ×' + f2(rd) + '：' + slowTxt(rd).replace('走路', '跑步') + '。';
     renderCal();
   }
+  var ICON_CHECK = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="m3 8.5 3.2 3.1L13 4.6"/></svg>';
+  var ICON_BACK = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5 2.5 7 6 10.5"/><path d="M2.75 7h7a3.5 3.5 0 0 1 0 7h-1.5"/></svg>';
+  function stashBar() {
+    if (!T.stash) return '';
+    return '<div class="calbanner"><span class="cb-t">校準用紀錄：「' + esc(T.name || T.fileName) + '」。先在「路段與地形」照那天的實況設定，這裡的倍數會跟著更新；套用後回到要去的路線。</span>' +
+      '<div class="row"><button class="btn primary sm" type="button" data-back="1">' + ICON_BACK + '回到「' + esc(stashName()) + '」</button></div></div>';
+  }
   function renderCal() {
-    var box = $('calOut'), G = calGrid();
-    if (!G) { setHTML(box, '<p class="calmsg">目前的路線沒有時間紀錄，還不能校準。<br><br>載入一筆有時間的 GPX，這裡就會算出建議的倍數。</p>'); return; }
-    if (T.reversed) { setHTML(box, '<p class="calmsg">路線已反轉，但紀錄是照原方向走的。<br><br>按「反轉方向」轉回來，才能校準。</p>'); return; }
-    var r = C.calibrate(T.track, T.secs, PP, G, T.range ? T.range[0] : 0), act = r.actUp + r.actDn, mod = r.modUp + r.modDn;
-    if (act < 10) { setHTML(box, '<p class="calmsg">這段紀錄幾乎沒有走路的時間，無法校準。</p>'); return; }
-    var su = r.actUp >= 15 ? r.modUp / r.actUp : null, sd = r.actDn >= 15 ? r.modDn / r.actDn : null, h = [];
+    var box = $('calOut'), G = calGrid(), back = stashBar();
+    if (!G) { setHTML(box, back + '<p class="calmsg">目前的路線沒有時間紀錄，還不能校準。<br><br>按上面「載入自己的紀錄」選一筆有時間紀錄的 GPX，這裡就會算出建議的倍數。</p>'); return; }
+    if (T.reversed) { setHTML(box, back + '<p class="calmsg">路線已反轉，但紀錄是照原方向走的。<br><br>按「反轉方向」轉回來，才能校準。</p>'); return; }
+    var ck = calKg(), Pc = PP;
+    if (ck !== null) { Pc = clone(PP); Pc.lightKg = ck; }
+    var r = C.calibrate(T.track, T.secs, Pc, G, T.range ? T.range[0] : 0);
+    var act = r.actUp + r.actDn, mod = r.modUp + r.modDn, ract = r.runActUp + r.runActDn, rmod = r.runModUp + r.runModDn, mvAll = act + ract;
+    if (mvAll < 5) { setHTML(box, back + '<p class="calmsg">這段紀錄幾乎沒有移動的時間，無法校準。</p>'); return; }
+    var su = r.actUp >= 15 ? r.modUp / r.actUp : null, sd = r.actDn >= 15 ? r.modDn / r.actDn : null;
+    var ru = r.runActUp >= 5 ? r.runModUp / r.runActUp : null, rd = r.runActDn >= 5 ? r.runModDn / r.runActDn : null;
+    var hasW = act >= 0.5, hasR = ract >= 0.5, h = [back], lk = ck !== null ? ck : (isNum(PP.lightKg) ? +PP.lightKg : 2);
     function row(lab, a, mm, v) { return '<tr><td>' + lab + '</td><td class="num">' + dur(a) + '</td><td class="num">' + dur(mm) + '</td><td class="num">' + (v === null ? '太少' : '×' + v.toFixed(2)) + '</td></tr>'; }
-    h.push('<p class="calmsg">比較這筆紀錄' + (T.range ? '（GPX ' + km(T.range[0]) + '–' + km(T.range[1]) + ' km）' : '') + '實際走路的時間和模型（倍數 1）。<br><br>算出來的是錄這筆軌跡那群人的倍數。<br><br>比較用的負重：勾重裝的路段 ' + nf1(+PP.calKg || 13) + ' kg，沒勾的 ' + nf1(isNum(PP.lightKg) ? +PP.lightKg : 2) + ' kg（「公式參數」的「輕裝負重」）。' +
+    h.push('<p class="calmsg">比較這筆紀錄' + (T.range ? '（GPX ' + km(T.range[0]) + '–' + km(T.range[1]) + ' km）' : '') + '實際移動的時間和模型（倍數 1）。<br><br>算出來的是錄這筆軌跡那個人（那群人）的倍數。<br><br>比較用的負重：勾重裝的路段 ' + nf1(+PP.calKg || 13) + ' kg，沒勾的 ' + nf1(lk) + ' kg' + (ck !== null ? '（上面填的）' : '（「公式參數」的「輕裝負重」）') + (hasR ? '；跑的路段不看負重' : '') + '。' +
       (r.still >= 100 ? '<br><br>紀錄裡約 ' + km(r.still) + ' km 是停下來時 GPS 飄移或極慢移動的距離，比較時已排除。' : '') + '</p>');
-    h.push('<table class="caltbl"><thead><tr><th></th><th class="num">實際走路</th><th class="num">模型</th><th class="num">倍數</th></tr></thead><tbody>' +
-      row('上坡與平路', r.actUp, r.modUp, su) + row('下坡', r.actDn, r.modDn, sd) + row('整段', act, mod, mod / act) + '</tbody></table>');
+    var rows = [];
+    if (hasW && (r.actUp >= 0.5 || !hasR)) rows.push(row((hasR ? '走・' : '') + '上坡與平路', r.actUp, r.modUp, su));
+    if (hasW && (r.actDn >= 0.5 || !hasR)) rows.push(row((hasR ? '走・' : '') + '下坡', r.actDn, r.modDn, sd));
+    if (hasR && r.runActUp >= 0.5) rows.push(row('跑・上坡與平路', r.runActUp, r.runModUp, ru));
+    if (hasR && r.runActDn >= 0.5) rows.push(row('跑・下坡', r.runActDn, r.runModDn, rd));
+    rows.push(row('整段', mvAll, mod + rmod, (mod + rmod) / mvAll));
+    h.push('<table class="caltbl"><thead><tr><th></th><th class="num">實際移動</th><th class="num">模型</th><th class="num">倍數</th></tr></thead><tbody>' + rows.join('') + '</tbody></table>');
     var warn = [];
     if (T.warn && !T.range) warn.push('軌跡可能含搭車段：先用「只算其中一段」裁掉，否則倍數會偏大。');
-    if (act < 45) warn.push('走路不到 45 分鐘，倍數誤差會很大。');
-    if ((su !== null && (su < 0.4 || su > 2.5)) || (sd !== null && (sd < 0.4 || sd > 2.5))) warn.push('倍數不太合理，請檢查路段設定，或是否含搭車段。');
+    if (hasW && act < 45) warn.push('走路不到 45 分鐘，走路倍數誤差會很大。');
+    if (hasR && ract < 15) warn.push('跑不到 15 分鐘，跑步倍數誤差會很大。');
+    if ([su, sd, ru, rd].some(function (v) { return v !== null && (v < 0.4 || v > 2.5); })) warn.push('倍數不太合理，請檢查路段設定（地形、重裝、跑），或是否含搭車段。');
     if (warn.length) h.push('<p class="warnbox">' + warn.join('<br><br>') + '</p>');
     var longMin = r.longs.reduce(function (a, z) { return a + z.min; }, 0);
-    var q = r.shortMin / (act + r.shortMin) * 60, qq = Math.min(45, Math.round(q * 2) / 2);
-    var qa = (r.shortMin + longMin) / (act + r.shortMin + longMin) * 60, qqa = Math.min(45, Math.round(qa * 2) / 2);
+    var q = r.shortMin / (mvAll + r.shortMin) * 60, qq = Math.min(45, Math.round(q * 2) / 2);
+    var qa = (r.shortMin + longMin) / (mvAll + r.shortMin + longMin) * 60, qqa = Math.min(45, Math.round(qa * 2) / 2);
     var lg = r.longs.slice(0, 4).map(function (z) { return clockOf(z.t) + ' 起 ' + Math.round(z.min) + ' 分'; }).join('、') + (r.longs.length > 4 ? ' 等' : '');
+    var stopOk = mvAll >= 45;   // a short record says little about the stops of a whole day
     h.push('<p class="calmsg">停留：10 分鐘以內的停留 ' + r.shortN + ' 次，換算每小時停 ' + nf1(q) + ' 分。' +
-      (r.longs.length ? '<br><br>較長的停留 ' + r.longs.length + ' 次：' + lg + '。<br><br>午餐、等車這類填在時間表各點；固定的休息也該算進每小時的停留，全部算進去是每小時 ' + nf1(qa) + ' 分。' : '') + '</p>');
-    var nu = su !== null ? Math.round(teamV(su) * 100) / 100 : teamV(S.teamUp), nd = sd !== null ? Math.round(teamV(sd) * 100) / 100 : teamV(S.teamDn);
-    h.push('<div class="row">' + (su !== null || sd !== null ? '<button class="btn" type="button" data-cal="team" data-u="' + nu + '" data-d="' + nd + '">套用倍數：上坡與平路 ×' + f2(nu) + (su === null ? '（維持）' : '') + '、下坡 ×' + f2(nd) + (sd === null ? '（維持）' : '') + '</button>' : '') +
-      '<button class="btn ghost" type="button" data-cal="stop" data-q="' + qq + '">套用停留 ' + nf1(qq) + ' 分</button>' +
-      (r.longs.length ? '<button class="btn ghost" type="button" data-cal="stop" data-q="' + qqa + '">套用停留 ' + nf1(qqa) + ' 分（含較長的）</button>' : '') + '</div>');
-    h.push('<p class="hint">倍數＝模型時間 ÷ 實際走路時間；大於 1 代表比基準快。<br><br>「太少」代表那個方向走不到 15 分鐘，套用時維持目前的值。<br><br>下坡指比 −5% 陡的路段。<br><br>套用前先確認「路段與地形」照那天的實況設定，例如那天沒揹大背包就不勾重裝。</p>');
+      (r.longs.length ? '<br><br>較長的停留 ' + r.longs.length + ' 次：' + lg + '。<br><br>午餐、等車這類填在時間表各點；固定的休息也該算進每小時的停留，全部算進去是每小時 ' + nf1(qa) + ' 分。' : '') +
+      (stopOk ? '' : '<br><br>紀錄不到 45 分鐘，停留的建議不準，不提供套用。') + '</p>');
+    var bt = [];
+    if (su !== null || sd !== null) {
+      var nu = su !== null ? Math.round(teamV(su) * 100) / 100 : teamV(S.teamUp), nd = sd !== null ? Math.round(teamV(sd) * 100) / 100 : teamV(S.teamDn);
+      bt.push('<button class="btn primary" type="button" data-cal="team" data-u="' + nu + '" data-d="' + nd + '">' + ICON_CHECK + '套用' + (hasR ? '走路' : '') + '倍數：上坡與平路 ×' + f2(nu) + (su === null ? '（維持）' : '') + '、下坡 ×' + f2(nd) + (sd === null ? '（維持）' : '') + '</button>');
+    }
+    if (ru !== null || rd !== null) {
+      var mu = ru !== null ? Math.round(teamV(ru) * 100) / 100 : teamV(S.runUp), md = rd !== null ? Math.round(teamV(rd) * 100) / 100 : teamV(S.runDn);
+      bt.push('<button class="btn primary" type="button" data-cal="run" data-u="' + mu + '" data-d="' + md + '">' + ICON_CHECK + '套用跑步倍數：上坡與平路 ×' + f2(mu) + (ru === null ? '（維持）' : '') + '、下坡 ×' + f2(md) + (rd === null ? '（維持）' : '') + '</button>');
+    }
+    if (stopOk) bt.push('<button class="btn" type="button" data-cal="stop" data-q="' + qq + '">套用停留 ' + nf1(qq) + ' 分</button>');
+    if (stopOk && r.longs.length) bt.push('<button class="btn" type="button" data-cal="stop" data-q="' + qqa + '">套用停留 ' + nf1(qqa) + ' 分（含較長的）</button>');
+    if (bt.length) h.push('<div class="row">' + bt.join('') + '</div>');
+    h.push('<p class="hint">倍數＝模型時間 ÷ 實際移動時間；大於 1 代表比基準快。<br><br>「太少」代表那個方向走不到 15 分鐘、跑不到 5 分鐘，套用時維持目前的值。<br><br>下坡指比 −5% 陡的路段。<br><br>套用前先確認「路段與地形」照那天的實況設定，例如那天沒揹大背包就不勾重裝、用跑的路段勾「跑」。</p>');
     setHTML(box, h.join(''));
   }
   function setHTML(el, html) { if (el._html !== html) { el.innerHTML = html; el._html = html; } }
@@ -1285,8 +1557,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   }
   function fillGaps(rain) {   // plain sections over every part of the track that no section covers
     var tot = T.full.total, cur = 0, add = [], s = T.secsFull.slice().sort(function (p, q) { return p.a - q.a; });
-    s.forEach(function (q) { if (q.a > cur + 1) add.push({ a: cur, b: q.a, real: null, terr: 'trail', heavy: true, rain: rain, zEnd: null }); cur = Math.max(cur, q.b); });
-    if (tot > cur + 1) add.push({ a: cur, b: tot, real: null, terr: 'trail', heavy: true, rain: rain, zEnd: null });
+    s.forEach(function (q) { if (q.a > cur + 1) add.push({ a: cur, b: q.a, real: null, terr: 'trail', heavy: true, rain: rain, run: false, zEnd: null }); cur = Math.max(cur, q.b); });
+    if (tot > cur + 1) add.push({ a: cur, b: tot, real: null, terr: 'trail', heavy: true, rain: rain, run: false, zEnd: null });
     T.secsFull = s.concat(add).sort(function (p, q) { return p.a - q.a; });
   }
   function lightState(sun, min) {
@@ -1321,7 +1593,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     var ctx = { tr: tr, st: st, m: m, mSun: mSun, mRain: mRain, buf: b, rows: rows, sun: sun, startMin: startMin, arrSun: arrSun, arrRain: arrRain };
     LAST = ctx;
     renderStatus(); renderSections(); renderSummary(ctx); renderTeam(); renderStrip(ctx); renderProfile(ctx); renderTable(ctx); renderCopy(ctx);
-    $('btnKm').textContent = hasKm() ? '移除公里點' : '每公里加點';
+    $('btnKmLabel').textContent = hasKm() ? '移除公里點' : '每公里加點';
     save();
   }
 
@@ -1338,6 +1610,12 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     var txt = s.join('｜');
     if (T.isSample) txt += '。選你的檔案後就會改算你的路線。';
     $('fileStatus').textContent = txt;
+    var cb = $('calBanner');   // v31
+    if (T.stash) {
+      cb.hidden = false;
+      setHTML(cb, '<span class="cb-t">校準中：目前是紀錄「' + esc(T.name || T.fileName) + '」；要去的路線「' + esc(stashName()) + '」先收起來了，路段與檢查點都保留。</span>' +
+        '<div class="row"><button class="btn primary sm" type="button" data-back="1">' + ICON_BACK + '回到「' + esc(stashName()) + '」</button><button class="btn ghost sm" type="button" data-keep="1">改用目前這條</button></div>');
+    } else { cb.hidden = true; setHTML(cb, ''); }
     var w = $('fileWarn');
     if (T.warn) {
       w.hidden = false;
@@ -1359,38 +1637,40 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     for (var d = a + C.STEP; d < b + C.STEP; d += C.STEP) { var zz = C.zAt(f, Math.min(d, b)), dd = zz - prev; if (dd > 0) up += dd; else dn -= dd; prev = zz; }
     return { up: up, dn: dn };
   }
-  function secRun(q, terr, heavy, rain) {   // moving hours and real km of one section with a given terrain, load and weather
+  function secRun(q, terr, heavy, rain, run) {   // moving hours and real km of one section with a given terrain, load, weather and 跑
     var f = T.fullFix || T.full, a = Math.max(0, Math.min(f.total, q.a)), b = Math.max(a, Math.min(f.total, q.b));
     var sc = q.real && q.real > 0 && q.b - q.a > 1 ? q.real / (q.b - q.a) : 1;
-    var h = C.stretchHours(f, a, b, sc, terr, heavy, rain ? 'rain' : 'sun', PM || MP()), k = (b - a) * sc / 1000;
+    var h = C.stretchHours(f, a, b, sc, terr, heavy, rain ? 'rain' : 'sun', PM || MP(), run), k = (b - a) * sc / 1000;
     return { h: h, km: k, kmh: h > 0 ? k / h : 0 };
   }
   function renderSections() {
     var act = document.activeElement && document.activeElement.id ? document.activeElement.id : null;
     var zRef = refAlt(), b0 = buf();
     var html = [];
-    if (!T.secsFull.length) html.push('<p class="secempty">全段當一般步道、揹重裝、晴天，距離與高度用 GPX 原值。<br><br>按「新增路段」設定地形、重裝、雨天、實際里程或實測海拔。</p>');
+    if (!T.secsFull.length) html.push('<p class="secempty">全段當一般步道、揹重裝、晴天，距離與高度用 GPX 原值。<br><br>按下方「新增路段」，整條路線會變成第 1 段，再設定地形、重裝、雨天；要分段就在上面的剖面選「切路段」。</p>');
     T.secsFull.forEach(function (q, i) {
-      var n = i + 1, heavy = q.heavy !== false, rain = q.rain === true, terr = C.TERRAIN_KEYS.indexOf(q.terr) >= 0 ? q.terr : 'trail', ud = secUpDn(q), cur = null;
+      var n = i + 1, run = q.run === true, heavy = !run && q.heavy !== false, rain = q.rain === true, terr = C.TERRAIN_KEYS.indexOf(q.terr) >= 0 ? q.terr : 'trail', ud = secUpDn(q), cur = null;
       var kk = 1 + b0.pause / 60;
-      var opts = C.TERRAIN_KEYS.map(function (k) {
-        var r = secRun(q, k, heavy, rain);
+      var chips = C.TERRAIN_KEYS.map(function (k) {
+        var r = secRun(q, k, heavy, rain, run), id = 'sxt-' + i + '-' + k;
         if (k === terr) cur = r;
-        return '<option value="' + k + '"' + (terr === k ? ' selected' : '') + '>' + PP.terr[k].name + '｜' + r.kmh.toFixed(1) + ' km/h</option>';
+        return '<label class="tchip" for="' + id + '"><input type="radio" name="sxt-' + i + '" id="' + id + '" value="' + k + '"' + (terr === k ? ' checked' : '') + '>' +
+          '<span class="tsw" style="background:var(' + TERR_COLOR[k] + ')"></span><span class="tn">' + PP.terr[k].name + '</span><span class="tv">' + r.kmh.toFixed(1) + '<small>km/h</small></span></label>';
       }).join('');
-      html.push('<div class="secrow">' +
-        '<div class="sechead"><span class="tsw" style="background:var(' + TERR_COLOR[terr] + ')"></span>' +
-        '<select id="sxt-' + i + '" aria-label="第 ' + n + ' 段地形，選項後是本段平均水平速度">' + opts + '</select>' +
-        '<span class="conds"><label class="hv" for="sxh-' + i + '"><input type="checkbox" id="sxh-' + i + '"' + (heavy ? ' checked' : '') + '>重裝</label>' +
-        '<label class="hv" for="sxw-' + i + '"><input type="checkbox" id="sxw-' + i + '"' + (rain ? ' checked' : '') + '>雨天</label></span>' +
-        '<button class="del" type="button" data-sdel="' + i + '" aria-label="刪除第 ' + n + ' 段">×</button></div>' +
+      html.push('<div class="secrow" id="secrow-' + i + '">' +
+        '<div class="sectop"><span class="secno">第 ' + n + ' 段</span><span class="secrange">GPX ' + (Math.max(0, q.a) / 1000).toFixed(2) + '–' + (q.b / 1000).toFixed(2) + ' km</span>' +
+        '<button class="btn ghost sm danger" type="button" data-sdel="' + i + '" aria-label="刪除第 ' + n + ' 段（併入' + (i ? '前一段' : '下一段') + '）"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.75 4.25h10.5"/><path d="M6.25 4.25V2.9a.65.65 0 0 1 .65-.65h2.2a.65.65 0 0 1 .65.65v1.35"/><path d="M4 4.25l.6 8.6a1.25 1.25 0 0 0 1.25 1.15h4.3a1.25 1.25 0 0 0 1.25-1.15l.6-8.6"/><path d="M6.75 7v4.25M9.25 7v4.25"/></svg>刪除</button></div>' +
+        '<fieldset class="terrs"><legend class="sr">第 ' + n + ' 段地形（後面是本段平均水平速度）</legend>' + chips + '</fieldset>' +
+        '<div class="conds"><label class="hv" for="sxh-' + i + '"><input type="checkbox" id="sxh-' + i + '"' + (heavy ? ' checked' : '') + '>重裝</label>' +
+        '<label class="hv" for="sxw-' + i + '"><input type="checkbox" id="sxw-' + i + '"' + (rain ? ' checked' : '') + '>雨天</label>' +
+        '<label class="hv" for="sxu-' + i + '"><input type="checkbox" id="sxu-' + i + '"' + (run ? ' checked' : '') + '>跑</label></div>' +
         '<div class="secgrid">' +
         '<label for="sxa-' + i + '">GPX 起 km<input type="number" step="0.01" min="0" inputmode="decimal" id="sxa-' + i + '" value="' + (Math.max(0, q.a) / 1000).toFixed(2) + '"></label>' +
         '<label for="sxb-' + i + '">GPX 迄 km<input type="number" step="0.01" min="0" inputmode="decimal" id="sxb-' + i + '" value="' + (q.b / 1000).toFixed(2) + '"></label>' +
         '<label for="sxr-' + i + '">實際 km<input type="number" step="0.1" min="0" inputmode="decimal" id="sxr-' + i + '" value="' + (q.real ? (q.real / 1000).toFixed(2) : '') + '" placeholder="同 GPX"></label>' +
         '<label for="sxz-' + i + '">終點海拔 m<input type="number" step="1" inputmode="numeric" id="sxz-' + i + '" value="' + (isNum(q.zEnd) ? Math.round(q.zEnd) : '') + '" placeholder="' + Math.round(C.zAt(T.full, Math.min(q.b, T.full.total))) + '"></label>' +
         '</div>' +
-        '<p class="secspd">本段 ' + cur.km.toFixed(cur.km < 0.995 ? 2 : 1) + ' km，爬升 ' + nf(ud.up) + ' m、下降 ' + nf(ud.dn) + ' m。<br>' + (heavy ? '重裝' : '輕裝') + '、' + (rain ? '雨天' : '晴天') + '：走路 ' + durZh(cur.h * 60) + '，平均每小時 ' + cur.kmh.toFixed(1) + ' km；含途中停留 ' + durZh(cur.h * 60 * kk) + '，約每小時 ' + (cur.kmh / kk).toFixed(1) + ' km。</p>' +
+        '<p class="secspd">本段 ' + cur.km.toFixed(cur.km < 0.995 ? 2 : 1) + ' km，爬升 ' + nf(ud.up) + ' m、下降 ' + nf(ud.dn) + ' m。<br>' + (run ? '跑' : (heavy ? '重裝' : '輕裝')) + '、' + (rain ? '雨天' : '晴天') + '：' + (run ? '跑 ' : '走路 ') + durZh(cur.h * 60) + '，平均每小時 ' + cur.kmh.toFixed(1) + ' km；含途中停留 ' + durZh(cur.h * 60 * kk) + '，約每小時 ' + (cur.kmh / kk).toFixed(1) + ' km。</p>' +
         '</div>');
     });
     $('secBody').innerHTML = html.join('');
@@ -1398,19 +1678,20 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     [[true, 'sun', '重裝・晴天', '一般步道、林道：10/20–21 四季林道晴天實測；樹根、泥濘：推估'],
      [true, 'rain', '重裝・雨天', '晴天速度乘雨天係數（推估）；10/6 草嶺古道、桃源谷陣雨實測比這組快 10–14%'],
      [false, 'sun', '輕裝・晴天', '林道：10/20–21 實測；其餘依能量公式換算（推估）'],
-     [false, 'rain', '輕裝・雨天', '無實測：雨天係數同重裝，輕裝加速同晴天']].forEach(function (g) {
+     [false, 'rain', '輕裝・雨天', '無實測：雨天係數同重裝，輕裝加速同晴天'],
+     [false, 'sun', '跑・晴天', 'Kay（2012）賽事紀錄的坡度曲線，平地每小時 ' + nf1(runFlat()) + ' km；樹根、泥濘的上限是推估', true]].forEach(function (g) {
       trs.push('<tr class="grp"><td colspan="6">' + g[2] + '<span class="basis">' + g[3] + '</span></td></tr>');
       C.TERRAIN_KEYS.forEach(function (k) {
-        var r = C.refSpeeds(k, g[1], PM || MP(), zRef, g[0]);
+        var r = C.refSpeeds(k, g[1], PM || MP(), zRef, g[0], g[4] === true);
         trs.push('<tr><td>' + TERR_SHORT[k] + '</td>' + [r.flat, r.up15, r.up30, r.dn15, r.dn30].map(function (v) { return '<td class="num">' + v.toFixed(1) + '</td>'; }).join('') + '</tr>');
       });
     });
-    $('spdRef').innerHTML = '<table class="spdtbl"><caption>每小時走幾公里（海拔約 ' + nf(zRef) + ' m 為本路線平均，只算走路）。<br><br>坡越陡水平速度越慢；雨天時間：一般步道約多 11%、林道約多 5%、樹根與泥濘多 17–30%（推估）。' + (teamIsOne() ? '' : '<br><br>已乘隊伍速度：' + teamTxt() + '。') + '</caption>' +
+    $('spdRef').innerHTML = '<table class="spdtbl"><caption>每小時走（跑）幾公里（海拔約 ' + nf(zRef) + ' m 為本路線平均，只算走路）。<br><br>坡越陡水平速度越慢；雨天時間：一般步道約多 11%、林道約多 5%、樹根與泥濘多 17–30%（推估）。' + (teamIsOne() ? '' : '<br><br>已乘隊伍速度：' + teamTxt() + '。') + '</caption>' +
       '<thead><tr><th>地形</th><th class="num">平路</th><th class="num">上坡<br>15%</th><th class="num">上坡<br>30%</th><th class="num">下坡<br>15%</th><th class="num">下坡<br>30%</th></tr></thead>' +
       '<tbody>' + trs.join('') + '</tbody></table>';
     var zs = $('zStart');
     if (zs && document.activeElement !== zs) { zs.value = isNum(T.zStart) ? Math.round(T.zStart) : ''; zs.placeholder = Math.round(C.zAt(T.full, 0)); }
-    if (act && /^sx[abrtzhw]-/.test(act) && $(act)) $(act).focus();
+    if (act && /^sx[abrtzhwu]-/.test(act) && $(act)) $(act).focus();
   }
 
   function renderSummary(c) {
@@ -1421,6 +1702,12 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     k.push(kpi('移動時間', dur(c.m.total * 60), true, '全晴 ' + dur(c.mSun.total * 60) + '／全雨 ' + dur(c.mRain.total * 60)));
     k.push(kpi('抵達終點', hm(last.arr), false, '含停留共 ' + dur(total)));
     $('kpis').innerHTML = k.join('');
+    var lsb = c.sun ? lightState(c.sun, last.arr) : 0, dlb = parseHM(S.deadline), lb = $('lbLight');   // v30: live bar
+    $('lbArr').textContent = hm(last.arr); $('lbMv').textContent = dur(c.m.total * 60);
+    if (dlb !== null && last.arr > dlb) { lb.className = 'chip crit'; lb.textContent = '超過最晚抵達'; }
+    else if (lsb === 2) { lb.className = 'chip crit'; lb.textContent = '天黑後抵達'; }
+    else if (lsb === 1) { lb.className = 'chip warn'; lb.textContent = '日落後抵達'; }
+    else { lb.className = 'chip ok'; lb.textContent = '日落前抵達'; }
     var t = [trow('出發', hm(c.startMin)), trow('全晴／全雨抵達', hm(c.arrSun) + '／' + hm(c.arrRain))];
     if (c.sun) {
       t.push(trow('日出／日落', hhmmFromHours(c.sun.rise) + '／' + hhmmFromHours(c.sun.set)));
@@ -1436,7 +1723,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     }
     $('tline').innerHTML = t.join('');
     $('scenLine').innerHTML = '天氣：<b>' + wxText() + '</b>（依各路段勾選）。<br><br>只算移動：全晴 ' + durZh(c.mSun.total * 60) + '，全雨 ' + durZh(c.mRain.total * 60) +
-      '。<br><br>途中停留：每小時走 ' + nf1(c.buf.walkH) + ' 分、停 ' + nf1(c.buf.stopH) + ' 分。<br><br>隊伍速度：' + teamTxt() + (teamIsOne() ? '（基準）' : '') + '。';
+      '。<br><br>途中停留：每小時走 ' + nf1(c.buf.walkH) + ' 分、停 ' + nf1(c.buf.stopH) + ' 分。<br><br>隊伍速度：' + teamTxt() + (teamIsOne() ? '（基準）' : '') + '。' +
+      (hasRun() ? '<br><br>跑步速度：平地每小時 ' + nf1(runFlat()) + ' km，' + runTxt() + '。' : '');
   }
   function kpi(label, value, main, sub) { return '<div class="kpi' + (main ? ' main' : '') + '"><span class="k">' + label + '</span><span class="v">' + value + '</span>' + (sub ? '<span class="s">' + sub + '</span>' : '') + '</div>'; }
   function trow(label, value) { return '<div class="trow"><span>' + label + '</span><b>' + value + '</b></div>'; }
@@ -1501,8 +1789,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     // terrain strip
     var ty = Tp + ph + 3;
     T.secs.forEach(function (q) {
-      var xa = sx(q.off), xb = sx(q.off + q.real), lt = q.heavy === false;   // light sections: half-height bar
-      o.push('<rect x="' + xa.toFixed(1) + '" y="' + (lt ? ty + 1.5 : ty) + '" width="' + Math.max(1, xb - xa).toFixed(1) + '" height="' + (lt ? 3 : 6) + '" style="fill:var(' + (TERR_COLOR[q.terr] || '--t-trail') + ')"></rect>');
+      var xa = sx(q.off), xb = sx(q.off + q.real), lt = q.heavy === false, col = 'fill:var(' + (TERR_COLOR[q.terr] || '--t-trail') + ')';   // light sections: half-height bar
+      if (q.run) { for (var xx = xa; xx < xb - 0.5; xx += 7) o.push('<rect x="' + xx.toFixed(1) + '" y="' + ty + '" width="' + Math.max(1, Math.min(4.5, xb - xx)).toFixed(1) + '" height="6" style="' + col + '"></rect>'); }   // v31 跑: dashed bar
+      else o.push('<rect x="' + xa.toFixed(1) + '" y="' + (lt ? ty + 1.5 : ty) + '" width="' + Math.max(1, xb - xa).toFixed(1) + '" height="' + (lt ? 3 : 6) + '" style="' + col + '"></rect>');
       if (q.rain) o.push('<rect x="' + xa.toFixed(1) + '" y="' + (ty + 8) + '" width="' + Math.max(1, xb - xa).toFixed(1) + '" height="2.5" style="fill:var(--rain)"></rect>');
     });
     var Dk = D / 1000, ppk = pw / Math.max(Dk, 1e-9);                     // pixels per km
@@ -1530,12 +1819,38 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       o.push('<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="8.5" style="fill:var(--ink);stroke:var(--surface);stroke-width:1.5"></circle>');
       o.push('<text x="' + cx.toFixed(1) + '" y="' + (cy + 3.8).toFixed(1) + '" text-anchor="middle" font-size="10.5" style="fill:var(--surface);font-weight:700">' + idx + '</text>');
     });
-    o.push('<rect x="' + L + '" y="' + (Tp - 14) + '" width="' + pw + '" height="' + (ph + 14) + '" style="fill:transparent;cursor:crosshair"></rect>');
-    box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="高度剖面，依坡度分色，標出檢查點、整點時刻與地形">' + o.join('') + '</svg>';
-    box._geom = { L: L, pw: pw, D: D };
+    var r0 = T.range ? T.range[0] : 0, tl = tr.total;   // v31: section numbers, boundary handles
+    T.secsFull.forEach(function (q, i) {
+      var a1 = Math.max(0, q.a - r0), b1 = Math.min(tl, q.b - r0);
+      if (b1 - a1 < 1) return;
+      var xa = sx(R(a1)), xb = sx(R(b1)), lab = String(i + 1), w = lab.length > 1 ? 19 : 14, x0 = xa + (a1 < 1 ? 4 : 9);
+      if (x0 + w > xb - 3) return;
+      o.push('<g class="stag" aria-hidden="true"><rect x="' + x0.toFixed(1) + '" y="' + (ty - 21) + '" width="' + w + '" height="14" rx="3"></rect><text x="' + (x0 + w / 2).toFixed(1) + '" y="' + (ty - 10.5) + '" text-anchor="middle" font-size="10">' + lab + '</text></g>');
+    });
+    o.push('<rect class="plot-hit" x="' + L + '" y="' + (Tp - 14) + '" width="' + pw + '" height="' + (ph + 14) + '" style="fill:transparent"></rect>');
+    o.push('<rect class="strip-hit" x="' + L + '" y="' + (ty - 2) + '" width="' + pw + '" height="18"><title>點這裡跳到這一段的設定</title></rect>');
+    BDS = [];
+    bounds().forEach(function (bd) {
+      var dt = bd.d - r0;
+      if (dt <= 1 || dt >= tl - 1) return;
+      var x = sx(R(dt)), k = BDS.length, lo = clampBd(bd, -1e9), hi = clampBd(bd, 1e9);
+      var lab = bd.l >= 0 && bd.r >= 0 ? '第 ' + (bd.l + 1) + '、' + (bd.r + 1) + ' 段分界' : (bd.l >= 0 ? '第 ' + (bd.l + 1) + ' 段終點' : '第 ' + (bd.r + 1) + ' 段起點');
+      BDS.push(bd);
+      o.push('<g class="bd" data-bd="' + k + '" tabindex="0" role="slider" aria-orientation="horizontal" aria-label="' + lab + '，左右拖拉或用方向鍵移動" aria-valuemin="' + (lo / 1000).toFixed(2) + '" aria-valuemax="' + (hi / 1000).toFixed(2) + '" aria-valuenow="' + (bd.d / 1000).toFixed(2) + '" aria-valuetext="GPX ' + (bd.d / 1000).toFixed(2) + ' km">' +
+        '<rect class="bd-hit" x="' + (x - 12).toFixed(1) + '" y="' + (Tp - 4) + '" width="24" height="' + (ty + 20 - Tp) + '"></rect>' +
+        '<line class="bd-line" x1="' + x.toFixed(1) + '" x2="' + x.toFixed(1) + '" y1="' + Tp + '" y2="' + (ty + 6) + '"></line>' +
+        '<rect class="bd-knob" x="' + (x - 6).toFixed(1) + '" y="' + (ty - 8) + '" width="12" height="22" rx="4"></rect>' +
+        '<path class="bd-grip" d="M' + (x - 2).toFixed(1) + ' ' + (ty - 2) + 'v10M' + (x + 2).toFixed(1) + ' ' + (ty - 2) + 'v10"></path></g>');
+    });
+    o.push('<line class="cutg" id="cutG" x1="0" x2="0" y1="' + Tp + '" y2="' + (ty + 6) + '" visibility="hidden"></line>');
+    o.push('<g class="tip" id="pTip" visibility="hidden"><rect x="0" y="' + (Tp + 3) + '" width="10" height="19" rx="4"></rect><text x="0" y="' + (Tp + 16.5) + '" text-anchor="middle" font-size="11"></text></g>');
+    box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="高度剖面，依坡度分色，標出檢查點、整點時刻、地形與可拖拉的路段分界">' + o.join('') + '</svg>';
+    box._geom = { L: L, pw: pw, D: D, Tp: Tp, ph: ph, ty: ty };
     var lg = [];
     for (var g = 0; g < 7; g++) lg.push('<span><i class="sw" style="background:var(--b' + g + ')"></i>' + BAND_LABEL[g] + '</span>');
     lg.push('<span><i class="sw" style="background:var(--t-root)"></i>樹根陡坡</span>', '<span><i class="sw" style="background:var(--t-mud)"></i>泥濘草徑</span>', '<span><i class="sw" style="background:var(--t-road)"></i>林道</span>', '<span><i class="sw" style="background:var(--rain)"></i>雨天路段</span>');
+    if (hasRun()) lg.push('<span><i class="sw dash"></i>跑的路段</span>');
+    if (BDS.length) lg.push('<span><i class="sw bdl"></i>路段分界（可拖拉）</span>');
     $('legend').innerHTML = lg.join('');
   }
 
@@ -1557,7 +1872,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
         '<td class="num"><span class="t">' + (first ? '—' : hm(r.arr)) + '</span></td>' +
         '<td class="num">' + (last ? '' : '<input class="stop" type="number" min="0" step="5" inputmode="numeric" id="st-' + cp.id + '" value="' + (cp.stop || 0) + '" aria-label="第 ' + i + ' 點停留分鐘">') + '</td>' +
         '<td class="num"><span class="t">' + (last ? '—' : (first || r.stop > 0 ? hm(r.dep) : '')) + '</span></td>' +
-        '<td>' + (cp.kind === 'start' || cp.kind === 'end' ? '' : '<button class="del" type="button" data-del="' + cp.id + '" aria-label="刪除第 ' + i + ' 點">×</button>') + '</td>' +
+        '<td>' + (cp.kind === 'start' || cp.kind === 'end' ? '' : '<button class="del" type="button" data-del="' + cp.id + '" aria-label="刪除第 ' + i + ' 點"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.75 4.25h10.5"/><path d="M6.25 4.25V2.9a.65.65 0 0 1 .65-.65h2.2a.65.65 0 0 1 .65.65v1.35"/><path d="M4 4.25l.6 8.6a1.25 1.25 0 0 0 1.25 1.15h4.3a1.25 1.25 0 0 0 1.25-1.15l.6-8.6"/><path d="M6.75 7v4.25M9.25 7v4.25"/></svg></button>') + '</td>' +
         '</tr>');
     });
     $('tbody').innerHTML = html.join('');
@@ -1573,6 +1888,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     L.push('・移動時間 ' + durZh(c.m.total * 60) + '（全晴 ' + durZh(c.mSun.total * 60) + '／全雨 ' + durZh(c.mRain.total * 60) + '）');
     L.push('・途中停留：每小時走 ' + nf1(c.buf.walkH) + ' 分、停 ' + nf1(c.buf.stopH) + ' 分（休息、整裝、集合、等人等）');
     if (!teamIsOne()) L.push('・隊伍速度：' + teamTxt() + '（1＝基準）');
+    if (hasRun()) L.push('・跑步速度：平地每小時 ' + nf1(runFlat()) + ' km，' + runTxt());
     c.rows.forEach(function (r, i) {
       var zv = C.zAt(c.tr, r.cp.d), flag = '';
       if (i > 0) {
@@ -1590,10 +1906,12 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
 
   // ---------- inputs ----------
   var PMAP = [['pTobF', 'F'], ['pWTob', 'wTob'], ['pSunDown', 'sunDown'], ['pDinH', 'dinH'], ['pDinUp', 'dinUp'], ['pDinDown', 'dinDown'],
-              ['pAltPct', 'altPct'], ['pAltRef', 'altRef'], ['pBody', 'bodyKg'], ['pLightKg', 'lightKg'], ['pRoadHF', 'roadHeavyF'], ['pRoadLU', 'roadLightUp'], ['pRoadLD', 'roadLightDown']];
+              ['pAltPct', 'altPct'], ['pAltRef', 'altRef'], ['pBody', 'bodyKg'], ['pLightKg', 'lightKg'], ['pRoadHF', 'roadHeavyF'], ['pRoadLU', 'roadLightUp'], ['pRoadLD', 'roadLightDown'],
+              ['pLightDnMax', 'lightDnMax'], ['pRunFlat', 'runFlat'], ['pRunCapX', 'runCapX']];
   function applyInputs() {
     $('date').value = S.date; $('start').value = S.start; $('deadline').value = S.deadline;
     $('stopH').value = S.stopH; $('teamUp').value = S.teamUp; $('teamDn').value = S.teamDn;
+    $('runUp').value = S.runUp; $('runDn').value = S.runDn; $('calKg').value = isNum(S.calKg) ? S.calKg : ''; $('calKg').placeholder = nf1(isNum(PP.lightKg) ? +PP.lightKg : 2);
     PMAP.forEach(function (pm) { $(pm[0]).value = PP[pm[1]]; });
     ['root', 'mud'].forEach(function (k) { ['Sun', 'Rain'].forEach(function (w) { for (var i = 0; i < 3; i++) $(k + w + i).value = PP.terr[k][w.toLowerCase()][i]; }); });
     ['trail', 'road'].forEach(function (k) { $(k + 'Rain0').value = PP.terr[k].rain[0]; });
@@ -1602,8 +1920,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     var r = T.range || [0, T.full.total];
     $('rFrom').value = (r[0] / 1000).toFixed(1); $('rTo').value = (r[1] / 1000).toFixed(1);
   }
-  function showError(msg) { var e = $('fileError'); e.textContent = msg; e.hidden = false; }
-  function hideError() { $('fileError').hidden = true; }
+  function showError(msg, cal) { var e = $(cal ? 'calError' : 'fileError'); e.textContent = msg; e.hidden = false; }
+  function hideError() { $('fileError').hidden = true; $('calError').hidden = true; }
   function readKmz(file) {
     if (typeof JSZip === 'undefined') return Promise.reject(new Error('目前無法解開 KMZ，請改匯出 GPX 或 KML。'));
     return file.arrayBuffer().then(function (b) { return JSZip.loadAsync(b); }).then(function (zip) {
@@ -1612,23 +1930,30 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       return zip.files[name].async('string');
     });
   }
-  function handleFile(file) {
+  function handleFile(file, cal) {   // cal: an own record for calibration (v31): the planned route is put aside first
     if (!file) return;
     var name = file.name || '';
     (/\.kmz$/i.test(name) ? readKmz(file) : file.text()).then(function (text) {
       var parsed = C.parseTrackText(text);
       if (!parsed.name) parsed.name = name.replace(/\.(gpx|kml|kmz|xml)$/i, '');
+      var timed = parsed.pts.filter(function (q) { return q.t != null; }).length >= parsed.pts.length * 0.5;
+      if (cal && !timed) throw new Error('這個檔案沒有時間紀錄，不能校準。請用手機 App 或手錶「錄下來」的軌跡，GPX 裡每一點都要有時間。');
+      if (cal && !T.stash && T.parsed) T.stash = snapRoute();
+      if (cal) S.calKg = '';
       var vi = vehicleInfo(parsed);
       T.parsed = parsed; T.name = parsed.name; T.fileName = name; T.reversed = false; T.range = null; T.isSample = false;
       T.secsFull = []; T.zStart = null; T.warn = ''; T.suggest = null;
-      T.recorded = parsed.pts.filter(function (q) { return q.t != null; }).length >= parsed.pts.length * 0.5;
+      T.recorded = timed;
       if (vi.fast > 500) {
         T.warn = '軌跡中約 ' + km(vi.fast) + ' km 的速度超過每小時 15 公里，可能含搭車段。';
         if (vi.best && vi.best[1] - vi.best[0] > 300) T.suggest = [vi.best[0], vi.best[1]];
       }
-      rebuild(false); setRangeInputs(); hideError(); render();
-      $('file').value = '';
-    }).catch(function (err) { showError((err && err.message) ? err.message : '讀取失敗，請確認是 GPX 或 KML 檔。'); $('file').value = ''; });
+      rebuild(false);
+      T.secsFull = [newSec(0, T.full.total)]; refreshSecs();   // v31: the whole route is section 1, ready for terrain chips
+      setRangeInputs(); hideError(); applyInputs(); render();
+      $('file').value = ''; $('calFile').value = '';
+      if (cal) { $('calBox').open = true; say('secMsg', '校準用紀錄已載入：照那天的實況設定路段（地形、重裝、雨天、跑），倍數在「設定 → 怎麼定倍數」。'); }
+    }).catch(function (err) { showError((err && err.message) ? err.message : '讀取失敗，請確認是 GPX 或 KML 檔。', cal); $('file').value = ''; $('calFile').value = ''; });
   }
   function loadSample() {
     T.parsed = { name: SAMPLE.name, pts: SAMPLE.pts.map(function (a) { return { lat: a[0], lon: a[1], ele: a[2], t: null }; }), wpts: clone(SAMPLE.wpts || []) };
@@ -1643,6 +1968,12 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
 
   function bind() {
     $('file').addEventListener('change', function (e) { handleFile(e.target.files && e.target.files[0]); });
+    $('calFile').addEventListener('change', function (e) { handleFile(e.target.files && e.target.files[0], true); });
+    $('calBanner').addEventListener('click', function (e) {
+      var b = e.target.closest ? e.target.closest('[data-back],[data-keep]') : null;
+      if (!b) return;
+      if (b.hasAttribute('data-back')) backToStash(); else { T.stash = null; render(); }
+    });
     var card = $('fileCard');
     card.addEventListener('dragover', function (e) { e.preventDefault(); card.classList.add('drop'); });
     card.addEventListener('dragleave', function () { card.classList.remove('drop'); });
@@ -1664,7 +1995,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       rebuild(false); setRangeInputs(); render();
     });
     $('btnRangeAll').addEventListener('click', function () { T.range = null; rebuild(false); setRangeInputs(); render(); });
-    ['date', 'start', 'deadline', 'stopH', 'teamUp', 'teamDn'].forEach(function (id) {
+    ['date', 'start', 'deadline', 'stopH', 'teamUp', 'teamDn', 'runUp', 'runDn', 'calKg'].forEach(function (id) {
       $(id).addEventListener('input', function () { S[id] = $(id).value; render(); });
     });
     PMAP.forEach(function (pm) { $(pm[0]).addEventListener('change', function () { PP[pm[1]] = numOr($(pm[0]).value, C.DEFAULTS[pm[1]]); render(); }); });
@@ -1681,29 +2012,48 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     });
     $('btnResetP').addEventListener('click', function () { PP = clone(C.DEFAULTS); applyInputs(); render(); });
     $('calOut').addEventListener('click', function (e) {   // v27: apply the calibration
+      if (e.target.closest && e.target.closest('[data-back]')) { backToStash(); return; }
       var b = e.target.closest ? e.target.closest('[data-cal]') : null;
       if (!b) return;
       if (b.getAttribute('data-cal') === 'team') { S.teamUp = teamV(b.getAttribute('data-u')); S.teamDn = teamV(b.getAttribute('data-d')); }
+      else if (b.getAttribute('data-cal') === 'run') { S.runUp = teamV(b.getAttribute('data-u')); S.runDn = teamV(b.getAttribute('data-d')); }
       else S.stopH = Math.min(45, Math.max(0, numOr(b.getAttribute('data-q'), 13)));
       applyInputs(); render();
     });
-    $('btnAddSec').addEventListener('click', function () {
-      var tot = T.full.total, lastB = T.secsFull.length ? Math.max.apply(null, T.secsFull.map(function (q) { return q.b; })) : 0;
-      var a = lastB < tot - 50 ? lastB : 0;
-      T.secsFull.push({ a: a, b: tot, real: null, terr: 'trail', heavy: true, rain: false, zEnd: null });
-      rebuild(true); render();
+    $('btnAddSec').addEventListener('click', function () {   // v31: whole route first, then cut the last section in half
+      var tot = T.full.total, r0 = T.range ? T.range[0] : 0, r1 = T.range ? T.range[1] : tot, last = null;
+      if (!T.secsFull.length) {
+        T.secsFull = [newSec(0, tot)]; refreshSecs(); render();
+        say('secMsg', '整條路線是第 1 段。要分段就再按一次「新增路段」，或在上面的剖面選「切路段」點要切的位置。');
+        return;
+      }
+      T.secsFull.forEach(function (q) { if (q.a < r1 - 1 && q.b > r0 + 1 && (!last || q.a >= last.a)) last = q; });
+      if (!last || last.b < r1 - 50) {   // the end of the route has no section yet
+        var st = last ? last.b : r0;
+        T.secsFull.push(newSec(st, r1)); sortSecs(); refreshSecs(); render();
+        say('secMsg', '已新增 GPX ' + km(st) + '–' + km(r1) + ' km 這一段。');
+        return;
+      }
+      var a = Math.max(last.a, r0), b = Math.min(last.b, r1);
+      if (b - a < 200) { say('secMsg', '最後一段太短，不能再切；在上面的剖面選「切路段」，點要切的位置。'); return; }
+      splitAt((a + b) / 2, 'secMsg');
     });
     $('secBody').addEventListener('change', function (e) {
-      var m = (e.target.id || '').match(/^sx([abrtzhw])-(\d+)$/);
+      var m = (e.target.id || '').match(/^sx([abrtzhwu])-(\d+)(?:-[a-z]+)?$/);
       if (!m) return;
-      var q = T.secsFull[+m[2]]; if (!q) return;
+      var idx = +m[2], q = T.secsFull[idx]; if (!q) return;
       var v = e.target.value;
-      if (m[1] === 'a') q.a = Math.max(0, numOr(v, 0) * 1000);
-      else if (m[1] === 'b') q.b = Math.min(T.full.total, numOr(v, T.full.total / 1000) * 1000);
+      if (m[1] === 'a' || m[1] === 'b') {   // v31: a shared boundary moves both sections, like dragging it on the profile
+        var nv = m[1] === 'a' ? Math.max(0, numOr(v, 0) * 1000) : Math.min(T.full.total, numOr(v, T.full.total / 1000) * 1000);
+        var bl = bounds().filter(function (o) { return m[1] === 'a' ? o.r === idx : o.l === idx; })[0];
+        if (bl && bl.l >= 0 && bl.r >= 0) moveBd(bl, clampBd(bl, nv));
+        else if (m[1] === 'a') q.a = nv; else q.b = nv;
+      }
       else if (m[1] === 'r') q.real = v === '' ? null : Math.max(0, numOr(v, 0) * 1000) || null;
       else if (m[1] === 'z') q.zEnd = (v === '' || !isNum(v)) ? null : Math.round(+v);
-      else if (m[1] === 'h') q.heavy = !!e.target.checked;
+      else if (m[1] === 'h') { q.heavy = !!e.target.checked; if (q.heavy) q.run = false; }
       else if (m[1] === 'w') q.rain = !!e.target.checked;
+      else if (m[1] === 'u') { q.run = !!e.target.checked; if (q.run) q.heavy = false; }
       else q.terr = v;
       if (q.b < q.a) { var t = q.a; q.a = q.b; q.b = t; }
       T.secsFull.sort(function (p, r) { return p.a - r.a; });
@@ -1712,8 +2062,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     $('secBody').addEventListener('click', function (e) {
       var b = e.target.closest ? e.target.closest('[data-sdel]') : null;
       if (!b) return;
-      T.secsFull.splice(+b.getAttribute('data-sdel'), 1);
-      refreshSecs(); render();
+      var txt = mergeSec(+b.getAttribute('data-sdel'));
+      refreshSecs(); render(); say('secMsg', txt);
     });
     $('zStart').addEventListener('change', function () {
       var v = $('zStart').value;
@@ -1739,16 +2089,135 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       T.cps = T.cps.filter(function (c) { return c.id !== id; });
       render();
     });
-    $('profile').addEventListener('click', function (e) {
-      var box = $('profile'), g = box._geom; if (!g) return;
-      var svg = box.querySelector('svg'); if (!svg) return;
-      var rect = svg.getBoundingClientRect(), scale = rect.width / (+svg.getAttribute('width'));
-      var x = (e.clientX - rect.left) / scale;
+    var pbox = $('profile');
+    function pgeom() {
+      var g = pbox._geom, svg = pbox.querySelector('svg');
+      if (!g || !svg) return null;
+      var rect = svg.getBoundingClientRect();
+      return { g: g, rect: rect, k: rect.width / (+svg.getAttribute('width')) };
+    }
+    function evX(pg, cx) { return (cx - pg.rect.left) / pg.k; }
+    function evY(pg, cy) { return (cy - pg.rect.top) / pg.k; }
+    function xReal(pg, x) { return Math.max(0, Math.min(pg.g.D, (x - pg.g.L) / pg.g.pw * pg.g.D)); }
+    function xTrack(pg, x) { return C.real2gpx(T.secs, xReal(pg, x)); }
+    function trackX(pg, d) { return pg.g.L + pg.g.pw * R(d) / pg.g.D; }
+    function rng0() { return T.range ? T.range[0] : 0; }
+    function showTip(pg, x, txt) {
+      var tp = $('pTip'); if (!tp) return;
+      var tx = tp.querySelector('text'), rc = tp.querySelector('rect');
+      tx.textContent = txt;
+      var w = 12 + (tx.getComputedTextLength ? tx.getComputedTextLength() : txt.length * 6);
+      var x0 = Math.max(pg.g.L, Math.min(pg.g.L + pg.g.pw - w, x - w / 2));
+      rc.setAttribute('x', x0.toFixed(1)); rc.setAttribute('width', w.toFixed(1)); tx.setAttribute('x', (x0 + w / 2).toFixed(1));
+      tp.setAttribute('visibility', 'visible');
+    }
+    function hideTip() { var tp = $('pTip'), cg = $('cutG'); if (tp) tp.setAttribute('visibility', 'hidden'); if (cg) cg.setAttribute('visibility', 'hidden'); }
+    function focusBd(k) { var el = pbox.querySelector('.bd[data-bd="' + k + '"]'); if (el) { try { el.focus({ preventScroll: true }); } catch (err) { el.focus(); } } }
+    function jumpSec(d) {
+      var i = -1;
+      T.secsFull.forEach(function (q, k) { if (i < 0 && q.a - 1 <= d && d <= q.b + 1) i = k; });
+      if (i < 0) { say('profMsg', '這裡沒有設定路段：當一般步道、重裝、晴天。'); return; }
+      var row = $('secrow-' + i); if (!row) return;
+      var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      row.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'center' });
+      row.classList.add('flash'); setTimeout(function () { row.classList.remove('flash'); }, 1600);
+    }
+    function zFull(d) { return C.zAt(T.fullFix || T.full, d); }
+    function snapCp(pg, x) {   // a checkpoint within 10 px (start and end excluded): cut or drag exactly there
+      var best = null, bx = 10;
+      T.cps.forEach(function (c) {
+        if (c.kind === 'start' || c.kind === 'end') return;
+        var dx = Math.abs(trackX(pg, c.d) - x);
+        if (dx < bx) { bx = dx; best = c; }
+      });
+      return best;
+    }
+    document.querySelectorAll('input[name="pmode"]').forEach(function (el) {
+      el.addEventListener('change', function () {
+        if (!el.checked) return;
+        PMODE = el.value;
+        pbox.classList.toggle('split', PMODE === 'split');
+        hideTip();
+        say('profMsg', PMODE === 'split' ? '點剖面上要切開的位置；新的一段沿用原本的設定。' : '');
+      });
+    });
+    pbox.addEventListener('click', function (e) {
+      if (SUPPRESS) { SUPPRESS = false; return; }
+      var pg = pgeom(); if (!pg) return;
+      var x = evX(pg, e.clientX), g = pg.g;
       if (x < g.L - 2 || x > g.L + g.pw + 2) return;
-      var r = Math.max(0, Math.min(g.D, (x - g.L) / g.pw * g.D));
-      var d = Math.round(C.real2gpx(T.secs, r) / C.STEP) * C.STEP;
+      var t = e.target && e.target.closest ? e.target : null;
+      if (t && t.closest('.bd') && evY(pg, e.clientY) >= g.ty - 10) return;   // a tap on a handle only selects it
+      var dTr = xTrack(pg, x);
+      if (t && t.closest('.strip-hit')) { jumpSec(dTr + rng0()); return; }
+      if (PMODE === 'split') { var sc = snapCp(pg, x); splitAt((sc ? sc.d : dTr) + rng0(), 'profMsg', sc ? sc.name : ''); return; }
+      var r = xReal(pg, x), d = Math.round(dTr / C.STEP) * C.STEP;
       addCp({ d: Math.min(d, T.track.total), name: km(r) + ' km', kind: 'user', stop: 0, trans: false });
       render();
+    });
+    pbox.addEventListener('pointerdown', function (e) {
+      var el = e.target.closest ? e.target.closest('.bd') : null; if (!el) return;
+      var k = +el.getAttribute('data-bd'), bd = BDS[k], pg = pgeom(); if (!bd || !pg) return;
+      DRAG = { k: k, bd: bd, el: el, x0: e.clientX, moved: false, d: bd.d, id: e.pointerId };
+      try { el.setPointerCapture(e.pointerId); } catch (err) { /* old browsers */ }
+      try { el.focus({ preventScroll: true }); } catch (err) { el.focus(); }
+      e.preventDefault();
+    });
+    pbox.addEventListener('pointermove', function (e) {
+      var pg;
+      if (DRAG) {
+        if (e.pointerId !== DRAG.id) return;
+        if (!DRAG.moved && Math.abs(e.clientX - DRAG.x0) < 4) return;
+        pg = pgeom(); if (!pg) return;
+        if (!DRAG.moved) { DRAG.moved = true; DRAG.el.classList.add('dragging'); }
+        var ex = evX(pg, e.clientX), sc = snapCp(pg, ex);
+        var d = clampBd(DRAG.bd, sc ? sc.d + rng0() : Math.round((xTrack(pg, ex) + rng0()) / 10) * 10);
+        if (sc && Math.abs(d - sc.d - rng0()) > 0.5) sc = null;
+        DRAG.d = d; DRAG.cp = sc;
+        var nx = trackX(pg, d - rng0()), dx = nx - trackX(pg, DRAG.bd.d - rng0());
+        DRAG.el.setAttribute('transform', 'translate(' + dx.toFixed(1) + ' 0)');
+        showTip(pg, nx, (sc ? sc.name + '｜' : '') + 'GPX ' + (d / 1000).toFixed(2) + ' km｜' + nf(zFull(d)) + ' m');
+        return;
+      }
+      if (PMODE !== 'split' || e.pointerType !== 'mouse') return;   // cut guide follows the mouse
+      pg = pgeom(); if (!pg) return;
+      var x = evX(pg, e.clientX), cg = $('cutG'), t = e.target && e.target.closest ? e.target : null;
+      if (!cg || x < pg.g.L || x > pg.g.L + pg.g.pw || (t && t.closest('.bd, .strip-hit'))) { hideTip(); return; }
+      var sc = snapCp(pg, x), gx = sc ? trackX(pg, sc.d) : x;
+      cg.setAttribute('x1', gx.toFixed(1)); cg.setAttribute('x2', gx.toFixed(1)); cg.setAttribute('visibility', 'visible');
+      showTip(pg, gx, '切在' + (sc ? '「' + sc.name + '」' : ' GPX ' + ((xTrack(pg, x) + rng0()) / 1000).toFixed(2) + ' km'));
+    });
+    function endDrag(e) {
+      if (!DRAG || (e && e.pointerId !== DRAG.id)) return;
+      var dg = DRAG; DRAG = null;
+      hideTip();
+      if (!dg.moved) return;
+      SUPPRESS = true; setTimeout(function () { SUPPRESS = false; }, 400);
+      if (Math.abs(dg.d - dg.bd.d) >= 0.5) {
+        moveBd(dg.bd, dg.d); refreshSecs(); render();
+        say('profMsg', '分界移到' + (dg.cp ? '「' + dg.cp.name + '」（GPX ' + (dg.d / 1000).toFixed(2) + ' km，' + nf(zFull(dg.d)) + ' m）。' : ' GPX ' + (dg.d / 1000).toFixed(2) + ' km（' + nf(zFull(dg.d)) + ' m）。'));
+      } else render();
+      focusBd(dg.k);
+    }
+    pbox.addEventListener('touchstart', function (e) { if (e.target.closest && e.target.closest('.bd')) e.preventDefault(); }, { passive: false });   // a drag on a handle never pans the page
+    pbox.addEventListener('touchmove', function (e) { if (DRAG) e.preventDefault(); }, { passive: false });
+    pbox.addEventListener('pointerup', endDrag);
+    pbox.addEventListener('pointercancel', function (e) { if (DRAG && e.pointerId === DRAG.id) { DRAG = null; hideTip(); render(); } });
+    pbox.addEventListener('pointerleave', function () { if (!DRAG) hideTip(); });
+    pbox.addEventListener('keydown', function (e) {
+      var el = e.target.closest ? e.target.closest('.bd') : null; if (!el) return;
+      var k = +el.getAttribute('data-bd'), bd = BDS[k]; if (!bd) return;
+      var step = e.shiftKey ? 100 : 20, d = null;
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') d = bd.d - step;
+      else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') d = bd.d + step;
+      else if (e.key === 'Home') d = -1e9;
+      else if (e.key === 'End') d = 1e9;
+      if (d === null) return;
+      e.preventDefault();
+      d = clampBd(bd, d);
+      if (Math.abs(d - bd.d) < 0.5) return;
+      moveBd(bd, d); refreshSecs(); render(); focusBd(k);
+      say('profMsg', '分界移到 GPX ' + (d / 1000).toFixed(2) + ' km（' + nf(zFull(d)) + ' m）。');
     });
     $('btnCopy').addEventListener('click', function () {
       var ta = $('copyText'), msg = $('copyMsg');
@@ -1757,6 +2226,14 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
         if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(function () { msg.textContent = '已複製。'; }, fallback);
         else fallback();
       } catch (err) { fallback(); }
+    });
+    var sumCard = $('hSum').closest('section'), bar = $('liveBar');   // v30: show the live bar while the summary is off screen
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) { es.forEach(function (en) { bar.hidden = en.isIntersecting; }); }, { threshold: 0.05 }).observe(sumCard);
+    }
+    bar.addEventListener('click', function () {
+      var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      sumCard.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' });
     });
     var raf = null;
     window.addEventListener('resize', function () {
@@ -1806,6 +2283,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       } catch (e) { ok = false; }
     }
     if (!ok) loadSample();
+    T.stash = saved && saved.stash && saved.stash.track && saved.stash.track.pts && saved.stash.track.pts.length > 1 ? saved.stash : null;   // v31
     setRangeInputs();
     bind();
     render();
