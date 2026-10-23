@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
-/* Layout: phone-first field card — one column (檔案 → 剖面 → 路段 → 設定・摘要 → 時間表); two columns only for settings + summary on wide screens */
+/* Layout: phone-first field card — one column (檔案 → 設定 → 剖面 → 路段 → 摘要 → 時間表): inputs first, results after */
 :root{
   --bg:#f2f4f1; --surface:#ffffff; --ink:#16201a; --ink2:#4a574f; --muted:#7a877f; --line:#d8ded9; --soft:#eaeeea;
   --accent:#0c6a5d; --accent-ink:#ffffff; --accent-soft:#dcefe9;
@@ -210,6 +210,15 @@ td .del{min-width:28px}
 .caltbl td{padding:5px 3px;font-variant-numeric:tabular-nums}
 .caltbl td.num{font-family:var(--font-num);font-weight:600;white-space:nowrap}
 [hidden]{display:none!important}
+/* v32: in-page links in the header; a short highlight on the place a link jumps to */
+.sub a{color:var(--accent);font-weight:600;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;text-decoration-color:var(--accent-line)}
+.sub a:hover{color:var(--accent-hover);text-decoration-color:currentColor}
+.sub a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+.card{transition:border-color .2s,box-shadow .2s}
+.card.flash{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+#hSet:focus{outline:none}
+@media (min-width:760px){ #setCard .form{grid-template-columns:repeat(4,minmax(0,1fr));align-items:end} #setCard .form .full{grid-column:auto} }
 /* v31: profile tools, draggable section boundaries, own-record calibration */
 .proftools{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
 .proftools .pt-k{font-size:.84rem;color:var(--ink2)}
@@ -246,7 +255,7 @@ td .del{min-width:28px}
   <header>
     <div class="eyebrow">10/6 實測校正 · 揹重 13 kg</div>
     <h1>步程試算</h1>
-    <p class="sub">Tobler 與 DIN 33466 各半的混合公式，用 10/6 班級揹 13 kg 的實測校正，10/20–21 四季林道實走再修正：含途中停留、地形與高度修正（每小時走 47 分、停 13 分）。<br><br>別的隊伍可在「設定」調整隊伍速度，並用自己的 GPS 紀錄校準。</p>
+    <p class="sub">Tobler 與 DIN 33466 各半的混合公式，用 10/6 班級揹 13 kg 的實測校正，10/20–21 四季林道實走再修正：含途中停留、地形與高度修正（每小時走 47 分、停 13 分）。<br><br>別的隊伍可在「<a href="#setCard" data-jump="setCard">設定</a>」調整隊伍速度，並<a href="#calBox" data-jump="calBox">用自己的 GPS 紀錄校準</a>。</p>
   </header>
 
   <section class="card" id="fileCard" aria-labelledby="hFile">
@@ -270,6 +279,82 @@ td .del{min-width:28px}
         <button class="btn ghost" id="btnRangeAll" type="button">全段</button>
       </div>
       <p class="hint">軌跡含搭車段或前後多錄的部分時，用這裡裁掉。</p>
+    </details>
+  </section>
+
+  <section class="card" id="setCard" aria-labelledby="hSet">
+    <h2 id="hSet" tabindex="-1">設定</h2>
+    <div class="form">
+      <label for="date">出發日期<input type="date" id="date"></label>
+      <label for="start">出發時間<input type="time" id="start"></label>
+      <label for="deadline">最晚抵達（選填）<input type="time" id="deadline"></label>
+      <label for="stopH" class="full">途中停留（每小時內含幾分鐘）<input type="number" id="stopH" min="0" max="45" step="0.5" inputmode="decimal"></label>
+    </div>
+    <p class="hint">途中停留＝休息、整裝、集合、等人等短停的合計，算在同一小時之內。<br><br>預設 13 分：每小時走 47 分、停 13 分。<br><br>13 分取自 10/6：休息 4 次、平均 8.3 分，短停 8 次、平均 4.2 分，合計約佔總時間的 22%。<br><br>停留不分晴雨：10/6 雨天每小時約停 15 分，10/20 晴天上坡約 16 分。<br><br>午餐、儀式等長停留，另外填在時間表各點的「停留」。<br><br>雨天只放慢走路速度，依各路段的「雨天」勾選。</p>
+    <div class="teamrow">
+      <span>隊伍速度（倍數；1＝八年級學生實測）</span>
+      <div class="inline"><label for="teamUp">上坡與平路 ×</label><input type="number" id="teamUp" min="0.3" max="2.5" step="0.05" inputmode="decimal"><label for="teamDn">下坡 ×</label><input type="number" id="teamDn" min="0.3" max="2.5" step="0.05" inputmode="decimal"></div>
+    </div>
+    <p class="teamnote" id="teamNote"></p>
+    <p class="hint">只調人的差別：體能、年紀、經驗。<br><br>有沒有揹大背包、晴雨、地形、停下來的時間，各有自己的設定，不要重複算進倍數。<br><br>填 1.2＝比基準快 20%，走路時間少約 17%；填 0.8＝慢 20%，走路時間多 25%。<br><br>下坡分開填：年紀較大或膝蓋不好的人，陡下坡常比上坡慢得多；比 −5% 陡的下坡用「下坡」倍數。</p>
+    <div class="teamrow" id="runRow" hidden>
+      <span>跑步速度（倍數；只用在勾「跑」的路段；1＝平地每小時 <span id="runFlatTxt">8</span> km）</span>
+      <div class="inline"><label for="runUp">上坡與平路 ×</label><input type="number" id="runUp" min="0.3" max="2.5" step="0.05" inputmode="decimal"><label for="runDn">下坡 ×</label><input type="number" id="runDn" min="0.3" max="2.5" step="0.05" inputmode="decimal"></div>
+      <p class="teamnote" id="runNote"></p>
+    </div>
+    <details class="calbox disc" id="calBox">
+      <summary>怎麼定倍數：用 GPS 紀錄校準</summary>
+      <div class="calbody">
+        <div class="row"><label class="btn primary" for="calFile"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9 1.75H4.5A1.75 1.75 0 0 0 2.75 3.5v9a1.75 1.75 0 0 0 1.75 1.75h7a1.75 1.75 0 0 0 1.75-1.75V6z"/><path d="M9 1.75V6h4.25"/><path d="M8 12V8.25M6.4 9.85 8 8.25l1.6 1.6"/></svg>載入自己的紀錄</label><input type="file" id="calFile" hidden></div>
+        <p class="error" id="calError" hidden></p>
+        <p class="hint">用自己（或同一群人）最近一次、有時間紀錄的 GPX 來算，手機 App 或手錶錄的都可以。<br><br>1. 按「載入自己的紀錄」選那次的 GPX。要去的路線會先收起來，路段與檢查點都保留；一次只算一筆，後載入的取代前一筆，不會疊加。<br><br>2. 在「路段與地形」照那天的實況設定地形、重裝、雨天；用跑的路段勾「跑」。搭車、在停車場或營地走動的部分，用「只算其中一段」裁掉。<br><br>3. 那天沒勾重裝的路段揹幾公斤，填在下面。<br><br>4. 下面會比對實際移動的時間（停下來的時間已扣掉）和模型，算出倍數，按「套用」。<br><br>5. 按「回到」那顆按鈕，回到要去的路線，倍數會保留。<br><br>直接在最上面載入有時間紀錄的 GPX 也能校準，但會取代目前的路線。<br><br>載入別人的紀錄，算出來的是那個人的倍數；隊伍以最慢的人為準，要用最慢的那位也在的紀錄。<br><br>例：上坡實際走了 2 小時，模型算 1 小時 48 分，倍數＝108 ÷ 120＝0.9。<br><br>紀錄最好上坡、下坡各有 1 小時以上，路況也和要去的路線相近。<br><br>沒有紀錄只能猜：寧可填慢一點，並先訂好最晚折返時間。</p>
+        <div class="inline calkg"><label for="calKg">紀錄那天沒勾重裝的路段揹</label><input type="number" id="calKg" min="0" max="30" step="0.5" inputmode="decimal"> kg<span class="hint">空白＝用「公式參數」的輕裝負重</span></div>
+        <div id="calOut"></div>
+      </div>
+    </details>
+    <details class="disc">
+      <summary>公式參數<span class="dsub">進階</span></summary>
+      <div class="pgrid" id="pgrid" style="margin-top:8px">
+        <h3>Tobler 與 DIN 33466（一般步道）</h3>
+        <label for="pTobF">Tobler 係數 F<input type="number" id="pTobF" step="0.01" inputmode="decimal"></label>
+        <label for="pWTob">Tobler 佔比<input type="number" id="pWTob" step="0.1" min="0" max="1" inputmode="decimal"></label>
+        <label for="pSunDown">晴天下坡時間×<input type="number" id="pSunDown" step="0.05" inputmode="decimal"></label>
+        <label for="pDinH">DIN 水平 km/h<input type="number" id="pDinH" step="0.1" inputmode="decimal"></label>
+        <label for="pDinUp">DIN 上升 m/h<input type="number" id="pDinUp" step="10" inputmode="numeric"></label>
+        <label for="pDinDown">DIN 下降 m/h<input type="number" id="pDinDown" step="10" inputmode="numeric"></label>
+        <h3>樹根陡坡（係數／重裝爬升上限／下降上限）</h3>
+        <label for="rootSun0">晴 係數<input type="number" id="rootSun0" step="0.05" inputmode="decimal"></label>
+        <label for="rootSun1">晴 爬升<input type="number" id="rootSun1" step="10" inputmode="numeric"></label>
+        <label for="rootSun2">晴 下降<input type="number" id="rootSun2" step="10" inputmode="numeric"></label>
+        <label for="rootRain0">雨霧 係數<input type="number" id="rootRain0" step="0.05" inputmode="decimal"></label>
+        <label for="rootRain1">雨霧 爬升<input type="number" id="rootRain1" step="10" inputmode="numeric"></label>
+        <label for="rootRain2">雨霧 下降<input type="number" id="rootRain2" step="10" inputmode="numeric"></label>
+        <h3>雨天係數（速度倍數，推估）</h3>
+        <label for="trailRain0">一般步道<input type="number" id="trailRain0" step="0.01" inputmode="decimal"></label>
+        <label for="roadRain0">林道<input type="number" id="roadRain0" step="0.01" inputmode="decimal"></label>
+        <h3>泥濘草徑（係數／重裝爬升上限／下降上限）</h3>
+        <label for="mudSun0">晴 係數<input type="number" id="mudSun0" step="0.05" inputmode="decimal"></label>
+        <label for="mudSun1">晴 爬升<input type="number" id="mudSun1" step="10" inputmode="numeric"></label>
+        <label for="mudSun2">晴 下降<input type="number" id="mudSun2" step="10" inputmode="numeric"></label>
+        <label for="mudRain0">雨霧 係數<input type="number" id="mudRain0" step="0.05" inputmode="decimal"></label>
+        <label for="mudRain1">雨霧 爬升<input type="number" id="mudRain1" step="10" inputmode="numeric"></label>
+        <label for="mudRain2">雨霧 下降<input type="number" id="mudRain2" step="10" inputmode="numeric"></label>
+        <h3>輕裝（沒勾重裝的路段）</h3>
+        <label for="pBody">體重 kg<input type="number" id="pBody" step="1" inputmode="numeric"></label>
+        <label for="pLightKg">輕裝負重 kg<input type="number" id="pLightKg" step="0.5" inputmode="decimal"></label>
+        <label for="pLightDnMax">下坡最多快×<input type="number" id="pLightDnMax" step="0.05" min="1" inputmode="decimal"></label>
+        <h3>跑（勾「跑」的路段）</h3>
+        <label for="pRunFlat">平地跑速 km/h<input type="number" id="pRunFlat" step="0.5" min="3" inputmode="decimal"></label>
+        <label for="pRunCapX">樹根、泥濘上限×<input type="number" id="pRunCapX" step="0.1" min="1" inputmode="decimal"></label>
+        <h3>林道（時間倍數）</h3>
+        <label for="pRoadHF">重裝×<input type="number" id="pRoadHF" step="0.01" inputmode="decimal"></label>
+        <label for="pRoadLU">輕裝上坡×<input type="number" id="pRoadLU" step="0.01" inputmode="decimal"></label>
+        <label for="pRoadLD">輕裝下坡×<input type="number" id="pRoadLD" step="0.01" inputmode="decimal"></label>
+        <h3>高度</h3>
+        <label for="pAltPct">每千公尺慢 %<input type="number" id="pAltPct" step="0.5" inputmode="decimal"></label>
+        <label for="pAltRef">高度基準 m<input type="number" id="pAltRef" step="50" inputmode="numeric"></label>
+      </div>
+      <div class="row" style="margin-top:8px"><button class="btn ghost" id="btnResetP" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.9 8a5.1 5.1 0 1 0 1.5-3.6"/><path d="M2.75 2.5v3.1h3.1"/></svg>恢復預設參數</button></div>
     </details>
   </section>
 
@@ -303,90 +388,12 @@ td .del{min-width:28px}
     <p class="hint">「新增路段」把最後一段從中間切成兩段；「刪除」把這段併入前一段（第 1 段併入第 2 段）。<br><br>GPX 常把小彎拉直，距離偏短；有實際里程就填，時間會照實際長度算。<br><br>地圖規劃的路線也可能走錯稜線、高度不準。<br><br>知道某段終點的實測海拔（GPS 紀錄、登山口標示）就填，中間的高度會按比例修正；空白就用 GPX 的值（灰字）。<br><br>「樹根陡坡」用在樹根、碎石多、陡上陡下的步道，例如戒茂斯到新武呂溪。<br><br>「泥濘草徑」用在泥濘的草坡路。<br><br>這兩種會限制每小時能爬升與下降的高度，雨天再降。<br><br>「林道」用在林道路面，例如四季林道。<br><br>不勾「重裝」用在行李另外運送的路段，例如行李上菜車；速度會換算得比揹 13 kg 快，林道再快一些。<br><br>勾「雨天」代表整段持續下雨或起霧、路濕，每種地形都會變慢：一般步道時間約多 11%、林道約多 5%、樹根陡坡與泥濘草徑多 17–30%，都是推估。<br><br>沒設定的部分當一般步道、重裝、晴天。</p>
   </section>
 
-  <div class="cols">
-    <section class="card" aria-labelledby="hSet">
-      <h2 id="hSet">設定</h2>
-      <div class="form">
-        <label for="date">出發日期<input type="date" id="date"></label>
-        <label for="start">出發時間<input type="time" id="start"></label>
-        <label for="deadline">最晚抵達（選填）<input type="time" id="deadline"></label>
-        <label for="stopH" class="full">途中停留（每小時內含幾分鐘）<input type="number" id="stopH" min="0" max="45" step="0.5" inputmode="decimal"></label>
-      </div>
-      <p class="hint">途中停留＝休息、整裝、集合、等人等短停的合計，算在同一小時之內。<br><br>預設 13 分：每小時走 47 分、停 13 分。<br><br>13 分取自 10/6：休息 4 次、平均 8.3 分，短停 8 次、平均 4.2 分，合計約佔總時間的 22%。<br><br>停留不分晴雨：10/6 雨天每小時約停 15 分，10/20 晴天上坡約 16 分。<br><br>午餐、儀式等長停留，另外填在時間表各點的「停留」。<br><br>雨天只放慢走路速度，依各路段的「雨天」勾選。</p>
-      <div class="teamrow">
-        <span>隊伍速度（倍數；1＝八年級學生實測）</span>
-        <div class="inline"><label for="teamUp">上坡與平路 ×</label><input type="number" id="teamUp" min="0.3" max="2.5" step="0.05" inputmode="decimal"><label for="teamDn">下坡 ×</label><input type="number" id="teamDn" min="0.3" max="2.5" step="0.05" inputmode="decimal"></div>
-      </div>
-      <p class="teamnote" id="teamNote"></p>
-      <p class="hint">只調人的差別：體能、年紀、經驗。<br><br>有沒有揹大背包、晴雨、地形、停下來的時間，各有自己的設定，不要重複算進倍數。<br><br>填 1.2＝比基準快 20%，走路時間少約 17%；填 0.8＝慢 20%，走路時間多 25%。<br><br>下坡分開填：年紀較大或膝蓋不好的人，陡下坡常比上坡慢得多；比 −5% 陡的下坡用「下坡」倍數。</p>
-      <div class="teamrow" id="runRow" hidden>
-        <span>跑步速度（倍數；只用在勾「跑」的路段；1＝平地每小時 <span id="runFlatTxt">8</span> km）</span>
-        <div class="inline"><label for="runUp">上坡與平路 ×</label><input type="number" id="runUp" min="0.3" max="2.5" step="0.05" inputmode="decimal"><label for="runDn">下坡 ×</label><input type="number" id="runDn" min="0.3" max="2.5" step="0.05" inputmode="decimal"></div>
-        <p class="teamnote" id="runNote"></p>
-      </div>
-      <details class="calbox disc" id="calBox">
-        <summary>怎麼定倍數：用 GPS 紀錄校準</summary>
-        <div class="calbody">
-          <div class="row"><label class="btn primary" for="calFile"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9 1.75H4.5A1.75 1.75 0 0 0 2.75 3.5v9a1.75 1.75 0 0 0 1.75 1.75h7a1.75 1.75 0 0 0 1.75-1.75V6z"/><path d="M9 1.75V6h4.25"/><path d="M8 12V8.25M6.4 9.85 8 8.25l1.6 1.6"/></svg>載入自己的紀錄</label><input type="file" id="calFile" hidden></div>
-          <p class="error" id="calError" hidden></p>
-          <p class="hint">用自己（或同一群人）最近一次、有時間紀錄的 GPX 來算，手機 App 或手錶錄的都可以。<br><br>1. 按「載入自己的紀錄」選那次的 GPX。要去的路線會先收起來，路段與檢查點都保留；一次只算一筆，後載入的取代前一筆，不會疊加。<br><br>2. 在「路段與地形」照那天的實況設定地形、重裝、雨天；用跑的路段勾「跑」。搭車、在停車場或營地走動的部分，用「只算其中一段」裁掉。<br><br>3. 那天沒勾重裝的路段揹幾公斤，填在下面。<br><br>4. 下面會比對實際移動的時間（停下來的時間已扣掉）和模型，算出倍數，按「套用」。<br><br>5. 按「回到」那顆按鈕，回到要去的路線，倍數會保留。<br><br>直接在最上面載入有時間紀錄的 GPX 也能校準，但會取代目前的路線。<br><br>載入別人的紀錄，算出來的是那個人的倍數；隊伍以最慢的人為準，要用最慢的那位也在的紀錄。<br><br>例：上坡實際走了 2 小時，模型算 1 小時 48 分，倍數＝108 ÷ 120＝0.9。<br><br>紀錄最好上坡、下坡各有 1 小時以上，路況也和要去的路線相近。<br><br>沒有紀錄只能猜：寧可填慢一點，並先訂好最晚折返時間。</p>
-          <div class="inline calkg"><label for="calKg">紀錄那天沒勾重裝的路段揹</label><input type="number" id="calKg" min="0" max="30" step="0.5" inputmode="decimal"> kg<span class="hint">空白＝用「公式參數」的輕裝負重</span></div>
-          <div id="calOut"></div>
-        </div>
-      </details>
-      <details class="disc">
-        <summary>公式參數<span class="dsub">進階</span></summary>
-        <div class="pgrid" id="pgrid" style="margin-top:8px">
-          <h3>Tobler 與 DIN 33466（一般步道）</h3>
-          <label for="pTobF">Tobler 係數 F<input type="number" id="pTobF" step="0.01" inputmode="decimal"></label>
-          <label for="pWTob">Tobler 佔比<input type="number" id="pWTob" step="0.1" min="0" max="1" inputmode="decimal"></label>
-          <label for="pSunDown">晴天下坡時間×<input type="number" id="pSunDown" step="0.05" inputmode="decimal"></label>
-          <label for="pDinH">DIN 水平 km/h<input type="number" id="pDinH" step="0.1" inputmode="decimal"></label>
-          <label for="pDinUp">DIN 上升 m/h<input type="number" id="pDinUp" step="10" inputmode="numeric"></label>
-          <label for="pDinDown">DIN 下降 m/h<input type="number" id="pDinDown" step="10" inputmode="numeric"></label>
-          <h3>樹根陡坡（係數／重裝爬升上限／下降上限）</h3>
-          <label for="rootSun0">晴 係數<input type="number" id="rootSun0" step="0.05" inputmode="decimal"></label>
-          <label for="rootSun1">晴 爬升<input type="number" id="rootSun1" step="10" inputmode="numeric"></label>
-          <label for="rootSun2">晴 下降<input type="number" id="rootSun2" step="10" inputmode="numeric"></label>
-          <label for="rootRain0">雨霧 係數<input type="number" id="rootRain0" step="0.05" inputmode="decimal"></label>
-          <label for="rootRain1">雨霧 爬升<input type="number" id="rootRain1" step="10" inputmode="numeric"></label>
-          <label for="rootRain2">雨霧 下降<input type="number" id="rootRain2" step="10" inputmode="numeric"></label>
-          <h3>雨天係數（速度倍數，推估）</h3>
-          <label for="trailRain0">一般步道<input type="number" id="trailRain0" step="0.01" inputmode="decimal"></label>
-          <label for="roadRain0">林道<input type="number" id="roadRain0" step="0.01" inputmode="decimal"></label>
-          <h3>泥濘草徑（係數／重裝爬升上限／下降上限）</h3>
-          <label for="mudSun0">晴 係數<input type="number" id="mudSun0" step="0.05" inputmode="decimal"></label>
-          <label for="mudSun1">晴 爬升<input type="number" id="mudSun1" step="10" inputmode="numeric"></label>
-          <label for="mudSun2">晴 下降<input type="number" id="mudSun2" step="10" inputmode="numeric"></label>
-          <label for="mudRain0">雨霧 係數<input type="number" id="mudRain0" step="0.05" inputmode="decimal"></label>
-          <label for="mudRain1">雨霧 爬升<input type="number" id="mudRain1" step="10" inputmode="numeric"></label>
-          <label for="mudRain2">雨霧 下降<input type="number" id="mudRain2" step="10" inputmode="numeric"></label>
-          <h3>輕裝（沒勾重裝的路段）</h3>
-          <label for="pBody">體重 kg<input type="number" id="pBody" step="1" inputmode="numeric"></label>
-          <label for="pLightKg">輕裝負重 kg<input type="number" id="pLightKg" step="0.5" inputmode="decimal"></label>
-          <label for="pLightDnMax">下坡最多快×<input type="number" id="pLightDnMax" step="0.05" min="1" inputmode="decimal"></label>
-          <h3>跑（勾「跑」的路段）</h3>
-          <label for="pRunFlat">平地跑速 km/h<input type="number" id="pRunFlat" step="0.5" min="3" inputmode="decimal"></label>
-          <label for="pRunCapX">樹根、泥濘上限×<input type="number" id="pRunCapX" step="0.1" min="1" inputmode="decimal"></label>
-          <h3>林道（時間倍數）</h3>
-          <label for="pRoadHF">重裝×<input type="number" id="pRoadHF" step="0.01" inputmode="decimal"></label>
-          <label for="pRoadLU">輕裝上坡×<input type="number" id="pRoadLU" step="0.01" inputmode="decimal"></label>
-          <label for="pRoadLD">輕裝下坡×<input type="number" id="pRoadLD" step="0.01" inputmode="decimal"></label>
-          <h3>高度</h3>
-          <label for="pAltPct">每千公尺慢 %<input type="number" id="pAltPct" step="0.5" inputmode="decimal"></label>
-          <label for="pAltRef">高度基準 m<input type="number" id="pAltRef" step="50" inputmode="numeric"></label>
-        </div>
-        <div class="row" style="margin-top:8px"><button class="btn ghost" id="btnResetP" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.9 8a5.1 5.1 0 1 0 1.5-3.6"/><path d="M2.75 2.5v3.1h3.1"/></svg>恢復預設參數</button></div>
-      </details>
-    </section>
-
-    <section class="card" aria-labelledby="hSum">
-      <h2 id="hSum">摘要</h2>
-      <div class="kpis" id="kpis"></div>
-      <div class="timeline" id="tline"></div>
-      <p class="scen" id="scenLine"></p>
-    </section>
-  </div>
+  <section class="card" aria-labelledby="hSum">
+    <h2 id="hSum">摘要</h2>
+    <div class="kpis" id="kpis"></div>
+    <div class="timeline" id="tline"></div>
+    <p class="scen" id="scenLine"></p>
+  </section>
 
   <section class="card" aria-labelledby="hTbl">
     <h2 id="hTbl">時間表</h2>
@@ -1968,6 +1975,19 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
 
   function bind() {
     $('file').addEventListener('change', function (e) { handleFile(e.target.files && e.target.files[0]); });
+    document.querySelectorAll('a[data-jump]').forEach(function (lk) {   // v32: header links to 設定 and to the calibration box
+      lk.addEventListener('click', function (e) {
+        var el = $(lk.getAttribute('data-jump'));
+        if (!el) return;
+        e.preventDefault();
+        if (el.tagName === 'DETAILS') el.open = true;
+        var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        el.scrollIntoView({ behavior: still ? 'auto' : 'smooth', block: 'start' });
+        var fo = el.tagName === 'DETAILS' ? el.querySelector('summary') : $('hSet');
+        if (fo) { try { fo.focus({ preventScroll: true }); } catch (err) { fo.focus(); } }
+        el.classList.add('flash'); setTimeout(function () { el.classList.remove('flash'); }, 1600);
+      });
+    });
     $('calFile').addEventListener('change', function (e) { handleFile(e.target.files && e.target.files[0], true); });
     $('calBanner').addEventListener('click', function (e) {
       var b = e.target.closest ? e.target.closest('[data-back],[data-keep]') : null;
