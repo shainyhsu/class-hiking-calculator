@@ -398,7 +398,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
     <div class="svgbox" id="profile"></div>
     <p class="profmsg" id="profMsg" aria-live="polite"></p>
     <div class="legend" id="legend"></div>
-    <p class="hint">點一下剖面：選「加檢查點」就在那裡加一個檢查點，檢查點從起點 0 開始編號；選「切路段」就在那裡把路段切成兩段，新的一段沿用原本的設定；選「刪除」再點檢查點或分界線就刪掉，起點、終點除外，刪錯了按「復原」。<br><br>勾「每公里」就每公里加一個點；勾「每整點」就在預計每個整點走到的位置加點，改了出發時間、速度或停留，這些點會跟著移動。<br><br>整點剛好落在某個點的停留時間裡（例如午餐），就不另外加點，看那一點的抵達、出發時間。<br><br>整點的點在時間表改了名稱或停留，就固定在那個位置。<br><br>琥珀色的圓是整點的點，和上緣「時刻」同色；空心灰圓是每公里的點，和下緣 km 同色；「清除自訂點」會清掉自己加的點、公里點和整點的點。<br><br>綠色虛線是路段分界，左右拖拉下方的把手就能移動。<br><br>點一下把手後，也能用方向鍵微調：每次 20 m，按住 Shift 每次 100 m；按 Delete 刪掉這個分界。<br><br>剖面底部的小方框是路段編號；點剖面下方的地形細條，會跳到那一段的設定。<br><br>上緣琥珀色「時刻」那一排是預計經過的整點，例如 10 代表 10:00 會走到那條琥珀色虛線的位置；下緣灰色是里程（km）。<br><br>灰底是日落後，深灰是天黑後。<br><br>剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，斷斷續續的是跑的路段，下方紫線是雨天路段。</p>
+    <p class="hint">點一下剖面：選「加檢查點」就在那裡加一個檢查點，檢查點從起點 0 開始編號；選「切路段」就在那裡把路段切成兩段，新的一段沿用原本的設定；選「刪除」再點檢查點或分界線就刪掉，起點、終點除外，刪錯了按「復原」。<br><br>勾「每公里」就每公里加一個點；勾「每整點」就在預計每個整點走到的位置加點，改了出發時間、速度或停留，這些點會跟著移動。<br><br>整點剛好落在某個點的停留時間裡（例如午餐），就不另外加點，看那一點的抵達、出發時間。<br><br>整點的點在時間表改了名稱或停留，就固定在那個位置。<br><br>琥珀色的圓是整點的點，和上緣「時刻」同色；空心灰圓是每公里的點，和下緣 km 同色；「清除自訂點」會清掉自己加的點、公里點和整點的點。<br><br>綠色虛線是路段分界，左右拖拉下方的把手就能移動。<br><br>點一下把手後，也能用方向鍵微調：每次 20 m，按住 Shift 每次 100 m；按 Delete 刪掉這個分界。<br><br>剖面底部的小方框是路段編號；點剖面下方的地形細條，會跳到那一段的設定。<br><br>上緣琥珀色「時刻」那一排是預計經過的整點，例如 10 代表 10:00 會走到那條琥珀色虛線的位置；下緣灰色是里程（km）。<br><br>灰底是暮光（日落後或日出前），深灰是夜間（民用暮光結束至曙光開始）。<br><br>剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，斷斷續續的是跑的路段，下方紫線是雨天路段。</p>
   </section>
 
   <section class="card" aria-labelledby="hSec">
@@ -460,7 +460,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
   <button type="button" class="livebar" id="liveBar" hidden aria-label="目前結果，點一下看摘要">
     <span class="lb"><span class="lb-k">抵達</span><b id="lbArr">--:--</b></span>
     <span class="lb"><span class="lb-k">走路</span><b id="lbMv">-:--</b></span>
-    <span class="chip ok" id="lbLight">日落前</span>
+    <span class="chip ok" id="lbLight">日間</span>
     <span class="lb-go"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 9.75 8 5.75l4 4"/></svg>摘要</span>
   </button>
 </main>
@@ -1752,16 +1752,16 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     var lsb = c.sun ? lightState(c.sun, last.arr) : 0, dlb = parseHM(S.deadline), lb = $('lbLight');   // v30: live bar
     $('lbArr').textContent = hm(last.arr); $('lbMv').textContent = dur(c.m.total * 60);
     if (dlb !== null && last.arr > dlb) { lb.className = 'chip crit'; lb.textContent = '超過最晚抵達'; }
-    else if (lsb === 2) { lb.className = 'chip crit'; lb.textContent = '天黑後抵達'; }
-    else if (lsb === 1) { lb.className = 'chip warn'; lb.textContent = '日落後抵達'; }
-    else { lb.className = 'chip ok'; lb.textContent = '日落前抵達'; }
+    else if (lsb === 2) { lb.className = 'chip crit'; lb.textContent = '夜間抵達'; }
+    else if (lsb === 1) { lb.className = 'chip warn'; lb.textContent = '暮光抵達'; }
+    else { lb.className = 'chip ok'; lb.textContent = '日間抵達'; }
     var t = [trow('出發', hm(c.startMin)), trow('全晴／全雨抵達', hm(c.arrSun) + '／' + hm(c.arrRain))];
     if (c.sun) {
       t.push(trow('日出／日落', hhmmFromHours(c.sun.rise) + '／' + hhmmFromHours(c.sun.set)));
       t.push(trow('天黑（民用暮光結束）', hhmmFromHours(c.sun.dusk)));
       var ls = lightState(c.sun, last.arr);
-      if (ls === 2) t.push(trow('終點時的光線', '<span class="chip crit">天黑後抵達</span>'));
-      else if (ls === 1) t.push(trow('終點時的光線', '<span class="chip warn">日落後抵達</span>'));
+      if (ls === 2) t.push(trow('終點時的光線', '<span class="chip crit">夜間抵達</span>'));
+      else if (ls === 1) t.push(trow('終點時的光線', '<span class="chip warn">暮光抵達</span>'));
     }
     var dl = parseHM(S.deadline);
     if (dl !== null) {
@@ -1914,7 +1914,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       var cp = r.cp, zv = C.zAt(c.tr, cp.d), first = i === 0, last = i === c.rows.length - 1, chips = '';
       if (!first) {
         var ls = lightState(c.sun, r.arr);
-        if (ls === 2) chips += ' <span class="chip crit">天黑後</span>'; else if (ls === 1) chips += ' <span class="chip warn">日落後</span>';
+        if (ls === 2) chips += ' <span class="chip crit">夜間</span>'; else if (ls === 1) chips += ' <span class="chip warn">暮光</span>';
         if (dl !== null && r.arr > dl) chips += ' <span class="chip crit">超過最晚抵達</span>';
       }
       var meta = km(R(cp.d)) + ' km｜' + nf(zv) + ' m' + (first ? '' : '<br>移動 ' + dur(r.seg) + (r.rest >= 1 ? '＋途中停留 ' + Math.round(r.rest) + ' 分' : ''));
@@ -1946,7 +1946,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       var zv = C.zAt(c.tr, r.cp.d), flag = '';
       if (i > 0) {
         var ls = lightState(c.sun, r.arr);
-        if (ls === 2) flag += '（天黑後）'; else if (ls === 1) flag += '（日落後）';
+        if (ls === 2) flag += '（夜間）'; else if (ls === 1) flag += '（暮光）';
         if (dl !== null && r.arr > dl) flag += '（超過最晚抵達）';
       }
       var tt = i === 0 ? '出發 ' + hm(r.dep) : '抵達 ' + hm(r.arr) + (r.stop > 0 && i < c.rows.length - 1 ? '，停 ' + Math.round(r.stop) + ' 分' : '');
