@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
-/* Layout: phone-first field card — one column (檔案 → 設定 → 剖面 → 路段 → 摘要 → 時間表): inputs first, results after */
+/* Layout: phone-first field card — one column (檔案 → 設定 → 剖面 → 路段 → 時間表 → 摘要): inputs first, results after */
 :root{
   --bg:#f2f4f1; --surface:#ffffff; --ink:#16201a; --ink2:#4a574f; --muted:#7a877f; --line:#d8ded9; --soft:#eaeeea;
   --accent:#0c6a5d; --accent-ink:#ffffff; --accent-soft:#dcefe9;
@@ -13,7 +13,7 @@
   --warn:#9a5a00; --warn-bg:#fff0d4; --crit:#a32632; --crit-bg:#fbe2e4;
   --night:rgba(22,32,26,.16); --dusk:rgba(22,32,26,.07);
   --b0:#08519d; --b1:#3186e9; --b2:#87bafc; --b3:#d8d7d4; --b4:#fd978f; --b5:#e24947; --b6:#9b0d1a;
-  --profile-line:#2f3833; --strip:#5b6a61; --t-root:#7a4b22; --t-mud:#8a8a3a; --t-trail:#c9cfc9; --t-road:#c2a878; --rain:#6b4fbb;
+  --profile-line:#2f3833; --strip:#5b6a61; --t-root:#7a4b22; --t-mud:#8a8a3a; --t-trail:#c9cfc9; --t-road:#c2a878; --rain:#6b4fbb; --time:#f0a51c; --time-ink:#2a1c00;
   --font-ui:"PingFang TC","Noto Sans TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
   --font-num:"Barlow Semi Condensed","Roboto Condensed","Arial Narrow",var(--font-ui);
   --r:10px;
@@ -25,7 +25,7 @@
   --warn:#f1b24f; --warn-bg:#3a2b0e; --crit:#ff8a93; --crit-bg:#3d161b;
   --night:rgba(0,0,0,.38); --dusk:rgba(0,0,0,.18);
   --b0:#3a78c8; --b1:#4f98ee; --b2:#94c3f8; --b3:#545b56; --b4:#f39c93; --b5:#ea5e5f; --b6:#c93545;
-  --profile-line:#dfe7e2; --strip:#9fb0a6; --t-root:#c58a52; --t-mud:#b9b65a; --t-trail:#3a443d; --t-road:#a48c5e; --rain:#a58cf0; color-scheme:dark;
+  --profile-line:#dfe7e2; --strip:#9fb0a6; --t-root:#c58a52; --t-mud:#b9b65a; --t-trail:#3a443d; --t-road:#a48c5e; --rain:#a58cf0; --time:#fbbf24; --time-ink:#2a1c00; color-scheme:dark;
 }}
 :root[data-theme="dark"]{
   --bg:#0f1411; --surface:#172019; --ink:#e4ebe6; --ink2:#b2beb6; --muted:#87958c; --line:#2a352e; --soft:#1e2822;
@@ -34,7 +34,7 @@
   --warn:#f1b24f; --warn-bg:#3a2b0e; --crit:#ff8a93; --crit-bg:#3d161b;
   --night:rgba(0,0,0,.38); --dusk:rgba(0,0,0,.18);
   --b0:#3a78c8; --b1:#4f98ee; --b2:#94c3f8; --b3:#545b56; --b4:#f39c93; --b5:#ea5e5f; --b6:#c93545;
-  --profile-line:#dfe7e2; --strip:#9fb0a6; --t-root:#c58a52; --t-mud:#b9b65a; --t-trail:#3a443d; --t-road:#a48c5e; --rain:#a58cf0; color-scheme:dark;
+  --profile-line:#dfe7e2; --strip:#9fb0a6; --t-root:#c58a52; --t-mud:#b9b65a; --t-trail:#3a443d; --t-road:#a48c5e; --rain:#a58cf0; --time:#fbbf24; --time-ink:#2a1c00; color-scheme:dark;
 }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.55;-webkit-text-size-adjust:100%}
@@ -218,6 +218,23 @@ td .del{min-width:28px}
 .card.flash{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
 #hSet:focus{outline:none}
+/* v33: profile — 刪除 mode, auto points, undo */
+.seg input#pmDel:checked+label{background:var(--crit);color:var(--surface);font-weight:600}
+#profile.delmode svg{cursor:pointer}
+#profile .cpc{stroke:var(--surface);stroke-width:1.5}
+#profile.delmode .cpc.dl{stroke:var(--crit);stroke-width:2.6}
+#profile .cpc.hot{stroke:var(--crit);stroke-width:3.6}
+#profile.delmode .bd{cursor:pointer}
+#profile.delmode .bd-line{stroke:var(--crit)}
+#profile.delmode .bd-knob{stroke:var(--crit)}
+#profile.delmode .bd-grip{stroke:var(--crit)}
+#profile .bd.hot .bd-line{stroke-dasharray:none;stroke-width:2.6}
+#profile .bd.hot .bd-knob{fill:var(--crit)}
+#profile .bd.hot .bd-grip{stroke:var(--surface)}
+.profmsg .btn{margin-left:8px;vertical-align:middle}
+.sw.dot{width:10px;height:10px;border-radius:50%}
+.sw.dot.ring{background:var(--surface);box-shadow:inset 0 0 0 1.6px var(--ink2)}
+#profile .cpc.km{stroke:var(--ink2);stroke-width:1.6}
 @media (min-width:760px){ #setCard .form{grid-template-columns:repeat(4,minmax(0,1fr));align-items:end} #setCard .form .full{grid-column:auto} }
 /* v31: profile tools, draggable section boundaries, own-record calibration */
 .proftools{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
@@ -369,12 +386,19 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
       <div class="seg" role="radiogroup" aria-labelledby="pmLabel">
         <input type="radio" name="pmode" id="pmCp" value="cp" checked><label for="pmCp">加檢查點</label>
         <input type="radio" name="pmode" id="pmSplit" value="split"><label for="pmSplit">切路段</label>
+        <input type="radio" name="pmode" id="pmDel" value="del"><label for="pmDel">刪除</label>
       </div>
+    </div>
+    <div class="proftools">
+      <span class="pt-k">自動加點</span>
+      <label class="hv" for="kmTog"><input type="checkbox" id="kmTog">每公里</label>
+      <label class="hv" for="hrTog"><input type="checkbox" id="hrTog">每整點</label>
+      <button class="btn ghost sm" id="btnClear" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.25 13.25h7"/><path d="M3.2 9.3 8.7 3.8a1.5 1.5 0 0 1 2.1 0l1.4 1.4a1.5 1.5 0 0 1 0 2.1L7.1 12.4a1.8 1.8 0 0 1-1.3.55H4.6a1 1 0 0 1-.7-.3l-.7-.7a1.4 1.4 0 0 1 0-1.95z"/></svg>清除自訂點</button>
     </div>
     <div class="svgbox" id="profile"></div>
     <p class="profmsg" id="profMsg" aria-live="polite"></p>
     <div class="legend" id="legend"></div>
-    <p class="hint">點一下剖面：選「加檢查點」就在那裡加一個檢查點，檢查點從起點 0 開始編號；選「切路段」就在那裡把路段切成兩段，新的一段沿用原本的設定。<br><br>綠色虛線是路段分界，左右拖拉下方的把手就能移動。<br><br>點一下把手後，也能用方向鍵微調：每次 20 m，按住 Shift 每次 100 m。<br><br>剖面底部的小方框是路段編號；點剖面下方的地形細條，會跳到那一段的設定。<br><br>上緣「時刻」那一排是預計經過的整點，例如 10 代表 10:00 會走到那條虛線的位置。<br><br>灰底是日落後，深灰是天黑後。<br><br>剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，斷斷續續的是跑的路段，下方紫線是雨天路段。</p>
+    <p class="hint">點一下剖面：選「加檢查點」就在那裡加一個檢查點，檢查點從起點 0 開始編號；選「切路段」就在那裡把路段切成兩段，新的一段沿用原本的設定；選「刪除」再點檢查點或分界線就刪掉，起點、終點除外，刪錯了按「復原」。<br><br>勾「每公里」就每公里加一個點；勾「每整點」就在預計每個整點走到的位置加點，改了出發時間、速度或停留，這些點會跟著移動。<br><br>整點剛好落在某個點的停留時間裡（例如午餐），就不另外加點，看那一點的抵達、出發時間。<br><br>整點的點在時間表改了名稱或停留，就固定在那個位置。<br><br>琥珀色的圓是整點的點，和上緣「時刻」同色；空心灰圓是每公里的點，和下緣 km 同色；「清除自訂點」會清掉自己加的點、公里點和整點的點。<br><br>綠色虛線是路段分界，左右拖拉下方的把手就能移動。<br><br>點一下把手後，也能用方向鍵微調：每次 20 m，按住 Shift 每次 100 m；按 Delete 刪掉這個分界。<br><br>剖面底部的小方框是路段編號；點剖面下方的地形細條，會跳到那一段的設定。<br><br>上緣琥珀色「時刻」那一排是預計經過的整點，例如 10 代表 10:00 會走到那條琥珀色虛線的位置；下緣灰色是里程（km）。<br><br>灰底是日落後，深灰是天黑後。<br><br>剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，斷斷續續的是跑的路段，下方紫線是雨天路段。</p>
   </section>
 
   <section class="card" aria-labelledby="hSec">
@@ -388,26 +412,22 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
     <p class="hint">「新增路段」把最後一段從中間切成兩段；「刪除」把這段併入前一段（第 1 段併入第 2 段）。<br><br>GPX 常把小彎拉直，距離偏短；有實際里程就填，時間會照實際長度算。<br><br>地圖規劃的路線也可能走錯稜線、高度不準。<br><br>知道某段終點的實測海拔（GPS 紀錄、登山口標示）就填，中間的高度會按比例修正；空白就用 GPX 的值（灰字）。<br><br>「樹根陡坡」用在樹根、碎石多、陡上陡下的步道，例如戒茂斯到新武呂溪。<br><br>「泥濘草徑」用在泥濘的草坡路。<br><br>這兩種會限制每小時能爬升與下降的高度，雨天再降。<br><br>「林道」用在林道路面，例如四季林道。<br><br>不勾「重裝」用在行李另外運送的路段，例如行李上菜車；速度會換算得比揹 13 kg 快，林道再快一些。<br><br>勾「雨天」代表整段持續下雨或起霧、路濕，每種地形都會變慢：一般步道時間約多 11%、林道約多 5%、樹根陡坡與泥濘草徑多 17–30%，都是推估。<br><br>沒設定的部分當一般步道、重裝、晴天。</p>
   </section>
 
-  <section class="card" aria-labelledby="hSum">
-    <h2 id="hSum">摘要</h2>
-    <div class="kpis" id="kpis"></div>
-    <div class="timeline" id="tline"></div>
-    <p class="scen" id="scenLine"></p>
-  </section>
-
   <section class="card" aria-labelledby="hTbl">
     <h2 id="hTbl">時間表</h2>
-    <div class="tools">
-      <button class="btn" id="btnKm" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M1.75 11.75h12.5"/><path d="M3 11.75V8.5M8 11.75V8.5M13 11.75V8.5"/><path d="M5.5 11.75v-1.5M10.5 11.75v-1.5"/><path d="M3 4.25h10"/></svg><span id="btnKmLabel">每公里加點</span></button>
-      <button class="btn ghost" id="btnClear" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.25 13.25h7"/><path d="M3.2 9.3 8.7 3.8a1.5 1.5 0 0 1 2.1 0l1.4 1.4a1.5 1.5 0 0 1 0 2.1L7.1 12.4a1.8 1.8 0 0 1-1.3.55H4.6a1 1 0 0 1-.7-.3l-.7-.7a1.4 1.4 0 0 1 0-1.95z"/></svg>清除自訂點</button>
-    </div>
     <div class="tblwrap">
       <table>
         <thead><tr><th>#</th><th>檢查點</th><th class="num">抵達</th><th class="num">停留</th><th class="num">出發</th><th></th></tr></thead>
         <tbody id="tbody"></tbody>
       </table>
     </div>
-    <p class="hint">停留填分鐘數，例如午餐、儀式。<br><br>點名稱可以改名。</p>
+    <p class="hint">停留填分鐘數，例如午餐、儀式。<br><br>點名稱可以改名。<br><br>加點、刪點、每公里、每整點，都可以在上面的高度剖面操作。</p>
+  </section>
+
+  <section class="card" aria-labelledby="hSum">
+    <h2 id="hSum">摘要</h2>
+    <div class="kpis" id="kpis"></div>
+    <div class="timeline" id="tline"></div>
+    <p class="scen" id="scenLine"></p>
   </section>
 
   <section class="card" aria-labelledby="hCopy">
@@ -1155,13 +1175,13 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   function $(id) { return document.getElementById(id); }
   var LS_KEY = 'ctp.v45', LS_OLD = ['ctp.v44', 'ctp.v43', 'ctp.v42', 'ctp.v41', 'ctp.v40', 'ctp.v39', 'ctp.v38', 'ctp.v37', 'ctp.v36', 'ctp.v35', 'ctp.v34', 'ctp.v33', 'ctp.v32', 'ctp.v31', 'ctp.v3'];
   var WD = ['日', '一', '二', '三', '四', '五', '六'];
-  var KIND_PRI = { start: 0, end: 0, wpt: 1, peak: 2, turn: 2, user: 3, km: 4 };
+  var KIND_PRI = { start: 0, end: 0, wpt: 1, peak: 2, turn: 2, user: 3, km: 4, hour: 5 };
   var BAND_LABEL = ['≤−20%', '−20～−12%', '−12～−5%', '−5～+5%', '+5～+12%', '+12～+20%', '≥+20%'];
   var TERR_COLOR = { trail: '--t-trail', root: '--t-root', mud: '--t-mud', road: '--t-road' };
   var WX_LABEL = { sun: '晴天', rain: '雨天或起霧' };
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
-  var S = { date: todayStr(), start: '07:30', deadline: '', stopH: 13, teamUp: 1, teamDn: 1, runUp: 1, runDn: 1, calKg: '' };
+  var S = { date: todayStr(), start: '07:30', deadline: '', stopH: 13, teamUp: 1, teamDn: 1, runUp: 1, runDn: 1, calKg: '', hourPts: false, hourSkip: [] };
   var TZ = 8;   // 台灣時間 UTC+8 (v21: no time-zone input)
   var PP = clone(C.DEFAULTS);
   var T = { parsed: null, name: '', fileName: '', reversed: false, range: null, full: null, track: null, stats: null,
@@ -1214,13 +1234,14 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   // v31: the planned route is put aside while an own record is loaded for calibration
   function snapRoute() {
     return { track: packTrack(T.parsed), name: T.name, fileName: T.fileName, reversed: T.reversed, range: T.range, isSample: T.isSample, warn: T.warn,
-             suggest: T.suggest, recorded: T.recorded, secsFull: clone(T.secsFull), cps: clone(T.cps), seq: T.seq, zStart: T.zStart };
+             suggest: T.suggest, recorded: T.recorded, secsFull: clone(T.secsFull), cps: clone(T.cps), seq: T.seq, zStart: T.zStart, hourSkip: (S.hourSkip || []).slice() };
   }
   function restoreRoute(o) {
     T.parsed = unpackTrack(o.track);
     T.name = o.name || o.track.name || ''; T.fileName = o.fileName || ''; T.reversed = !!o.reversed; T.range = o.range || null;
     T.isSample = !!o.isSample; T.warn = o.warn || ''; T.suggest = o.suggest || null; T.recorded = !!o.recorded;
     T.secsFull = o.secsFull || []; T.zStart = isNum(o.zStart) ? +o.zStart : null;
+    S.hourSkip = o.hourSkip || [];
     rebuild(true);
     if (o.cps && o.cps.length >= 2) {
       T.cps = o.cps.filter(function (c) { return c.d <= T.track.total + 1; });
@@ -1447,6 +1468,24 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     for (var r = 1000; r < rt - 150; r += 1000) addCp({ d: C.real2gpx(T.secs, r), name: km(r) + ' km', kind: 'km', stop: 0, trans: false });
   }
   function hasKm() { return T.cps.some(function (c) { return c.kind === 'km'; }); }
+  // v33: every-hour points sit where the schedule (without them) reaches each full hour; they carry no stop, so the other times stay
+  function syncHours(m, b, startMin) {
+    var base = T.cps.filter(function (c) { return c.kind !== 'hour'; });
+    if (!S.hourPts) { T.cps = base; return; }
+    var rows0 = C.scheduleV3(base, m, b, startMin), x = T.track.x, add = [], skip = S.hourSkip || [];
+    var prev = C.clockAtV3(rows0, m, b, x[0]);
+    for (var i = 1; i < x.length; i++) {
+      var ck = C.clockAtV3(rows0, m, b, x[i]);
+      for (var h = Math.floor(prev / 60) + 1; h * 60 <= ck; h++) {
+        var f = (h * 60 - prev) / ((ck - prev) || 1), d = x[i - 1] + (x[i] - x[i - 1]) * f;
+        if (skip.indexOf(h) >= 0) continue;
+        if (base.some(function (c) { return Math.abs(c.d - d) < 40 || c.id === 100000 + h; })) continue;   // next to a real point, or an hour point turned fixed
+        add.push({ d: d, name: pad(((h % 24) + 24) % 24) + ':00 整點', kind: 'hour', stop: 0, trans: false, id: 100000 + h });
+      }
+      prev = ck;
+    }
+    T.cps = base.concat(add).sort(function (p, q) { return p.d - q.d; });
+  }
 
   // ---------- model ----------
   function buf() {
@@ -1593,6 +1632,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     var m = C.applyBuffer(C.runModelV3(tr, T.secs, null, PM), b);
     var mSun = C.applyBuffer(C.runModelV3(tr, T.secs, 'sun', PM), b), mRain = C.applyBuffer(C.runModelV3(tr, T.secs, 'rain', PM), b);
     var startMin = parseHM(S.start); if (startMin === null) startMin = 450;
+    syncHours(m, b, startMin);   // v33
     var rows = C.scheduleV3(T.cps, m, b, startMin);
     var arrSun = C.scheduleV3(T.cps, mSun, b, startMin).pop().arr, arrRain = C.scheduleV3(T.cps, mRain, b, startMin).pop().arr;
     var sun = null;
@@ -1600,7 +1640,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     var ctx = { tr: tr, st: st, m: m, mSun: mSun, mRain: mRain, buf: b, rows: rows, sun: sun, startMin: startMin, arrSun: arrSun, arrRain: arrRain };
     LAST = ctx;
     renderStatus(); renderSections(); renderSummary(ctx); renderTeam(); renderStrip(ctx); renderProfile(ctx); renderTable(ctx); renderCopy(ctx);
-    $('btnKmLabel').textContent = hasKm() ? '移除公里點' : '每公里加點';
+    $('kmTog').checked = hasKm(); $('hrTog').checked = !!S.hourPts;   // v33
     save();
   }
 
@@ -1806,25 +1846,28 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     var tk = Dk <= 80 ? 1 : lab, fs = ppk >= 24 || lab > 1 ? 11 : 10;
     for (var kx = 0; kx <= Dk + 1e-9; kx += tk) {
       var px = sx(kx * 1000).toFixed(1);
-      o.push('<line x1="' + px + '" x2="' + px + '" y1="' + (ty + 12) + '" y2="' + (ty + 16) + '" style="stroke:var(--muted);stroke-width:1"></line>');
+      o.push('<line x1="' + px + '" x2="' + px + '" y1="' + (ty + 12) + '" y2="' + (ty + 16) + '" style="stroke:var(--ink2);stroke-width:1"></line>');
       if (Math.round(kx) % lab === 0) o.push('<text x="' + px + '" y="' + (H - 8) + '" text-anchor="middle" font-size="' + fs + '">' + Math.round(kx) + '</text>');
     }
     o.push('<text x="' + (L - 10) + '" y="' + (H - 8) + '" text-anchor="end" font-size="11">km</text>');
     var lastHour = Math.floor(clocks[0] / 60), lastLabelX = -99;
-    o.push('<text x="' + (L - 10) + '" y="' + (Tp - 10) + '" text-anchor="end" font-size="11">時刻</text>');   // the top row is clock hours
+    o.push('<rect x="' + (L - 40) + '" y="' + (Tp - 23) + '" width="32" height="16" rx="8" style="fill:var(--time)"></rect><text x="' + (L - 24) + '" y="' + (Tp - 11) + '" text-anchor="middle" font-size="10.5" style="fill:var(--time-ink);font-weight:700">時刻</text>');   // v34: the top row is clock time, amber like the hour points
     for (var q2 = 1; q2 < clocks.length; q2++) {
       var hr = Math.floor(clocks[q2] / 60);
       if (hr > lastHour) {
         var hx = sx(xr[q2]);
-        o.push('<line x1="' + hx.toFixed(1) + '" x2="' + hx.toFixed(1) + '" y1="' + (Tp - 6) + '" y2="' + (Tp + ph) + '" style="stroke:var(--muted);stroke-width:1;stroke-dasharray:2 3;opacity:.7"></line>');
-        if (hx - lastLabelX > 24) { o.push('<text x="' + hx.toFixed(1) + '" y="' + (Tp - 10) + '" text-anchor="middle" font-size="11" style="font-weight:600">' + pad(((hr % 24) + 24) % 24) + '</text>'); lastLabelX = hx; }
+        o.push('<line x1="' + hx.toFixed(1) + '" x2="' + hx.toFixed(1) + '" y1="' + (Tp - 6) + '" y2="' + (Tp + ph) + '" style="stroke:var(--time);stroke-width:1.2;stroke-dasharray:2 3;opacity:.9"></line>');
+        var lx = Math.max(hx, lastLabelX + 24);   // pills 22 px wide: nudge a crowded label right a little, skip it if it would drift too far
+        if (lx - hx <= 12 && lx <= L + pw + 2) { o.push('<rect x="' + (lx - 11).toFixed(1) + '" y="' + (Tp - 23) + '" width="22" height="16" rx="8" style="fill:var(--time)"></rect><text x="' + lx.toFixed(1) + '" y="' + (Tp - 11) + '" text-anchor="middle" font-size="10.5" style="fill:var(--time-ink);font-weight:700">' + pad(((hr % 24) + 24) % 24) + '</text>'); lastLabelX = lx; }
         lastHour = hr;
       }
     }
+    var cpx = [];
     c.rows.forEach(function (r, idx) {
-      var cx = sx(R(r.cp.d)), cy = sy(C.zAt(tr, r.cp.d));
-      o.push('<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="8.5" style="fill:var(--ink);stroke:var(--surface);stroke-width:1.5"></circle>');
-      o.push('<text x="' + cx.toFixed(1) + '" y="' + (cy + 3.8).toFixed(1) + '" text-anchor="middle" font-size="10.5" style="fill:var(--surface);font-weight:700">' + idx + '</text>');
+      var cx = sx(R(r.cp.d)), cy = sy(C.zAt(tr, r.cp.d)), kd = r.cp.kind, auto = kd === 'km' || kd === 'hour', dl = kd !== 'start' && kd !== 'end';
+      cpx.push({ id: r.cp.id, x: cx, y: cy });
+      o.push('<circle class="cpc' + (dl ? ' dl' : '') + (kd === 'km' ? ' km' : '') + '" data-cp="' + r.cp.id + '" cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + (auto ? 7.5 : 8.5) + '" style="fill:var(' + (kd === 'hour' ? '--time' : (kd === 'km' ? '--surface' : '--ink')) + ')"></circle>');
+      o.push('<text x="' + cx.toFixed(1) + '" y="' + (cy + (auto ? 3.4 : 3.8)).toFixed(1) + '" text-anchor="middle" font-size="' + (auto ? 9.5 : 10.5) + '" style="fill:var(' + (kd === 'hour' ? '--time-ink' : (kd === 'km' ? '--ink2' : '--surface')) + ');font-weight:700;pointer-events:none">' + idx + '</text>');
     });
     var r0 = T.range ? T.range[0] : 0, tl = tr.total;   // v31: section numbers, boundary handles
     T.secsFull.forEach(function (q, i) {
@@ -1836,11 +1879,12 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     });
     o.push('<rect class="plot-hit" x="' + L + '" y="' + (Tp - 14) + '" width="' + pw + '" height="' + (ph + 14) + '" style="fill:transparent"></rect>');
     o.push('<rect class="strip-hit" x="' + L + '" y="' + (ty - 2) + '" width="' + pw + '" height="18"><title>點這裡跳到這一段的設定</title></rect>');
-    BDS = [];
+    BDS = []; var bdx = [];
     bounds().forEach(function (bd) {
       var dt = bd.d - r0;
       if (dt <= 1 || dt >= tl - 1) return;
       var x = sx(R(dt)), k = BDS.length, lo = clampBd(bd, -1e9), hi = clampBd(bd, 1e9);
+      bdx.push(x);
       var lab = bd.l >= 0 && bd.r >= 0 ? '第 ' + (bd.l + 1) + '、' + (bd.r + 1) + ' 段分界' : (bd.l >= 0 ? '第 ' + (bd.l + 1) + ' 段終點' : '第 ' + (bd.r + 1) + ' 段起點');
       BDS.push(bd);
       o.push('<g class="bd" data-bd="' + k + '" tabindex="0" role="slider" aria-orientation="horizontal" aria-label="' + lab + '，左右拖拉或用方向鍵移動" aria-valuemin="' + (lo / 1000).toFixed(2) + '" aria-valuemax="' + (hi / 1000).toFixed(2) + '" aria-valuenow="' + (bd.d / 1000).toFixed(2) + '" aria-valuetext="GPX ' + (bd.d / 1000).toFixed(2) + ' km">' +
@@ -1852,12 +1896,14 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     o.push('<line class="cutg" id="cutG" x1="0" x2="0" y1="' + Tp + '" y2="' + (ty + 6) + '" visibility="hidden"></line>');
     o.push('<g class="tip" id="pTip" visibility="hidden"><rect x="0" y="' + (Tp + 3) + '" width="10" height="19" rx="4"></rect><text x="0" y="' + (Tp + 16.5) + '" text-anchor="middle" font-size="11"></text></g>');
     box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" role="img" aria-label="高度剖面，依坡度分色，標出檢查點、整點時刻、地形與可拖拉的路段分界">' + o.join('') + '</svg>';
-    box._geom = { L: L, pw: pw, D: D, Tp: Tp, ph: ph, ty: ty };
+    box._geom = { L: L, pw: pw, D: D, Tp: Tp, ph: ph, ty: ty, cps: cpx, bdx: bdx };
     var lg = [];
     for (var g = 0; g < 7; g++) lg.push('<span><i class="sw" style="background:var(--b' + g + ')"></i>' + BAND_LABEL[g] + '</span>');
     lg.push('<span><i class="sw" style="background:var(--t-root)"></i>樹根陡坡</span>', '<span><i class="sw" style="background:var(--t-mud)"></i>泥濘草徑</span>', '<span><i class="sw" style="background:var(--t-road)"></i>林道</span>', '<span><i class="sw" style="background:var(--rain)"></i>雨天路段</span>');
     if (hasRun()) lg.push('<span><i class="sw dash"></i>跑的路段</span>');
     if (BDS.length) lg.push('<span><i class="sw bdl"></i>路段分界（可拖拉）</span>');
+    if (T.cps.some(function (q) { return q.kind === 'hour'; })) lg.push('<span><i class="sw dot" style="background:var(--time)"></i>整點的點（同上緣時刻）</span>');
+    if (T.cps.some(function (q) { return q.kind === 'km'; })) lg.push('<span><i class="sw dot ring"></i>每公里的點（同下緣 km）</span>');
     $('legend').innerHTML = lg.join('');
   }
 
@@ -1949,7 +1995,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       if (cal) S.calKg = '';
       var vi = vehicleInfo(parsed);
       T.parsed = parsed; T.name = parsed.name; T.fileName = name; T.reversed = false; T.range = null; T.isSample = false;
-      T.secsFull = []; T.zStart = null; T.warn = ''; T.suggest = null;
+      T.secsFull = []; T.zStart = null; T.warn = ''; T.suggest = null; S.hourSkip = [];
       T.recorded = timed;
       if (vi.fast > 500) {
         T.warn = '軌跡中約 ' + km(vi.fast) + ' km 的速度超過每小時 15 公里，可能含搭車段。';
@@ -1964,7 +2010,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   }
   function loadSample() {
     T.parsed = { name: SAMPLE.name, pts: SAMPLE.pts.map(function (a) { return { lat: a[0], lon: a[1], ele: a[2], t: null }; }), wpts: clone(SAMPLE.wpts || []) };
-    T.name = SAMPLE.name; T.fileName = ''; T.reversed = false; T.range = null; T.isSample = true; T.warn = ''; T.suggest = null; T.recorded = false;
+    T.name = SAMPLE.name; T.fileName = ''; T.reversed = false; T.range = null; T.isSample = true; T.warn = ''; T.suggest = null; T.recorded = false; S.hourSkip = [];
     T.secsFull = clone(SAMPLE.sections || []);
     T.zStart = isNum(SAMPLE.zStart) ? +SAMPLE.zStart : null;
     if (SAMPLE.date) S.date = SAMPLE.date;
@@ -2090,13 +2136,39 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       T.zStart = (v === '' || !isNum(v)) ? null : Math.round(+v);
       refreshSecs(); render();
     });
-    $('btnKm').addEventListener('click', function () { if (hasKm()) T.cps = T.cps.filter(function (c) { return c.kind !== 'km'; }); else addKm(); render(); });
-    $('btnClear').addEventListener('click', function () { T.cps = T.cps.filter(function (c) { return c.kind !== 'km' && c.kind !== 'user'; }); render(); });
+    var UNDO = null, ICON_UNDO = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.9 8a5.1 5.1 0 1 0 1.5-3.6"/><path d="M2.75 2.5v3.1h3.1"/></svg>';
+    function snapUndo() { UNDO = { cps: clone(T.cps), secs: clone(T.secsFull), skip: (S.hourSkip || []).slice(), hp: !!S.hourPts }; }
+    function undoMsg(txt) {   // v33: every removal on the profile can be undone once
+      var el = $('profMsg');
+      el.innerHTML = esc(txt) + '<button class="btn ghost sm" type="button" id="btnUndo">' + ICON_UNDO + '復原</button>';
+      $('btnUndo').onclick = function () {
+        if (!UNDO) return;
+        T.cps = UNDO.cps; T.secsFull = UNDO.secs; S.hourSkip = UNDO.skip; S.hourPts = UNDO.hp; UNDO = null;
+        refreshSecs(); render(); say('profMsg', '已復原。');
+      };
+    }
+    $('kmTog').addEventListener('change', function () {
+      if ($('kmTog').checked) { addKm(); render(); say('profMsg', '已每公里加一個點。'); }
+      else { snapUndo(); T.cps = T.cps.filter(function (c) { return c.kind !== 'km'; }); render(); undoMsg('已移除公里點。'); }
+    });
+    $('hrTog').addEventListener('change', function () {
+      S.hourPts = $('hrTog').checked; S.hourSkip = [];
+      render(); say('profMsg', S.hourPts ? '已在預計每個整點走到的位置加點；改了出發時間、速度或停留，這些點會跟著移動。' : '已移除整點的點。');
+    });
+    $('btnClear').addEventListener('click', function () {
+      var n = T.cps.filter(function (c) { return c.kind === 'km' || c.kind === 'user' || c.kind === 'hour'; }).length;
+      if (!n) { say('profMsg', '沒有自己加的點、公里點或整點的點。'); return; }
+      snapUndo();
+      T.cps = T.cps.filter(function (c) { return c.kind !== 'km' && c.kind !== 'user' && c.kind !== 'hour'; });
+      S.hourPts = false;
+      render(); undoMsg('已清除 ' + n + ' 個點（自己加的、每公里、每整點）。');
+    });
     $('tbody').addEventListener('change', function (e) {
       var m = (e.target.id || '').match(/^(nm|st|tr)-(\d+)$/);
       if (!m) return;
       var cp = T.cps.filter(function (c) { return c.id === +m[2]; })[0];
       if (!cp) return;
+      if (cp.kind === 'hour') { S.hourSkip = (S.hourSkip || []).concat([cp.id - 100000]); cp.kind = 'user'; }   // v33: an edited hour point stays where it is
       if (m[1] === 'nm') cp.name = e.target.value.trim() || cp.name;
       else if (m[1] === 'st') cp.stop = Math.max(0, Math.round(numOr(e.target.value, 0)));
       else cp.trans = !!e.target.checked;
@@ -2105,7 +2177,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     $('tbody').addEventListener('click', function (e) {
       var b = e.target.closest ? e.target.closest('[data-del]') : null;
       if (!b) return;
-      var id = +b.getAttribute('data-del');
+      var id = +b.getAttribute('data-del'), cp0 = T.cps.filter(function (c) { return c.id === id; })[0];
+      if (cp0 && cp0.kind === 'hour') S.hourSkip = (S.hourSkip || []).concat([id - 100000]);
       T.cps = T.cps.filter(function (c) { return c.id !== id; });
       render();
     });
@@ -2152,13 +2225,41 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       });
       return best;
     }
+    function hitDel(pg, x, y) {   // v33: the checkpoint circle or the section boundary under a tap
+      var g = pg.g, best = null, bdist = 15, bk = -1, bx = 13;
+      (g.cps || []).forEach(function (c) { var dd = Math.sqrt((c.x - x) * (c.x - x) + (c.y - y) * (c.y - y)); if (dd < bdist) { bdist = dd; best = c; } });
+      if (best) return { cp: T.cps.filter(function (q) { return q.id === best.id; })[0] || null, id: best.id };
+      if (y >= g.Tp - 8 && y <= g.ty + 20) (g.bdx || []).forEach(function (v, k) { var dx = Math.abs(v - x); if (dx < bx) { bx = dx; bk = k; } });
+      return bk >= 0 ? { bd: BDS[bk], k: bk } : null;
+    }
+    function delBd(bd) {
+      if (!bd) return;
+      if (bd.r < 0) { say('profMsg', '這個分界後面沒有路段，請到「路段與地形」調整。'); return; }
+      snapUndo();
+      var txt = mergeSec(bd.r);
+      refreshSecs(); render(); undoMsg('已刪除分界：' + txt);
+    }
+    function delAt(pg, x, y) {
+      var h = hitDel(pg, x, y);
+      if (!h) { say('profMsg', '點檢查點的圓圈或分界線就能刪除。'); return; }
+      if (h.bd) { delBd(h.bd); return; }
+      var cp = h.cp; if (!cp) return;
+      if (cp.kind === 'start' || cp.kind === 'end') { say('profMsg', '起點、終點不能刪。'); return; }
+      snapUndo();
+      if (cp.kind === 'hour') S.hourSkip = (S.hourSkip || []).concat([cp.id - 100000]);
+      T.cps = T.cps.filter(function (q) { return q.id !== cp.id; });
+      render(); undoMsg('已刪除檢查點「' + cp.name + '」。');
+    }
+    var HOT = null;
+    function setHot(el) { if (HOT === el) return; if (HOT) HOT.classList.remove('hot'); HOT = el; if (el) el.classList.add('hot'); }
     document.querySelectorAll('input[name="pmode"]').forEach(function (el) {
       el.addEventListener('change', function () {
         if (!el.checked) return;
         PMODE = el.value;
         pbox.classList.toggle('split', PMODE === 'split');
-        hideTip();
-        say('profMsg', PMODE === 'split' ? '點剖面上要切開的位置；新的一段沿用原本的設定。' : '');
+        pbox.classList.toggle('delmode', PMODE === 'del');   // not 'del': .del is the trash button style
+        hideTip(); setHot(null);
+        say('profMsg', PMODE === 'split' ? '點剖面上要切開的位置；新的一段沿用原本的設定。' : (PMODE === 'del' ? '點檢查點的圓圈或分界線就刪掉（起點、終點除外）；刪錯了按「復原」。' : ''));
       });
     });
     pbox.addEventListener('click', function (e) {
@@ -2167,6 +2268,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       var x = evX(pg, e.clientX), g = pg.g;
       if (x < g.L - 2 || x > g.L + g.pw + 2) return;
       var t = e.target && e.target.closest ? e.target : null;
+      if (PMODE === 'del') { delAt(pg, x, evY(pg, e.clientY)); return; }   // v33
       if (t && t.closest('.bd') && evY(pg, e.clientY) >= g.ty - 10) return;   // a tap on a handle only selects it
       var dTr = xTrack(pg, x);
       if (t && t.closest('.strip-hit')) { jumpSec(dTr + rng0()); return; }
@@ -2176,6 +2278,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       render();
     });
     pbox.addEventListener('pointerdown', function (e) {
+      if (PMODE === 'del') return;   // v33: taps delete, no drag
       var el = e.target.closest ? e.target.closest('.bd') : null; if (!el) return;
       var k = +el.getAttribute('data-bd'), bd = BDS[k], pg = pgeom(); if (!bd || !pg) return;
       DRAG = { k: k, bd: bd, el: el, x0: e.clientX, moved: false, d: bd.d, id: e.pointerId };
@@ -2199,6 +2302,12 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
         showTip(pg, nx, (sc ? sc.name + '｜' : '') + 'GPX ' + (d / 1000).toFixed(2) + ' km｜' + nf(zFull(d)) + ' m');
         return;
       }
+      if (PMODE === 'del' && e.pointerType === 'mouse') {   // v33: show what a click would delete
+        pg = pgeom(); if (!pg) return;
+        var hh = hitDel(pg, evX(pg, e.clientX), evY(pg, e.clientY));
+        setHot(!hh ? null : (hh.bd ? pbox.querySelector('.bd[data-bd="' + hh.k + '"]') : (hh.cp && hh.cp.kind !== 'start' && hh.cp.kind !== 'end' ? pbox.querySelector('.cpc[data-cp="' + hh.id + '"]') : null)));
+        return;
+      }
       if (PMODE !== 'split' || e.pointerType !== 'mouse') return;   // cut guide follows the mouse
       pg = pgeom(); if (!pg) return;
       var x = evX(pg, e.clientX), cg = $('cutG'), t = e.target && e.target.closest ? e.target : null;
@@ -2219,14 +2328,15 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       } else render();
       focusBd(dg.k);
     }
-    pbox.addEventListener('touchstart', function (e) { if (e.target.closest && e.target.closest('.bd')) e.preventDefault(); }, { passive: false });   // a drag on a handle never pans the page
+    pbox.addEventListener('touchstart', function (e) { if (PMODE !== 'del' && e.target.closest && e.target.closest('.bd')) e.preventDefault(); }, { passive: false });   // a drag on a handle never pans the page
     pbox.addEventListener('touchmove', function (e) { if (DRAG) e.preventDefault(); }, { passive: false });
     pbox.addEventListener('pointerup', endDrag);
     pbox.addEventListener('pointercancel', function (e) { if (DRAG && e.pointerId === DRAG.id) { DRAG = null; hideTip(); render(); } });
-    pbox.addEventListener('pointerleave', function () { if (!DRAG) hideTip(); });
+    pbox.addEventListener('pointerleave', function () { if (!DRAG) hideTip(); setHot(null); });
     pbox.addEventListener('keydown', function (e) {
       var el = e.target.closest ? e.target.closest('.bd') : null; if (!el) return;
       var k = +el.getAttribute('data-bd'), bd = BDS[k]; if (!bd) return;
+      if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); delBd(bd); return; }   // v33
       var step = e.shiftKey ? 100 : 20, d = null;
       if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') d = bd.d - step;
       else if (e.key === 'ArrowRight' || e.key === 'ArrowUp') d = bd.d + step;
