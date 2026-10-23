@@ -1926,11 +1926,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     var dl = parseHM(S.deadline), html = [];
     c.rows.forEach(function (r, i) {
       var cp = r.cp, zv = C.zAt(c.tr, cp.d), first = i === 0, last = i === c.rows.length - 1, chips = '';
-      if (!first) {
-        var ls = lightState(c.sun, r.arr);
-        if (ls === 2 || ls === 1 || ls === 3) chips += ' ' + lightChip(ls);
-        if (dl !== null && r.arr > dl) chips += ' <span class="chip crit">超過最晚抵達</span>';
-      }
+      var ls = lightState(c.sun, first ? r.dep : r.arr);
+      if (ls === 2 || ls === 1 || ls === 3) chips += ' ' + lightChip(ls);
+      if (!first && dl !== null && r.arr > dl) chips += ' <span class="chip crit">超過最晚抵達</span>';
       var meta = km(R(cp.d)) + ' km｜' + nf(zv) + ' m' + (first ? '' : '<br>移動 ' + dur(r.seg) + (r.rest >= 1 ? '＋途中停留 ' + Math.round(r.rest) + ' 分' : ''));
       var transBox = '';   // v23: transition regroups are part of the hourly stop
       html.push('<tr>' +
@@ -1958,11 +1956,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     if (hasRun()) L.push('・跑步速度：平地每小時 ' + nf1(runFlat()) + ' km，' + runTxt());
     c.rows.forEach(function (r, i) {
       var zv = C.zAt(c.tr, r.cp.d), flag = '';
-      if (i > 0) {
-        var ls = lightState(c.sun, r.arr);
-        if (ls === 2 || ls === 1 || ls === 3) flag += '（' + lightLabel(ls) + '）';
-        if (dl !== null && r.arr > dl) flag += '（超過最晚抵達）';
-      }
+      var ls = lightState(c.sun, i === 0 ? r.dep : r.arr);
+      if (ls === 2 || ls === 1 || ls === 3) flag += '（' + lightLabel(ls) + '）';
+      if (i > 0 && dl !== null && r.arr > dl) flag += '（超過最晚抵達）';
       var tt = i === 0 ? '出發 ' + hm(r.dep) : '抵達 ' + hm(r.arr) + (r.stop > 0 && i < c.rows.length - 1 ? '，停 ' + Math.round(r.stop) + ' 分' : '');
       L.push('・' + i + ' ' + r.cp.name + '　' + km(R(r.cp.d)) + ' km　' + nf(zv) + ' m　' + tt + flag);
     });
