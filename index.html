@@ -322,7 +322,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
     <details class="calbox disc" id="calBox">
       <summary>怎麼定倍數：用歷史 GPX 做勞侖茲函數最佳化</summary>
       <div class="calbody">
-        <p class="hint">一次上傳一個或多個歷史實走 GPX（或含多檔的 ZIP）。系統過濾淨速 &lt;0.6 km/h（整隊停頓）與 &gt;15 km/h（車輛雜訊），用高斯-牛頓法解出該團體專屬<strong>勞侖茲函數參數</strong> [a, b, c]。解出後所有路段改以勞侖茲函數為基底速度，再套用各段原本的地形／雨天／重裝／高度修正。資料不足或擬合失敗時，自動維持 Tobler + DIN 混合。<br><br>紀錄最好上坡、下坡各有一段，路況與要去的路線相近。隊伍以最慢的人為準時，請用最慢那位也在的紀錄。</p>
+        <p class="hint">一次上傳一個或多個歷史實走 GPX（或含多檔的 ZIP）。系統過濾淨速 &lt;0.6 km/h（整隊停頓）與 &gt;15 km/h（車輛雜訊），用高斯-牛頓法解出該團體專屬<strong>勞侖茲函數參數</strong> [a, b, c]。上傳後會立刻顯示擬合出的勞侖茲函數參數；按「最佳化」後才套用到行程時間。資料不足或擬合失敗時，維持 Tobler + DIN 混合。<br><br>紀錄最好上坡、下坡各有一段，路況與要去的路線相近。隊伍以最慢的人為準時，請用最慢那位也在的紀錄。</p>
         <div class="row" style="margin-top:8px">
           <label class="btn primary" for="histFiles">上傳歷史 GPX / ZIP</label>
           <input type="file" id="histFiles" hidden accept=".gpx,.zip" multiple>
@@ -2459,6 +2459,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     
     // ----- 勞侖茲函數批次最佳化 -----
     var histSamples = [];
+    var pendingLorentz = null; // 上傳後擬合預覽，按「最佳化」才套用
     $('histFiles').addEventListener('change', async function (e) {
       var files = e.target.files;
       if (!files || !files.length) return;
@@ -2508,29 +2509,52 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
           } catch (err) { console.warn(err); }
         }
       }
-      $('histStatus').textContent = '已載入 ' + count + ' 個檔案，提取 ' + histSamples.length + ' 個純淨移動點（已過濾停頓與車輛雜訊）。';
+      var msg = '已載入 ' + count + ' 個檔案，提取 ' + histSamples.length + ' 個純淨移動點（已過濾停頓與車輛雜訊）。';
+      pendingLorentz = null;
+      if (histSamples.length < 20) {
+        $('histStatus').textContent = msg;
+        $('lorentzParamsView').textContent = '樣本不足 20 點，無法擬合勞侖茲函數參數。請增加有時間戳記的歷史 GPX。';
+      } else {
+        var p = C.fitLorentz(histSamples);
+        if (p) {
+          pendingLorentz = p;
+          $('histStatus').textContent = msg;
+          $('lorentzParamsView').textContent = '已解出勞侖茲函數參數（尚未套用）：a=' + p[0].toFixed(2) + ' km/h　b=' + p[1].toFixed(2) + '　c=' + p[2].toFixed(3) +
+            '（最省力坡度約 ' + ((-p[2]/p[1])*100).toFixed(1) + '%）。按「最佳化」後才會套用到行程時間。';
+        } else {
+          $('histStatus').textContent = msg;
+          $('lorentzParamsView').textContent = '擬合未收斂，無法得到勞侖茲函數參數。請檢查資料或增加樣本。';
+        }
+      }
     });
     $('btnOptimizeLorentz').addEventListener('click', function () {
-      if (histSamples.length < 20) {
-        alert('有效樣本不足 20 點，請先上傳足夠的歷史 GPX（需含時間戳記）。');
+      if (!pendingLorentz) {
+        if (histSamples.length < 20) {
+          alert('請先上傳足夠的歷史 GPX（需含時間戳記），系統會先顯示擬合結果。');
+        } else {
+          alert('尚無可用的勞侖茲函數參數，請重新上傳歷史 GPX。');
+        }
         return;
       }
-      var p = C.fitLorentz(histSamples);
-      if (p) {
-        $('lorentzParamsView').textContent = '已鎖定勞侖茲函數參數：a=' + p[0].toFixed(2) + ' km/h　b=' + p[1].toFixed(2) + '　c=' + p[2].toFixed(3) +
-          '（最省力坡度約 ' + ((-p[2]/p[1])*100).toFixed(1) + '%）';
-        S.teamUp = 1; S.teamDn = 1;
-        if ($('teamUp')) $('teamUp').value = 1;
-        if ($('teamDn')) $('teamDn').value = 1;
-        if ($('teamBox')) $('teamBox').hidden = true;
-        if ($('lorentzTeamNote')) $('lorentzTeamNote').hidden = false;
-        render();
-      } else {
-        alert('勞侖茲函數擬合未收斂，請檢查資料品質或增加樣本。將維持 Tobler + DIN 混合。');
+      var p = pendingLorentz;
+      if (!C.setLorentzParams(p)) {
+        alert('參數無效，無法套用。');
+        return;
       }
+      $('lorentzParamsView').textContent = '已鎖定勞侖茲函數參數：a=' + p[0].toFixed(2) + ' km/h　b=' + p[1].toFixed(2) + '　c=' + p[2].toFixed(3) +
+        '（最省力坡度約 ' + ((-p[2]/p[1])*100).toFixed(1) + '%）';
+      S.teamUp = 1; S.teamDn = 1;
+      if ($('teamUp')) $('teamUp').value = 1;
+      if ($('teamDn')) $('teamDn').value = 1;
+      if ($('teamBox')) $('teamBox').hidden = true;
+      if ($('lorentzTeamNote')) $('lorentzTeamNote').hidden = false;
+      render();
     });
     $('btnClearLorentz').addEventListener('click', function () {
       C.clearLorentzParams();
+      pendingLorentz = null;
+      histSamples = [];
+      $('histStatus').textContent = '';
       $('lorentzParamsView').textContent = '目前：使用 Tobler + DIN 混合（尚未解出勞侖茲函數參數）';
       if ($('teamBox')) $('teamBox').hidden = false;
       if ($('lorentzTeamNote')) $('lorentzTeamNote').hidden = true;
