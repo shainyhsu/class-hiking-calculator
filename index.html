@@ -309,12 +309,12 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
     </div>
     <p class="hint">途中停留＝休息、整裝、集合、等人等短停的合計，算在同一小時之內。<br><br>預設 13 分：每小時走 47 分、停 13 分。<br><br>13 分取自 10/6：休息 4 次、平均 8.3 分，短停 8 次、平均 4.2 分，合計約佔總時間的 22%。<br><br>停留不分晴雨：10/6 雨天每小時約停 15 分，10/20 晴天上坡約 16 分。<br><br>午餐、儀式等長停留，另外填在時間表各點的「停留」。<br><br>雨天只放慢走路速度，依各路段的「雨天」勾選。</p>
     <div class="teamrow" id="bodyLightRow">
-      <span>體重與輕裝負重（沒勾「重裝」的路段用輕裝）</span>
+      <span>輕裝負重與當日疲勞</span>
       <div class="inline">
-        <label for="mainBodyKg">體重</label><input type="number" id="mainBodyKg" min="30" max="120" step="1" value="50" inputmode="numeric"> kg
         <label for="mainLightKg">輕裝背包</label><input type="number" id="mainLightKg" min="1" max="9" step="0.5" value="2" inputmode="decimal"> kg
+        <label for="mainFatigue">疲勞降速</label><input type="number" id="mainFatigue" min="0" max="25" step="1" value="8" inputmode="numeric"> <span class="hint">%／移動 5 小時</span>
       </div>
-      <p class="hint" style="margin:4px 0 0">輕裝 1–9 kg 會用 Pandolf 相對 13 kg 重裝換算速度；體重影響換算曲線。</p>
+      <p class="hint" style="margin:4px 0 0">輕裝 1–9 kg：Pandolf 相對 13 kg。累積疲勞（取代體重／VO₂max）：依<strong>距離 + 爬升/100 + 下降/200</strong>與移動時間加權變慢（HikingTTE／Tranter／exposure-dose）。預設每約 10 努力單位或 5 移動小時慢 8%，上限 +30%。填 0＝關閉。個人基準步速仍以歷史 GPX 勞侖茲函數為準。</p>
     </div>
     <div id="teamBox">
       <div class="teamrow">
@@ -375,8 +375,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
         <label for="mudRain1">雨霧 爬升<input type="number" id="mudRain1" step="10" inputmode="numeric"></label>
         <label for="mudRain2">雨霧 下降<input type="number" id="mudRain2" step="10" inputmode="numeric"></label>
         <h3>輕裝（沒勾重裝的路段）</h3>
-        <label for="pBody">體重 kg<input type="number" id="pBody" step="1" inputmode="numeric"></label>
-        <label for="pLightKg">輕裝負重 kg<input type="number" id="pLightKg" step="0.5" inputmode="decimal"></label>
+        <label for="pLightKg">輕裝負重 kg<input type="number" id="pLightKg" step="0.5" min="1" max="9" inputmode="decimal"></label>
         <label for="pLightDnMax">下坡最多快×<input type="number" id="pLightDnMax" step="0.05" min="1" inputmode="decimal"></label>
         <h3>跑（勾「跑」的路段）</h3>
         <label for="pRunFlat">平地跑速 km/h<input type="number" id="pRunFlat" step="0.5" min="3" inputmode="decimal"></label>
@@ -846,7 +845,7 @@ var CORE = (function () {
     sunDown: 1.00,                             // dry descents same speed as wet: 10/18 舊寮 dry walk (7 kg) down/up ratio matched the wet calibration
     altRef: 300, altPct: 6.3,                  // uphill speed -6.3 % per 1,000 m above 300 m (flat 1/2, down 1/3)
     f: 1.00,                                   // overall time factor (v27: kept at 1; the team speed teamUp / teamDn is a setting)
-    bodyKg: 50, lightKg: 2, calKg: 13,         // light sections: same effort (Pandolf 1977) with lightKg instead of the 13 kg calibration load
+    bodyKg: 50, lightKg: 2, calKg: 13, fatiguePct: 8, vo2max: 0,  // 0 = use default altPct; else scale altitude penalty vs ref 45         // light sections: same effort (Pandolf 1977) with lightKg instead of the 13 kg calibration load
     lightDnMax: 1.25,                          // v31: on descents the lighter pack makes you at most x1.25 faster (footing and braking limit steep descents, not effort)
     runFlat: 8, runCapX: 2.5,                  // v31 跑: flat running speed km/h; vertical caps of 樹根陡坡／泥濘草徑 x2.5 when running (assumed, no data)
     roadHeavyF: 1.00,                          // 林道 with 13 kg: time x1.00 (四季林道 moving time, 10/20 up 95 vs model 100 min, 10/21 down 72 vs 73 min)
@@ -1080,15 +1079,30 @@ var CORE = (function () {
     return { flat: at(0), up15: at(0.15), up30: at(0.30), dn15: at(-0.15), dn30: at(-0.30) };
   }
   // moving hours of the stretch [a, b] (GPX m) of track tr with one terrain; scale = real / GPX length
-  function stretchHours(tr, a, b, scale, terr, heavy, wx, P, run) {
+  function stretchHours(tr, a, b, scale, terr, heavy, wx, P, run, cumH0) {
     P = P || DEFAULTS;
     a = Math.max(0, Math.min(tr.total, a)); b = Math.max(a, Math.min(tr.total, b));
     var rain = wx === 'rain', light = heavy === false, sc = scale > 0 ? scale : 1, h = 0, xa = a, za = zAt(tr, a), x = tr.x;
+    var fatPct = Math.max(0, Math.min(25, P.fatiguePct || 0)); // % slow per ~10 effort units
+    var baseH = isFinite(cumH0) ? cumH0 : 0;
+    var cumEffort = isFinite(P._cumEffort0) ? P._cumEffort0 : 0; // 可選：由外層傳入已累積努力
     for (var i = Math.max(0, Math.floor(a / STEP) - 1); i <= x.length && xa < b; i++) {
       var xb = i < x.length ? Math.min(x[i], b) : b;
       if (xb <= xa) continue;
       var zb = zAt(tr, xb);
-      h += stepHours((xb - xa) * sc, zb - za, (za + zb) / 2, terr, rain, P, light, run === true);
+      var dxm = (xb - xa) * sc, dzm = zb - za;
+      var dh = stepHours(dxm, dzm, (za + zb) / 2, terr, rain, P, light, run === true);
+      // 累積努力：水平 km + 爬升/100m + 下降/200m（下坡離心較輕但非零；對齊 effort-dose 文獻）
+      var segEffort = (dxm / 1000) + Math.max(0, dzm) / 100 + Math.max(0, -dzm) / 200;
+      cumEffort += segEffort;
+      if (fatPct > 0) {
+        // 每 10 努力單位約慢 fatPct%；並與已走時間耦合（長天數）；上限 +30%
+        var fromEffort = (cumEffort / 10) * (fatPct / 100);
+        var fromTime = ((baseH + h) / 5) * (fatPct / 100);
+        var factor = 1 + Math.min(0.30, 0.6 * fromEffort + 0.4 * fromTime);
+        dh *= factor;
+      }
+      h += dh;
       xa = xb; za = zb;
     }
     return h;
@@ -1800,10 +1814,10 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     for (var d = a + C.STEP; d < b + C.STEP; d += C.STEP) { var zz = C.zAt(f, Math.min(d, b)), dd = zz - prev; if (dd > 0) up += dd; else dn -= dd; prev = zz; }
     return { up: up, dn: dn };
   }
-  function secRun(q, terr, heavy, rain, run) {   // moving hours and real km of one section with a given terrain, load, weather and 跑
+  function secRun(q, terr, heavy, rain, run, cumH0) {   // moving hours and real km of one section with a given terrain, load, weather and 跑
     var f = T.fullFix || T.full, a = Math.max(0, Math.min(f.total, q.a)), b = Math.max(a, Math.min(f.total, q.b));
     var sc = q.real && q.real > 0 && q.b - q.a > 1 ? q.real / (q.b - q.a) : 1;
-    var h = C.stretchHours(f, a, b, sc, terr, heavy, rain ? 'rain' : 'sun', PM || MP(), run), k = (b - a) * sc / 1000;
+    var h = C.stretchHours(f, a, b, sc, terr, heavy, rain ? 'rain' : 'sun', PM || MP(), run, cumH0), k = (b - a) * sc / 1000;
     return { h: h, km: k, kmh: h > 0 ? k / h : 0 };
   }
   function renderSections() {
@@ -2082,7 +2096,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     if ($('lorentzTeamNote')) $('lorentzTeamNote').hidden = !hasL;
     if (hasL) { S.teamUp = 1; S.teamDn = 1; $('teamUp').value = 1; $('teamDn').value = 1; }
     if ($('mainLightKg') && isNum(PP.lightKg)) $('mainLightKg').value = PP.lightKg;
-    if ($('mainBodyKg') && isNum(PP.bodyKg)) $('mainBodyKg').value = PP.bodyKg;
+    if ($('mainFatigue')) $('mainFatigue').value = isNum(PP.fatiguePct) ? PP.fatiguePct : 8;
+    if ($('mainFatigue')) $('mainFatigue').value = isNum(PP.fatiguePct) ? PP.fatiguePct : 8;
     $('runUp').value = S.runUp; $('runDn').value = S.runDn; if ($('calKg')) { $('calKg').value = isNum(S.calKg) ? S.calKg : ''; $('calKg').placeholder = nf1(isNum(PP.lightKg) ? +PP.lightKg : 2); }
     PMAP.forEach(function (pm) { $(pm[0]).value = PP[pm[1]]; });
     ['root', 'mud'].forEach(function (k) { ['Sun', 'Rain'].forEach(function (w) { for (var i = 0; i < 3; i++) $(k + w + i).value = PP.terr[k][w.toLowerCase()][i]; }); });
@@ -2580,6 +2595,14 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
         PP.lightKg = v;
         $('mainLightKg').value = v;
         if ($('pLightKg')) $('pLightKg').value = v;
+        render();
+      });
+    }
+    if ($('mainFatigue')) {
+      $('mainFatigue').value = isNum(PP.fatiguePct) ? PP.fatiguePct : 8;
+      $('mainFatigue').addEventListener('change', function () {
+        PP.fatiguePct = Math.max(0, Math.min(25, numOr($('mainFatigue').value, 8)));
+        $('mainFatigue').value = PP.fatiguePct;
         render();
       });
     }
