@@ -2086,7 +2086,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
 
   // ---------- inputs ----------
   var PMAP = [['pTobF', 'F'], ['pWTob', 'wTob'], ['pSunDown', 'sunDown'], ['pDinH', 'dinH'], ['pDinUp', 'dinUp'], ['pDinDown', 'dinDown'],
-              ['pAltPct', 'altPct'], ['pAltRef', 'altRef'], ['pBody', 'bodyKg'], ['pLightKg', 'lightKg'], ['pRoadHF', 'roadHeavyF'], ['pRoadLU', 'roadLightUp'], ['pRoadLD', 'roadLightDown'],
+              ['pAltPct', 'altPct'], ['pAltRef', 'altRef'], ['pLightKg', 'lightKg'], ['pRoadHF', 'roadHeavyF'], ['pRoadLU', 'roadLightUp'], ['pRoadLD', 'roadLightDown'],
               ['pLightDnMax', 'lightDnMax'], ['pRunFlat', 'runFlat'], ['pRunCapX', 'runCapX']];
   function applyInputs() {
     $('date').value = S.date; $('start').value = S.start; $('deadline').value = S.deadline;
@@ -2097,11 +2097,10 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     if (hasL) { S.teamUp = 1; S.teamDn = 1; $('teamUp').value = 1; $('teamDn').value = 1; }
     if ($('mainLightKg') && isNum(PP.lightKg)) $('mainLightKg').value = PP.lightKg;
     if ($('mainFatigue')) $('mainFatigue').value = isNum(PP.fatiguePct) ? PP.fatiguePct : 8;
-    if ($('mainFatigue')) $('mainFatigue').value = isNum(PP.fatiguePct) ? PP.fatiguePct : 8;
     $('runUp').value = S.runUp; $('runDn').value = S.runDn; if ($('calKg')) { $('calKg').value = isNum(S.calKg) ? S.calKg : ''; $('calKg').placeholder = nf1(isNum(PP.lightKg) ? +PP.lightKg : 2); }
-    PMAP.forEach(function (pm) { $(pm[0]).value = PP[pm[1]]; });
-    ['root', 'mud'].forEach(function (k) { ['Sun', 'Rain'].forEach(function (w) { for (var i = 0; i < 3; i++) $(k + w + i).value = PP.terr[k][w.toLowerCase()][i]; }); });
-    ['trail', 'road'].forEach(function (k) { $(k + 'Rain0').value = PP.terr[k].rain[0]; });
+    PMAP.forEach(function (pm) { var el = $(pm[0]); if (el) el.value = PP[pm[1]]; });
+    ['root', 'mud'].forEach(function (k) { ['Sun', 'Rain'].forEach(function (w) { for (var i = 0; i < 3; i++) { var el = $(k + w + i); if (el) el.value = PP.terr[k][w.toLowerCase()][i]; } }); });
+    ['trail', 'road'].forEach(function (k) { var el = $(k + 'Rain0'); if (el) el.value = PP.terr[k].rain[0]; });
   }
   function setRangeInputs() {
     var r = T.range || [0, T.full.total];
