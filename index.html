@@ -272,7 +272,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
   <header>
     <div class="eyebrow">10/6 實測校正 · 揹重 13 kg · 可選勞侖茲函數再最佳化</div>
     <h1>步程試算</h1>
-    <p class="sub">預設使用 Tobler 與 DIN 33466 各半的混合公式（10/6 班級揹 13 kg 實測校正，10/20–21 四季林道再修正）。上傳足夠的歷史實走 GPX 後，可用高斯-牛頓法解出團體專屬<strong>勞侖茲函數參數</strong>，之後改以勞侖茲函數為基底速度，再套用各路段的地形／雨天／重裝／高度修正。<br><br>別的隊伍可在「<a href="#setCard" data-jump="setCard">設定</a>」調整隊伍速度，並<a href="#calBox" data-jump="calBox">用歷史 GPX 做勞侖茲函數最佳化</a>，或批次上傳歷史軌跡做<strong>勞侖茲函數再最佳化</strong>。</p>
+    <p class="sub">預設使用 Tobler 與 DIN 33466 各半的混合公式（10/6 班級揹 13 kg 實測校正，10/20–21 四季林道再修正）。上傳足夠的歷史實走 GPX 後，可用高斯-牛頓法解出團體專屬<strong>勞侖茲函數參數</strong>，之後改以勞侖茲函數為基底速度，再套用各路段的地形／雨天／重裝／高度修正。<br><br>可在「<a href="#setCard" data-jump="setCard">設定</a>」調整途中停留與輕裝負重；用<a href="#calBox" data-jump="calBox">歷史 GPX 做勞侖茲函數最佳化</a>後，團體步速由擬合參數決定，不再使用手動上下坡倍數。</p>
   </header>
 
   <section class="card" id="fileCard" aria-labelledby="hFile">
@@ -1057,7 +1057,8 @@ var CORE = (function () {
     var rc = Math.max(1, r);
     if (dz > 0 && t[1] > 0) h = Math.max(h, dz / (t[1] * fu * rc));     // vertical caps (13 kg): up and down separately
     else if (dz < 0 && t[2] > 0) h = Math.max(h, -dz / (t[2] * fd * rc));
-    var v = S <= -0.05 ? P.teamDn : P.teamUp;                          // v27: team speed (1 = the class); steeper than -5 % uses the downhill value
+    // 有勞侖茲函數參數時，團體步速已寫入 a,b,c，不再套用手動上下坡倍數
+    var v = lorentzParams ? 1 : (S <= -0.05 ? P.teamDn : P.teamUp);
     return h * P.f / (v > 0 ? v : 1);
   }
   // horizontal speeds (km/h) of one terrain at altitude zm on 0 %, +-15 % and +-30 % grades; heavy false = no big pack
@@ -2065,6 +2066,11 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   function applyInputs() {
     $('date').value = S.date; $('start').value = S.start; $('deadline').value = S.deadline;
     $('stopH').value = S.stopH; $('teamUp').value = S.teamUp; $('teamDn').value = S.teamDn;
+    var hasL = C.hasLorentz && C.hasLorentz();
+    if ($('teamBox')) $('teamBox').hidden = !!hasL;
+    if ($('lorentzTeamNote')) $('lorentzTeamNote').hidden = !hasL;
+    if (hasL) { S.teamUp = 1; S.teamDn = 1; $('teamUp').value = 1; $('teamDn').value = 1; }
+    if ($('mainLightKg') && isNum(PP.lightKg)) $('mainLightKg').value = PP.lightKg;
     $('runUp').value = S.runUp; $('runDn').value = S.runDn; if ($('calKg')) { $('calKg').value = isNum(S.calKg) ? S.calKg : ''; $('calKg').placeholder = nf1(isNum(PP.lightKg) ? +PP.lightKg : 2); }
     PMAP.forEach(function (pm) { $(pm[0]).value = PP[pm[1]]; });
     ['root', 'mud'].forEach(function (k) { ['Sun', 'Rain'].forEach(function (w) { for (var i = 0; i < 3; i++) $(k + w + i).value = PP.terr[k][w.toLowerCase()][i]; }); });
@@ -2513,6 +2519,11 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       if (p) {
         $('lorentzParamsView').textContent = '已鎖定勞侖茲函數參數：a=' + p[0].toFixed(2) + ' km/h　b=' + p[1].toFixed(2) + '　c=' + p[2].toFixed(3) +
           '（最省力坡度約 ' + ((-p[2]/p[1])*100).toFixed(1) + '%）';
+        S.teamUp = 1; S.teamDn = 1;
+        if ($('teamUp')) $('teamUp').value = 1;
+        if ($('teamDn')) $('teamDn').value = 1;
+        if ($('teamBox')) $('teamBox').hidden = true;
+        if ($('lorentzTeamNote')) $('lorentzTeamNote').hidden = false;
         render();
       } else {
         alert('勞侖茲函數擬合未收斂，請檢查資料品質或增加樣本。將維持 Tobler + DIN 混合。');
@@ -2521,8 +2532,30 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     $('btnClearLorentz').addEventListener('click', function () {
       C.clearLorentzParams();
       $('lorentzParamsView').textContent = '目前：使用 Tobler + DIN 混合（尚未解出勞侖茲函數參數）';
+      if ($('teamBox')) $('teamBox').hidden = false;
+      if ($('lorentzTeamNote')) $('lorentzTeamNote').hidden = true;
       render();
     });
+
+    if ($('mainLightKg')) {
+      $('mainLightKg').value = isNum(PP.lightKg) ? PP.lightKg : 2;
+      $('mainLightKg').addEventListener('change', function () {
+        var v = Math.max(1, Math.min(9, numOr($('mainLightKg').value, 2)));
+        PP.lightKg = v;
+        $('mainLightKg').value = v;
+        if ($('pLightKg')) $('pLightKg').value = v;
+        render();
+      });
+    }
+    if ($('pLightKg')) {
+      $('pLightKg').addEventListener('change', function () {
+        var v = Math.max(1, Math.min(9, numOr($('pLightKg').value, 2)));
+        PP.lightKg = v;
+        if ($('mainLightKg')) $('mainLightKg').value = v;
+        render();
+      });
+    }
+
 
     $('btnCopy').addEventListener('click', function () {
       var ta = $('copyText'), msg = $('copyMsg');
