@@ -1,751 +1,882 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🏔️ 勞侖茲全方位健行時間預測與再最佳化系統</title>
-    <!-- 引入 Google Fonts & JSZip CDN -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:ital,wght@0,100;0,300;0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-    <style>
-        :root {
-            --bg-color: #ffffff;
-            --text-color: #212529;
-            --card-bg: #f8f9fa;
-            --border-color: #dee2e6;
-            --primary-color: #007bff;
-            --primary-hover: #0056b3;
-            --accent-color: #e67e22;
-            --canvas-bg: #f1f3f5;
-            --shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-color: #121212;
-                --text-color: #e0e0e0;
-                --card-bg: #1e1e1e;
-                --border-color: #333333;
-                --primary-color: #375a7f;
-                --primary-hover: #2b4764;
-                --accent-color: #f39c12;
-                --canvas-bg: #252525;
-                --shadow: 0 4px 6px rgba(0,0,0,0.3);
-            }
-        }
-
-        body {
-            font-family: 'Barlow Semi Condensed', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            line-height: 1.6;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        h1, h2, h3 {
-            color: var(--primary-color);
-            font-weight: 600;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .grid-container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 20px;
-            box-shadow: var(--shadow);
-        }
-
-        .upload-box {
-            border: 2px dashed var(--primary-color);
-            padding: 20px;
-            text-align: center;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 10px;
-            background-color: rgba(0, 123, 255, 0.02);
-        }
-
-        button {
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 15px;
-            transition: background-color 0.2s;
-        }
-
-        button:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .btn-accent {
-            background-color: var(--accent-color);
-        }
-        .btn-accent:hover {
-            opacity: 0.9;
-        }
-
-        input[type="number"], select {
-            background: var(--bg-color);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-            padding: 6px 10px;
-            border-radius: 4px;
-            margin: 5px 0;
-            width: 80px;
-        }
-
-        .form-group {
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        canvas {
-            width: 100%;
-            height: 300px;
-            background-color: var(--canvas-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            margin-top: 15px;
-        }
-
-        pre {
-            background-color: var(--canvas-bg);
-            border: 1px solid var(--border-color);
-            padding: 15px;
-            border-radius: 6px;
-            overflow-x: auto;
-            font-family: monospace;
-            font-size: 13px;
-        }
-
-        .flex-wrap {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>步程試算</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{
+  --bg:#f2f4f1; --surface:#ffffff; --ink:#16201a; --ink2:#4a574f; --muted:#7a877f; --line:#d8ded9; --soft:#eaeeea;
+  --accent:#0c6a5d; --accent-ink:#ffffff; --accent-soft:#dcefe9;
+  --accent-hover:#09584d; --accent-line:#a3cdc3; --ctl-line:#c2cbc4; --shadow:rgba(22,32,26,.08);
+  --warn:#9a5a00; --warn-bg:#fff0d4; --crit:#a32632; --crit-bg:#fbe2e4;
+  --night:rgba(22,32,26,.16); --dusk:rgba(22,32,26,.07);
+  --b0:#08519d; --b1:#3186e9; --b2:#87bafc; --b3:#d8d7d4; --b4:#fd978f; --b5:#e24947; --b6:#9b0d1a;
+  --profile-line:#2f3833; --strip:#5b6a61; --t-root:#7a4b22; --t-mud:#8a8a3a; --t-trail:#c9cfc9; --t-road:#c2a878; --rain:#6b4fbb; --time:#f0a51c; --time-ink:#2a1c00;
+  --font-ui:"PingFang TC","Noto Sans TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
+  --font-num:"Barlow Semi Condensed","Roboto Condensed","Arial Narrow",var(--font-ui);
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1411; --surface:#172019; --ink:#e4ebe6; --ink2:#b2beb6; --muted:#87958c; --line:#2a352e; --soft:#1e2822;
+  --accent:#5cc4b2; --accent-ink:#0b1512; --accent-soft:#18332d;
+  --accent-hover:#7fd6c7; --accent-line:#2f6a5f; --ctl-line:#3b4a41; --shadow:rgba(0,0,0,.45);
+  --warn:#f1b24f; --warn-bg:#3a2b0e; --crit:#ff8a93; --crit-bg:#3d161b;
+  --night:rgba(0,0,0,.38); --dusk:rgba(0,0,0,.18);
+  --b0:#3a78c8; --b1:#4f98ee; --b2:#94c3f8; --b3:#545b56; --b4:#f39c93; --b5:#ea5e5f; --b6:#c93545;
+  --profile-line:#dfe7e2; --strip:#9fb0a6; --t-root:#c58a52; --t-mud:#b9b65a; --t-trail:#3a443d; --t-road:#a48c5e; --rain:#a58cf0; --time:#fbbf24; --time-ink:#2a1c00; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0f1411; --surface:#172019; --ink:#e4ebe6; --ink2:#b2beb6; --muted:#87958c; --line:#2a352e; --soft:#1e2822;
+  --accent:#5cc4b2; --accent-ink:#0b1512; --accent-soft:#18332d;
+  --accent-hover:#7fd6c7; --accent-line:#2f6a5f; --ctl-line:#3b4a41; --shadow:rgba(0,0,0,.45);
+  --warn:#f1b24f; --warn-bg:#3a2b0e; --crit:#ff8a93; --crit-bg:#3d161b;
+  --night:rgba(0,0,0,.38); --dusk:rgba(0,0,0,.18);
+  --b0:#3a78c8; --b1:#4f98ee; --b2:#94c3f8; --b3:#545b56; --b4:#f39c93; --b5:#ea5e5f; --b6:#c93545;
+  --profile-line:#dfe7e2; --strip:#9fb0a6; --t-root:#c58a52; --t-mud:#b9b65a; --t-trail:#3a443d; --t-road:#a48c5e; --rain:#a58cf0; --time:#fbbf24; --time-ink:#2a1c00; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.55;-webkit-text-size-adjust:100%;margin:0}
+.wrap{max-width:860px;margin:0 auto;padding:18px 16px 96px;display:grid;gap:14px}
+h1,h2{margin:0;text-wrap:balance}
+h1{font-size:1.45rem;letter-spacing:.02em}
+h2{font-size:1.02rem}
+.sub{margin:.25rem 0 0;color:var(--ink2);font-size:.92rem}
+.eyebrow{font-weight:600;letter-spacing:.06em;color:var(--accent);font-size:.8rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:10px;min-width:0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.btn{font:inherit;font-size:.93rem;font-weight:600;border:1px solid var(--ctl-line);background:var(--surface);color:var(--ink);padding:.5rem .9rem;border-radius:9px;cursor:pointer;line-height:1.2;display:inline-flex;align-items:center;justify-content:center;gap:.45rem;min-height:42px;box-shadow:0 1px 2px var(--shadow);transition:border-color .15s,color .15s,background-color .15s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover);color:var(--accent-ink)}
+.btn.ghost{background:transparent;box-shadow:none;color:var(--ink2);border-color:var(--line);font-weight:500}
+.btn.ghost:hover{color:var(--accent);border-color:var(--accent)}
+.btn.sm{min-height:36px;padding:.3rem .7rem;font-size:.84rem}
+.status{margin:0;color:var(--ink2);font-size:.9rem}
+.error{margin:0;color:var(--crit);background:var(--crit-bg);border-radius:8px;padding:.55rem .7rem;font-size:.9rem}
+.warnbox{margin:0;color:var(--warn);background:var(--warn-bg);border-radius:8px;padding:.55rem .7rem;font-size:.9rem}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+.form label,.field{display:grid;gap:4px;font-size:.84rem;color:var(--ink2);min-width:0}
+.full{grid-column:1/-1}
+input,select{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.45rem .55rem;min-height:40px;width:100%;min-width:0}
+input[type=number]{font-family:var(--font-num);font-weight:600}
+.inline{display:flex;flex-wrap:wrap;align-items:center;gap:6px;color:var(--ink2);font-size:.88rem}
+.inline input{width:4.6rem}
+.hint{color:var(--muted);font-size:.8rem;margin:0}
+details.disc>summary{list-style:none;display:flex;align-items:center;gap:.55rem;min-height:44px;padding:.5rem .8rem;border:1px solid var(--ctl-line);border-radius:9px;background:var(--surface);color:var(--ink);font-weight:600;font-size:.9rem;box-shadow:0 1px 2px var(--shadow);cursor:pointer}
+details.disc>summary::-webkit-details-marker{display:none}
+details.disc>summary::before{content:"";flex:none;width:.42rem;height:.42rem;border-right:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:rotate(-45deg);margin:0 .2rem 0 .1rem;transition:transform .15s}
+details.disc[open]>summary::before{transform:rotate(45deg) translate(-1px,-1px)}
+details.disc[open]>summary{margin-bottom:10px}
+.kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+@media (min-width:520px){.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.kpi{display:grid;gap:2px;padding:8px 10px;border-radius:8px;background:var(--soft);min-width:0}
+.kpi .k{font-size:.76rem;color:var(--muted)}
+.kpi .v{font-family:var(--font-num);font-weight:600;font-size:1.35rem;line-height:1.15;font-variant-numeric:tabular-nums;white-space:nowrap}
+.kpi.main{background:var(--accent-soft)}
+.kpi.main .v{color:var(--accent)}
+.svgbox{width:100%;min-width:0}
+.svgbox svg{display:block;width:100%;height:auto;touch-action:manipulation}
+.legend{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:.74rem;color:var(--ink2);align-items:center}
+.sw{display:inline-block;width:12px;height:10px;border-radius:2px;margin-right:3px;vertical-align:-1px}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th{font-size:.74rem;color:var(--muted);font-weight:500;text-align:left;padding:4px 4px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:7px 3px;border-bottom:1px solid var(--line);vertical-align:top}
+td.num,th.num{text-align:right}
+td .t{font-family:var(--font-num);font-weight:600;font-size:.98rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.idx{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ink);color:var(--surface);font-family:var(--font-num);font-weight:700;font-size:.8rem}
+.terrs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;border:0;margin:0;padding:0}
+@media (min-width:640px){.terrs{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.tchip{position:relative;display:flex;align-items:center;gap:6px;min-height:40px;padding:.3rem .6rem;border:1px solid var(--ctl-line);border-radius:999px;background:var(--surface);color:var(--ink2);font-size:.86rem;cursor:pointer}
+.tchip input{position:absolute;opacity:0;width:1px;height:1px}
+.tchip:has(input:checked){background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.conds{display:flex;flex-wrap:wrap;gap:6px}
+.hv{display:inline-flex;align-items:center;gap:6px;font-size:.88rem;color:var(--ink2);white-space:nowrap;cursor:pointer;min-height:38px;padding:0 .6rem 0 .45rem;border:1px solid var(--ctl-line);border-radius:999px;background:var(--surface)}
+.hv:has(input:checked){background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.hv input{width:18px;height:18px;min-height:0;margin:0;accent-color:var(--accent)}
+.secrow{border:1px solid var(--line);border-radius:10px;padding:8px;background:var(--bg);display:grid;gap:8px}
+.sectop{display:flex;align-items:center;gap:8px;min-height:36px}
+.secno{font-weight:700;font-size:.92rem}
+.secrange{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px}
+.pgrid label{display:grid;gap:3px;font-size:.78rem;color:var(--ink2)}
+.pgrid h3{grid-column:1/-1;margin:.4rem 0 0;font-size:.86rem}
+.teamrow{display:grid;gap:4px;font-size:.84rem;color:var(--ink2)}
+.teamnote{margin:0;font-size:.86rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.livebar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 14px;margin:0;border-top:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.88rem;cursor:pointer;padding:8px 16px;padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));box-shadow:0 -2px 12px var(--shadow)}
+.livebar b{font-family:var(--font-num);font-weight:600;font-size:1.14rem}
+.copybox{width:100%;min-height:9rem;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.6rem}
+.about p,.about li{font-size:.88rem;color:var(--ink2);margin:.3rem 0}
+.about ul{padding-left:1.1rem}
+.lorentz-box{border:1px dashed var(--accent-line);border-radius:9px;padding:10px;background:var(--accent-soft);margin-top:8px}
+.lorentz-box h3{margin:0 0 6px;font-size:.9rem;color:var(--accent)}
+.lorentz-params{font-family:var(--font-num);font-weight:600;font-size:.95rem;margin:4px 0}
+[hidden]{display:none!important}
+</style>
 </head>
 <body>
+<main class="wrap">
+  <header>
+    <div class="eyebrow">10/6 實測校正 · 揹重 13 kg · 可選勞侖茲再最佳化</div>
+    <h1>步程試算</h1>
+    <p class="sub">Tobler 與 DIN 33466 各半的混合公式為預設基底。上傳歷史實走 GPX（可多檔或 ZIP）後，可用高斯-牛頓法解出團體專屬勞侖茲參數 [a,b,c]，之後所有路段改以勞侖茲為基底，再套用原本的分段地形／雨天／重裝／高度修正。<br><br>別的隊伍可在「設定」調整隊伍速度，並用自己的 GPS 紀錄校準，或批次上傳歷史軌跡做勞侖茲再最佳化。</p>
+  </header>
 
-    <h1>🏔️ 勞侖茲全方位健行預測與再最佳化系統</h1>
-    <p>整合 <strong>勞侖茲坡度模型</strong>、<strong>Pandolf 負重能量轉換</strong>、<strong>雨天係數降速鏈</strong> 與 <strong>Canvas 高度剖面動態渲染</strong> 的極致純前端引擎。</p>
-
-    <div class="grid-container">
-        <!-- 左側控制面板 -->
-        <div>
-            <div class="card">
-                <h2>1. 目標【計畫性航跡】</h2>
-                <p>上傳即將前往的計畫路線 (單一 GPX 檔案)</p>
-                <input type="file" id="targetFile" accept=".gpx" style="display:none">
-                <div class="upload-box" onclick="document.getElementById('targetFile').click()">
-                    點擊此處上傳計畫航跡 GPX
-                </div>
-                <div id="targetStatus" style="margin-top: 5px; font-weight: bold; color: var(--accent-color);"></div>
-            </div>
-
-            <div class="card">
-                <h2>2. 批次【歷史實走航跡校準】</h2>
-                <p>一次上傳多個歷史實走航跡，或包含多檔案的 ZIP 壓縮包，系統將自動解析並透過高斯-牛頓法對全方位物理鏈進行勞侖茲最佳化參數求解。</p>
-                <input type="file" id="historyFiles" accept=".gpx,.zip" multiple style="display:none">
-                <div class="upload-box" onclick="document.getElementById('historyFiles').click()" style="border-color: var(--accent-color);">
-                    點擊上傳多個歷史 GPX 或單一 ZIP 包
-                </div>
-                <div id="historyStatus" style="margin-top: 5px; font-weight: bold;"></div>
-            </div>
-        </div>
-
-        <!-- 右側生理與環境控制參數鏈 -->
-        <div>
-            <div class="card">
-                <h2>3. 生理、負重與天候參數控制鏈</h2>
-                
-                <div class="form-group">
-                    <label>基本體重 (W, kg):</label>
-                    <input type="number" id="paramW" value="50" min="30" max="150">
-                </div>
-                <div class="form-group">
-                    <label>重裝背包重 (L_heavy, kg):</label>
-                    <input type="number" id="paramLHeavy" value="13" min="0" max="50">
-                </div>
-                <div class="form-group">
-                    <label>輕裝背包重 (L_light, kg):</label>
-                    <input type="number" id="paramLLight" value="2" min="0" max="20">
-                </div>
-                <div class="form-group">
-                    <label>環境天候設定:</label>
-                    <select id="paramWeather" style="width: 100px;">
-                        <option value="sunny">晴天舒適</option>
-                        <option value="rainy">雨霧路濕</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>地貌與步道類型:</label>
-                    <select id="paramTerrain" style="width: 120px;">
-                        <option value="trail">一般步道</option>
-                        <option value="forest">沙色林道</option>
-                        <option value="root">樹根陡坡</option>
-                        <option value="mud">泥濘草徑</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>途中停留時間 (分鐘/每小時):</label>
-                    <input type="number" id="paramRest" value="13" min="0" max="30">
-                </div>
-                
-                <div class="flex-wrap" style="margin-top: 15px;">
-                    <button id="btnOptimize" class="btn-accent">執行勞侖茲參數再最佳化 🚀</button>
-                    <button id="btnPredict">重新計算計畫航跡 📊</button>
-                </div>
-            </div>
-        </div>
+  <section class="card" id="fileCard">
+    <h2>路線檔案</h2>
+    <div class="row">
+      <label class="btn primary" for="file">選擇 GPX／KML 檔</label>
+      <input type="file" id="file" hidden accept=".gpx,.kml,.kmz">
+      <button class="btn" id="btnReverse" type="button">反轉方向</button>
+      <button class="btn" id="btnSample" type="button">載入範例</button>
     </div>
+    <p class="status" id="fileStatus"></p>
+    <p class="error" id="fileError" hidden></p>
+    <p class="warnbox" id="fileWarn" hidden></p>
+    <details class="disc" id="rangeBox">
+      <summary>只算其中一段<span style="margin-left:auto;font-weight:400;font-size:.78rem;color:var(--muted)">裁掉搭車段</span></summary>
+      <div class="inline" style="margin-top:8px">
+        從 <input id="rFrom" type="number" step="0.1" min="0" inputmode="decimal"> km 到
+        <input id="rTo" type="number" step="0.1" min="0" inputmode="decimal"> km
+        <button class="btn" id="btnRange" type="button">套用</button>
+        <button class="btn ghost" id="btnRangeAll" type="button">全段</button>
+      </div>
+    </details>
+  </section>
 
-    <!-- 高度剖面 Canvas 視覺化區塊 -->
-    <div class="card">
-        <h2>📈 地形與高度剖面動態 Canvas 視覺化圖表</h2>
-        <div id="canvasContainer">
-            <canvas id="profileCanvas"></canvas>
+  <section class="card" id="setCard">
+    <h2>設定</h2>
+    <div class="form">
+      <label for="date">出發日期<input type="date" id="date"></label>
+      <label for="start">出發時間<input type="time" id="start"></label>
+      <label for="deadline">最晚抵達（選填）<input type="time" id="deadline"></label>
+      <label for="stopH" class="full">途中停留（每小時內含幾分鐘）<input type="number" id="stopH" min="0" max="45" step="0.5" value="13" inputmode="decimal"></label>
+    </div>
+    <p class="hint">預設 13 分：每小時走 47 分、停 13 分。午餐、儀式等長停留請填在時間表各點。</p>
+    <div class="teamrow">
+      <span>隊伍速度（倍數；1＝八年級學生實測）</span>
+      <div class="inline"><label for="teamUp">上坡與平路 ×</label><input type="number" id="teamUp" min="0.3" max="2.5" step="0.05" value="1" inputmode="decimal"><label for="teamDn">下坡 ×</label><input type="number" id="teamDn" min="0.3" max="2.5" step="0.05" value="1" inputmode="decimal"></div>
+    </div>
+    <p class="teamnote" id="teamNote"></p>
+
+    <details class="disc" id="calBox">
+      <summary>怎麼定倍數：用 GPS 紀錄校準 / 勞侖茲再最佳化</summary>
+      <div style="display:grid;gap:10px;margin-top:8px">
+        <div class="row">
+          <label class="btn primary" for="calFile">載入自己的紀錄（單檔）</label>
+          <input type="file" id="calFile" hidden accept=".gpx,.kml">
         </div>
+        <p class="hint">單檔校準會算出隊伍速度倍數並套用。下方可改用批次歷史軌跡做勞侖茲參數求解。</p>
+
+        <div class="lorentz-box">
+          <h3>勞侖茲再最佳化（批次歷史 GPX）</h3>
+          <p class="hint" style="margin:0 0 8px">一次上傳多個歷史實走 GPX 或含多檔的 ZIP。系統會過濾 &lt;0.6 km/h 停頓與 &gt;15 km/h 雜訊，用高斯-牛頓法解出該團體專屬 [a, b, c]。之後所有路段改以勞侖茲為基底速度，再套用各段的地形／雨天／重裝／高度修正。</p>
+          <div class="row">
+            <label class="btn" for="histFiles" style="border-color:var(--accent)">上傳歷史 GPX / ZIP</label>
+            <input type="file" id="histFiles" hidden accept=".gpx,.zip" multiple>
+            <button class="btn primary" id="btnOptimize" type="button">執行勞侖茲最佳化</button>
+            <button class="btn ghost sm" id="btnClearLorentz" type="button">清除勞侖茲參數</button>
+          </div>
+          <p class="status" id="histStatus"></p>
+          <div class="lorentz-params" id="lorentzParams">目前：使用 Tobler + DIN 混合（尚未最佳化）</div>
+        </div>
+      </div>
+    </details>
+
+    <details class="disc">
+      <summary>公式參數<span style="margin-left:auto;font-weight:400;font-size:.78rem;color:var(--muted)">進階</span></summary>
+      <div class="pgrid" id="pgrid" style="margin-top:8px">
+        <h3>Tobler 與 DIN 33466（一般步道，無勞侖茲時使用）</h3>
+        <label for="pTobF">Tobler 係數 F<input type="number" id="pTobF" step="0.01" value="0.734"></label>
+        <label for="pWTob">Tobler 佔比<input type="number" id="pWTob" step="0.1" min="0" max="1" value="0.5"></label>
+        <label for="pSunDown">晴天下坡時間×<input type="number" id="pSunDown" step="0.05" value="1"></label>
+        <label for="pDinH">DIN 水平 km/h<input type="number" id="pDinH" step="0.1" value="3.62"></label>
+        <label for="pDinUp">DIN 上升 m/h<input type="number" id="pDinUp" step="10" value="468"></label>
+        <label for="pDinDown">DIN 下降 m/h<input type="number" id="pDinDown" step="10" value="791"></label>
+        <h3>樹根陡坡（係數／重裝爬升上限／下降上限）</h3>
+        <label for="rootSun0">晴 係數<input type="number" id="rootSun0" step="0.05" value="0.70"></label>
+        <label for="rootSun1">晴 爬升<input type="number" id="rootSun1" step="10" value="260"></label>
+        <label for="rootSun2">晴 下降<input type="number" id="rootSun2" step="10" value="300"></label>
+        <label for="rootRain0">雨霧 係數<input type="number" id="rootRain0" step="0.05" value="0.60"></label>
+        <label for="rootRain1">雨霧 爬升<input type="number" id="rootRain1" step="10" value="220"></label>
+        <label for="rootRain2">雨霧 下降<input type="number" id="rootRain2" step="10" value="230"></label>
+        <h3>雨天係數（速度倍數）</h3>
+        <label for="trailRain0">一般步道<input type="number" id="trailRain0" step="0.01" value="0.90"></label>
+        <label for="roadRain0">林道<input type="number" id="roadRain0" step="0.01" value="0.95"></label>
+        <h3>泥濘草徑</h3>
+        <label for="mudSun0">晴 係數<input type="number" id="mudSun0" step="0.05" value="0.75"></label>
+        <label for="mudSun1">晴 爬升<input type="number" id="mudSun1" step="10" value="260"></label>
+        <label for="mudSun2">晴 下降<input type="number" id="mudSun2" step="10" value="300"></label>
+        <label for="mudRain0">雨霧 係數<input type="number" id="mudRain0" step="0.05" value="0.60"></label>
+        <label for="mudRain1">雨霧 爬升<input type="number" id="mudRain1" step="10" value="220"></label>
+        <label for="mudRain2">雨霧 下降<input type="number" id="mudRain2" step="10" value="230"></label>
+        <h3>輕裝 / 高度</h3>
+        <label for="pBody">體重 kg<input type="number" id="pBody" step="1" value="50"></label>
+        <label for="pLightKg">輕裝負重 kg<input type="number" id="pLightKg" step="0.5" value="2"></label>
+        <label for="pLightDnMax">下坡最多快×<input type="number" id="pLightDnMax" step="0.05" min="1" value="1.25"></label>
+        <label for="pAltPct">每千公尺慢 %<input type="number" id="pAltPct" step="0.5" value="6.3"></label>
+        <label for="pAltRef">高度基準 m<input type="number" id="pAltRef" step="50" value="300"></label>
+      </div>
+      <div class="row" style="margin-top:8px"><button class="btn ghost" id="btnResetP" type="button">恢復預設參數</button></div>
+    </details>
+  </section>
+
+  <section class="card">
+    <h2>高度剖面</h2>
+    <div class="svgbox" id="profile"></div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--t-trail)"></i>一般步道</span>
+      <span><i class="sw" style="background:var(--t-road)"></i>林道</span>
+      <span><i class="sw" style="background:var(--t-root)"></i>樹根陡坡</span>
+      <span><i class="sw" style="background:var(--t-mud)"></i>泥濘草徑</span>
+      <span><i class="sw" style="background:var(--rain)"></i>雨天</span>
     </div>
+  </section>
 
-    <!-- 輸出控制台 -->
-    <div class="card">
-        <h2>🖥️ 最佳化迴歸與時程預報摘要</h2>
-        <pre id="consoleOutput">系統就緒。請先上傳航跡檔案以啟動參數控制鏈模型。</pre>
+  <section class="card">
+    <h2>路段與地形</h2>
+    <p class="hint">每段可獨立設定地形、重裝、雨天。數字為該段平均水平速度（km/h，已含坡度與隊伍倍數，不含停留）。</p>
+    <div id="secBody" class="seclist" style="display:grid;gap:8px"></div>
+    <button class="btn" id="btnAddSec" type="button" style="margin-top:6px">新增路段</button>
+  </section>
+
+  <section class="card">
+    <h2>時間表</h2>
+    <div class="tblwrap" style="overflow-x:auto">
+      <table>
+        <thead><tr><th>#</th><th>檢查點</th><th class="num">抵達</th><th class="num">停留</th><th class="num">出發</th><th></th></tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
     </div>
+  </section>
 
-    <script>
-    // 使用 IIFE 模組化封裝核心引擎
-    const MOUNTAIN_ENGINE = (function() {
-        
-        // 核心狀態變數
-        let state = {
-            lorentzParams: [3.80, 6.20, 0.05], // 預設 [a:最大時速, b:坡度寬度敏感度, c:最佳下坡偏置]
-            targetRoute: null,
-            historicalPoints: []
-        };
+  <section class="card" id="sumCard">
+    <h2>摘要</h2>
+    <div class="kpis" id="kpis"></div>
+    <div style="margin-top:10px">
+      <button class="btn" id="btnCopy" type="button">複製純文字時間表</button>
+      <span id="copyMsg" class="hint"></span>
+    </div>
+    <textarea class="copybox" id="copyText" readonly style="margin-top:8px"></textarea>
+  </section>
 
-        // 1. Pandolf 負重能量速率轉換公式
-        // 核心邏輯：出力不變原則 (代流量不變)，根據負重與體重非線性求解對應的速度比
-        function getPandolfSpeedRatio(W, L_target, L_base, slope) {
-            // 簡化形式的 Pandolf 模型速度趨近率：
-            // 當負重從 L_base (如13kg) 減輕到 L_target (如2kg) 時，平地速度約快 15%，陡坡上坡可快 22~24%
-            const G = slope * 100; // 轉為百分比坡度
-            let baseFactor = 1.0;
-            if (G >= 0) {
-                // 上坡與平路：隨著坡度增加，減重帶來的提速效益更大
-                baseFactor = 1.15 + (G * 0.003);
-            } else {
-                // 下坡：落腳煞車限制，提速有上限 (預設最多25%)
-                baseFactor = Math.min(1.25, 1.15 + (Math.abs(G) * 0.002));
-            }
-            // 若目標負重比基準重裝輕，則提供加速比率
-            return L_target < L_base ? baseFactor : 1.0;
+  <section class="card about">
+    <h2>模型怎麼算</h2>
+    <ul>
+      <li>預設：每 20 m 算 Tobler 與 DIN 33466 時間再各取一半。Tobler：距離 ÷ (0.734 × 6 × e^(−3.5 × |S+0.05|))；DIN：水平 3.62 km/h、上升 468 m/h、下降 791 m/h，取 max + min/2。</li>
+      <li>有勞侖茲參數時：基底速度改為 a / ((b·S + c)² + 1)，再套用各段地形係數、雨天倍數、垂直上限、Pandolf 輕裝加速、高度衰減、隊伍倍數與途中停留。</li>
+      <li>歷史批次校準：過濾淨速 &lt;0.6 km/h（整隊停頓）與 &gt;15 km/h（車輛），攤平所有純淨點，高斯-牛頓解 [a,b,c]。</li>
+      <li>分段設定完全保留：重裝／輕裝、晴／雨、地形類型可各自勾選，不會全行程套用同一組。</li>
+    </ul>
+  </section>
+</main>
+
+<button class="livebar" id="liveBar" type="button" hidden>
+  <span class="lb"><span class="lb-k">總時程</span> <b id="liveTotal">—</b></span>
+  <span class="lb"><span class="lb-k">移動</span> <b id="liveMove">—</b></span>
+</button>
+
+<script>
+(function () {
+  "use strict";
+  var STEP = 20, R_EARTH = 6371008.8;
+  var DEFAULTS = {
+    F: 0.734, dinH: 3.62, dinUp: 468, dinDown: 791, wTob: 0.5, sunDown: 1.00,
+    altRef: 300, altPct: 6.3, bodyKg: 50, lightKg: 2, lightDnMax: 1.25,
+    roadHeavyF: 1.00, roadLightUp: 0.92, roadLightDown: 0.75,
+    terr: {
+      trail: { name: "一般步道", sun: [1.00, 0, 0], rain: [0.90, 0, 0] },
+      root:  { name: "樹根陡坡", sun: [0.70, 260, 300], rain: [0.60, 220, 230] },
+      mud:   { name: "泥濘草徑", sun: [0.75, 260, 300], rain: [0.60, 220, 230] },
+      road:  { name: "林道",     sun: [1.00, 0, 0], rain: [0.95, 0, 0] }
+    }
+  };
+  var PP = JSON.parse(JSON.stringify(DEFAULTS));
+  var S = { date: "", start: "08:00", deadline: "", stopH: 13, teamUp: 1, teamDn: 1 };
+  var T = { parsed: null, name: "", reversed: false, range: null, full: null, track: null, secsFull: [], cps: [], seq: 1 };
+  var lorentzParams = null; // [a, b, c] or null
+  var histSamples = [];
+
+  function $(id) { return document.getElementById(id); }
+  function isNum(v) { return v !== null && v !== undefined && v !== "" && isFinite(+v); }
+  function numOr(v, d) { return isNum(v) ? +v : d; }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
+  function rad(d) { return d * Math.PI / 180; }
+  function hav(a1, o1, a2, o2) {
+    var p1 = rad(a1), p2 = rad(a2), dp = p2 - p1, dl = rad(o2 - o1);
+    var h = Math.sin(dp/2)*Math.sin(dp/2) + Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2);
+    return 2 * R_EARTH * Math.asin(Math.min(1, Math.sqrt(h)));
+  }
+  function tobler(S) { return 6 * Math.exp(-3.5 * Math.abs(S + 0.05)); }
+  function hm(min) {
+    var h = Math.floor(min / 60) % 24, m = Math.round(min % 60);
+    if (m === 60) { h = (h + 1) % 24; m = 0; }
+    return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
+  }
+  function dur(min) {
+    var h = Math.floor(min / 60), m = Math.round(min % 60);
+    return (h ? h + " 時 " : "") + m + " 分";
+  }
+  function km(m) { return (m / 1000).toFixed(2); }
+  function nf(n) { return Math.round(n); }
+
+  // ----- GPX parse -----
+  function parseTrackText(text) {
+    var doc = new DOMParser().parseFromString(text, "application/xml");
+    var root = doc.documentElement;
+    if (!root) throw new Error("不是有效的 GPX/KML");
+    var name = "", pts = [], rootName = (root.localName || root.nodeName || "").toLowerCase().replace(/^.*:/, "");
+    if (rootName === "gpx") {
+      var trks = root.getElementsByTagName("trk");
+      if (trks.length) {
+        var n = trks[0].getElementsByTagName("name")[0];
+        if (n) name = n.textContent || "";
+      }
+      var tp = root.getElementsByTagName("trkpt");
+      if (!tp.length) tp = root.getElementsByTagName("rtept");
+      for (var i = 0; i < tp.length; i++) {
+        var p = tp[i], lat = +p.getAttribute("lat"), lon = +p.getAttribute("lon");
+        var eleEl = p.getElementsByTagName("ele")[0];
+        var timeEl = p.getElementsByTagName("time")[0];
+        pts.push({ lat: lat, lon: lon, ele: eleEl ? +eleEl.textContent : 0, t: timeEl ? new Date(timeEl.textContent).getTime() : null });
+      }
+    } else {
+      throw new Error("請使用 GPX 檔");
+    }
+    if (pts.length < 2) throw new Error("軌跡點太少");
+    // 3-point elevation smooth
+    for (var i = 1; i < pts.length - 1; i++) {
+      pts[i].ele = (pts[i-1].ele + pts[i].ele + pts[i+1].ele) / 3;
+    }
+    var dist = 0;
+    pts[0].d = 0;
+    for (var i = 1; i < pts.length; i++) {
+      dist += hav(pts[i-1].lat, pts[i-1].lon, pts[i].lat, pts[i].lon);
+      pts[i].d = dist;
+    }
+    return { name: name, pts: pts, total: dist };
+  }
+
+  // ----- resample to STEP -----
+  function resample(pts) {
+    if (!pts.length) return { x: [], z: [], total: 0 };
+    var total = pts[pts.length-1].d, n = Math.max(1, Math.round(total / STEP));
+    var x = [], z = [], j = 0;
+    for (var i = 0; i <= n; i++) {
+      var d = (i / n) * total;
+      while (j < pts.length - 2 && pts[j+1].d < d) j++;
+      var p0 = pts[j], p1 = pts[j+1] || p0;
+      var t = (p1.d - p0.d) > 0 ? (d - p0.d) / (p1.d - p0.d) : 0;
+      x.push(d);
+      z.push(p0.ele + t * (p1.ele - p0.ele));
+    }
+    return { x: x, z: z, total: total };
+  }
+
+  function zAt(tr, d) {
+    if (!tr || !tr.x.length) return 0;
+    d = Math.max(0, Math.min(tr.total, d));
+    var i = Math.min(tr.x.length - 2, Math.floor(d / STEP));
+    if (i < 0) i = 0;
+    var t = (tr.x[i+1] - tr.x[i]) > 0 ? (d - tr.x[i]) / (tr.x[i+1] - tr.x[i]) : 0;
+    return tr.z[i] + t * (tr.z[i+1] - tr.z[i]);
+  }
+
+  // ----- core speed / time -----
+  function baseSpeedKmh(S) {
+    if (lorentzParams) {
+      var a = lorentzParams[0], b = lorentzParams[1], c = lorentzParams[2];
+      return Math.max(0.4, a / (Math.pow(b * S + c, 2) + 1));
+    }
+    // Tobler + DIN blend → equivalent horizontal speed
+    var tTob = 1 / (PP.F * tobler(S)); // hours per km
+    var th = 1 / PP.dinH, tv = S > 0 ? S / (PP.dinUp / 1000) : (S < 0 ? -S / (PP.dinDown / 1000) : 0);
+    var tDin = Math.max(th, tv) + 0.5 * Math.min(th, tv);
+    var t = PP.wTob * tTob + (1 - PP.wTob) * tDin;
+    if (!isFinite(t) || t <= 0) return 0.5;
+    return 1 / t;
+  }
+
+  function stepHours(dx, dz, zm, terr, rain, light) {
+    if (dx <= 0) return 0;
+    var S = dz / dx;
+    var tInfo = (PP.terr[terr] || PP.terr.trail)[rain ? "rain" : "sun"];
+    var coeff = tInfo[0], capUp = tInfo[1], capDn = tInfo[2];
+    var aK = (PP.altPct || 0) / 100;
+    var a = Math.max(0, (zm - PP.altRef) / 1000 * aK);
+    var fAlt = S >= 0.05 ? (1 - a) : (S <= -0.05 ? (1 - a / 3) : (1 - a / 2));
+    var spd = baseSpeedKmh(S) * coeff * fAlt;
+    // vertical caps
+    if (capUp > 0 && S > 0.01) {
+      var maxHoriz = (capUp / 1000) / S;
+      spd = Math.min(spd, maxHoriz);
+    }
+    if (capDn > 0 && S < -0.01) {
+      var maxHorizD = (capDn / 1000) / (-S);
+      spd = Math.min(spd, maxHorizD);
+    }
+    // light pack (Pandolf-inspired)
+    if (light) {
+      var G = S * 100;
+      var ratio = G >= 0 ? (1.15 + G * 0.003) : Math.min(PP.lightDnMax || 1.25, 1.15 + Math.abs(G) * 0.002);
+      spd *= ratio;
+    }
+    // road specials
+    if (terr === "road") {
+      if (light) spd *= (S >= 0 ? (PP.roadLightUp || 0.92) : (PP.roadLightDown || 0.75));
+      else spd *= (PP.roadHeavyF || 1);
+    }
+    // team multiplier
+    var team = (S <= -0.05) ? (S.teamDn || 1) : (S.teamUp || 1);
+    // wait, S is local; use global S settings
+    team = (dz / dx <= -0.05) ? numOr($("teamDn").value, 1) : numOr($("teamUp").value, 1);
+    spd *= team;
+    spd = Math.max(spd, 0.4);
+    return (dx / 1000) / spd;
+  }
+
+  function stretchHours(tr, a, b, terr, heavy, rain) {
+    a = Math.max(0, Math.min(tr.total, a));
+    b = Math.max(a, Math.min(tr.total, b));
+    var light = !heavy, h = 0, xa = a, za = zAt(tr, a);
+    for (var i = Math.max(0, Math.floor(a / STEP)); i * STEP < b; i++) {
+      var xb = Math.min(b, (i + 1) * STEP);
+      if (xb <= xa) continue;
+      var zb = zAt(tr, xb);
+      h += stepHours(xb - xa, zb - za, (za + zb) / 2, terr, rain, light);
+      xa = xb; za = zb;
+    }
+    return h;
+  }
+
+  // ----- Lorentz fitting -----
+  function extractSamples(pts) {
+    var samples = [];
+    for (var i = 0; i < pts.length - 1; i++) {
+      var p1 = pts[i], p2 = pts[i+1];
+      if (p1.t == null || p2.t == null) continue;
+      var dt = (p2.t - p1.t) / 1000;
+      if (dt <= 0 || dt > 90) continue;
+      var dx = p2.d - p1.d;
+      if (dx <= 0.5) continue;
+      var dy = p2.ele - p1.ele;
+      var speed = (dx / 1000) / (dt / 3600);
+      if (speed < 0.6 || speed > 15) continue;
+      var slope = dy / dx;
+      samples.push({ slope: slope, speed: speed });
+    }
+    return samples;
+  }
+
+  function gaussNewton(samples) {
+    if (samples.length < 20) return null;
+    var p = lorentzParams ? lorentzParams.slice() : [3.8, 6.2, 0.05];
+    var maxIter = 40;
+    for (var iter = 0; iter < maxIter; iter++) {
+      var JtJ = [[0,0,0],[0,0,0],[0,0,0]], Jtr = [0,0,0];
+      for (var i = 0; i < samples.length; i++) {
+        var s = samples[i].slope, v = samples[i].speed;
+        var a = p[0], b = p[1], c = p[2];
+        var denom = Math.pow(b * s + c, 2) + 1;
+        var pred = a / denom;
+        var res = v - pred;
+        var da = 1 / denom;
+        var db = -2 * a * (b * s + c) * s / (denom * denom);
+        var dc = -2 * a * (b * s + c) / (denom * denom);
+        var J = [da, db, dc];
+        for (var r = 0; r < 3; r++) {
+          for (var col = 0; col < 3; col++) JtJ[r][col] += J[r] * J[col];
+          Jtr[r] += J[r] * res;
         }
-
-        // 2. 雨天與地貌環境降速鏈
-        function getEnvironmentCoefficient(terrain, weather) {
-            if (weather === 'sunny') return 1.0;
-            
-            // 依據 10/6 與四季林道推估之雨天降速鏈
-            switch(terrain) {
-                case 'forest': return 0.95; // 林道受雨天影響較小
-                case 'root':   return 0.65; // 樹根陡坡極滑
-                case 'mud':    return 0.60; // 泥濘草徑限制極大
-                case 'trail':  
-                default:       return 0.90; // 一般步道
-            }
-        }
-
-        // 3. 高度 VO2max 衰減模型
-        function getHeightModifier(elevation, slope) {
-            if (elevation <= 300) return 1.0;
-            const deltaH = (elevation - 300) / 1000;
-            
-            // 每高 1,000m，上坡慢 6.3%、平路慢 3.2%、下坡慢 2.1%
-            if (slope > 0.02)  return 1.0 - (deltaH * 0.063);
-            if (slope < -0.02) return 1.0 - (deltaH * 0.021);
-            return 1.0 - (deltaH * 0.032);
-        }
-
-        // 4. 全方位整合的勞侖茲參數控制鏈模型速度計算
-        function calculateModelSpeed(slope, ele, W, L, terrain, weather) {
-            const [a, b, c] = state.lorentzParams;
-            
-            // 基礎勞侖茲速度 (晴天、重裝基準下)
-            let speed = a / (Math.pow(b * slope + c, 2) + 1);
-            
-            // 引入環境降速鏈
-            const envCoeff = getEnvironmentCoefficient(terrain, weather);
-            speed *= envCoeff;
-
-            // 引入高度衰減修正
-            const heightMod = getHeightModifier(ele, slope);
-            speed *= heightMod;
-
-            // 引入 Pandolf 負重轉換比率 (以 13kg 為基準重裝)
-            if (L < 10) { 
-                const pandolfRatio = getPandolfSpeedRatio(W, L, 13, slope);
-                speed *= pandolfRatio;
-            }
-
-            // 地形垂直爬升與下降上限之硬體限制 (Hard boundary constraints)
-            let maxVertRatePerHour = Infinity; // 每小時最大垂直高度變動 (米)
-            if (terrain === 'root' || terrain === 'mud') {
-                maxVertRatePerHour = (weather === 'sunny') ? 260 : 220; // 爬升上限
-                if (slope < 0) maxVertRatePerHour = (weather === 'sunny') ? 300 : 230; // 下降上限
-            }
-
-            // 檢查是否超過垂直極限速率
-            if (maxVertRatePerHour !== Infinity && Math.abs(slope) > 0.01) {
-                const vertSpeedLimitKmh = maxVertRatePerHour / 1000;
-                const horizSpeedLimitKmh = vertSpeedLimitKmh / Math.abs(slope);
-                speed = Math.min(speed, horizSpeedLimitKmh);
-            }
-
-            return Math.max(speed, 0.4); // 保底生理移動速度 0.4 km/h
-        }
-
-        // 5. 哈弗辛公式計算大圓距離 (公尺)
-        function distance2D(lat1, lon1, lat2, lon2) {
-            const R = 6371000;
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                      Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) *
-                      Math.sin(dLon/2) * Math.sin(dLon/2);
-            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        }
-
-        // 6. 解析單一 GPX 航跡內容 (內建3點高度平滑)
-        function parseGPX(text) {
-            const parser = new DOMParser();
-            const xml = parser.parseFromString(text, "text/xml");
-            const trkpts = xml.getElementsByTagName("trkpt");
-            
-            let pts = [];
-            for (let i = 0; i < trkpts.length; i++) {
-                const pt = trkpts[i];
-                const lat = parseFloat(pt.getAttribute("lat"));
-                const lon = parseFloat(pt.getAttribute("lon"));
-                const eleEl = pt.getElementsByTagName("ele")[0];
-                const timeEl = pt.getElementsByTagName("time")[0];
-                
-                pts.push({
-                    lat: lat,
-                    lon: lon,
-                    ele: eleEl ? parseFloat(eleEl.textContent) : 0,
-                    time: timeEl ? new Date(timeEl.textContent).getTime() / 1000 : null
-                });
-            }
-
-            // 執行 3 點高度平滑化
-            if (pts.length > 2) {
-                for (let i = 1; i < pts.length - 1; i++) {
-                    pts[i].ele = (pts[i-1].ele + pts[i].ele + pts[i+1].ele) / 3;
-                }
-            }
-
-            // 計算累積距離
-            let cumDist = 0;
-            for (let i = 0; i < pts.length; i++) {
-                if (i > 0) {
-                    cumDist += distance2D(pts[i-1].lat, pts[i-1].lon, pts[i].lat, pts[i].lon);
-                }
-                pts[i].dist = cumDist;
-            }
-
-            return pts;
-        }
-
-        // 7. 微觀資料清洗過濾管道 (0.6 km/h 團隊停頓判定)
-        function extractRegressionPoints(pts, W, L, terrain, weather) {
-            let samples = [];
-            for (let i = 0; i < pts.length - 1; i++) {
-                const p1 = pts[i];
-                const p2 = pts[i+1];
-                if (p1.time === null || p2.time === null) continue;
-
-                const dt = p2.time - p1.time;
-                if (dt <= 0 || dt > 60) continue; // 排除長時間中斷或異常點
-
-                const dx = p2.dist - p1.dist;
-                if (dx <= 0) continue;
-
-                const dy = p2.ele - p1.ele;
-                const speedKmh = (dx / 1000) / (dt / 3600);
-
-                // 核心獨創過濾：低於 0.6 km/h 視為轉換點整隊、集合停頓點；大於 15 km/h 為車輛噪點，皆予以剔除
-                if (speedKmh < 0.6 || speedKmh > 15) continue;
-
-                const slope = dy / dx;
-
-                // 逆向環境還原：為了擬合標準狀態下的勞侖茲 [a,b,c]，需將觀測速度反向扣除高度、雨天與 Pandolf 的修正係數
-                const envCoeff = getEnvironmentCoefficient(terrain, weather);
-                const heightMod = getHeightModifier(p1.ele, slope);
-                const pandolfRatio = (L < 10) ? getPandolfSpeedRatio(W, L, 13, slope) : 1.0;
-
-                const standardizedSpeed = speedKmh / (envCoeff * heightMod * pandolfRatio);
-
-                samples.push({ slope: slope, speed: standardizedSpeed });
-            }
-            return samples;
-        }
-
-        // 8. 非線性最小平方擬合求解器 (純 JS 高斯-牛頓法 Gauss-Newton)
-        function runGaussNewtonOptimization(samples) {
-            let p = [...state.lorentzParams]; // 讀取當前引導參數作為疊代起點
-            const numPoints = samples.length;
-            const maxIter = 40;
-
-            for (let iter = 0; iter < maxIter; iter++) {
-                let JtJ = [[0,0,0], [0,0,0], [0,0,0]];
-                let Jtr = [0, 0, 0];
-
-                for (let i = 0; i < numPoints; i++) {
-                    const { slope, speed } = samples[i];
-                    const [a, b, c] = p;
-
-                    const denom = Math.pow(b * slope + c, 2) + 1;
-                    const pred = a / denom;
-                    const residual = speed - pred;
-
-                    // 對 a, b, c 三項偏微分
-                    const dF_da = 1 / denom;
-                    const dF_db = -2 * a * (b * slope + c) * slope / Math.pow(denom, 2);
-                    const dF_dc = -2 * a * (b * slope + c) / Math.pow(denom, 2);
-
-                    const J = [dF_da, dF_db, dF_dc];
-
-                    for (let r = 0; r < 3; r++) {
-                        for (let col = 0; col < 3; col++) {
-                            JtJ[r][col] += J[r] * J[col];
-                        }
-                        Jtr[r] += J[r] * residual;
-                    }
-                }
-
-                // 矩陣求解 (克拉瑪公式)
-                const det = JtJ[0][0]*(JtJ[1][1]*JtJ[2][2] - JtJ[1][2]*JtJ[2][1]) -
-                            JtJ[0][1]*(JtJ[1][0]*JtJ[2][2] - JtJ[1][2]*JtJ[2][0]) +
-                            JtJ[0][2]*(JtJ[1][0]*JtJ[2][1] - JtJ[1][1]*JtJ[2][0]);
-
-                if (Math.abs(det) < 1e-10) break; // 矩陣奇異，強制跳出
-
-                const getDelta = (colIdx) => {
-                    let M = JSON.parse(JSON.stringify(JtJ));
-                    for(let i=0; i<3; i++) M[i][colIdx] = Jtr[i];
-                    return M[0][0]*(M[1][1]*M[2][2] - M[1][2]*M[2][1]) -
-                           M[0][1]*(M[1][0]*M[2][2] - M[1][2]*M[2][0]) +
-                           M[0][2]*(M[1][0]*M[2][1] - M[1][1]*M[2][0]);
-                };
-
-                const delta = [getDelta(0)/det, getDelta(1)/det, getDelta(2)/det];
-                
-                // 漸進步長約束，防範數值發散
-                p[0] += delta[0] * 0.5;
-                p[1] += delta[1] * 0.5;
-                p[2] += delta[2] * 0.5;
-
-                const stepSize = Math.sqrt(delta[0]*delta[0] + delta[1]*delta[1] + delta[2]*delta[2]);
-                if (stepSize < 1e-4) break;
-            }
-
-            // 邊界合理性防禦
-            if (p[0] > 1.5 && p[0] < 8.0 && p[1] > 1.0) {
-                state.lorentzParams = p;
-                return true;
-            }
-            return false;
-        }
-
-        // 9. Canvas 高度剖面動態美化渲染器
-        function drawProfileCanvas(pts) {
-            const canvas = document.getElementById("profileCanvas");
-            const ctx = canvas.getContext("2d");
-            
-            // 隨動調整解析度
-            const dpr = window.devicePixelRatio || 1;
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width * dpr;
-            canvas.height = 300 * dpr;
-            ctx.scale(dpr, dpr);
-
-            if (!pts || pts.length === 0) return;
-
-            const width = rect.width;
-            const height = 300;
-            const padding = { top: 30, right: 30, bottom: 40, left: 50 };
-
-            const maxDist = pts[pts.length - 1].dist;
-            const eles = pts.map(p => p.ele);
-            const maxEle = Math.max(...eles) + 100;
-            const minEle = Math.max(0, Math.min(...eles) - 100);
-
-            // 清空畫布
-            ctx.clearRect(0, 0, width, height);
-
-            // 座標映射函數
-            const mapX = (d) => padding.left + (d / maxDist) * (width - padding.left - padding.right);
-            const mapY = (e) => padding.top + (1 - (e - minEle) / (maxEle - minEle)) * (height - padding.top - padding.bottom);
-
-            // 繪製背景漸層地形網格
-            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--border-color');
-            ctx.lineWidth = 0.5;
-            for (let i = 0; i <= 5; i++) {
-                const y = padding.top + (i / 5) * (height - padding.top - padding.bottom);
-                const eleVal = maxEle - (i / 5) * (maxEle - minEle);
-                ctx.beginPath();
-                ctx.moveTo(padding.left, y);
-                ctx.lineTo(width - padding.right, y);
-                ctx.stroke();
-                
-                // 標註高度軸
-                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-color');
-                ctx.font = "10px sans-serif";
-                ctx.fillText(`${Math.round(eleVal)}m`, 10, y + 4);
-            }
-
-            // 繪製高度主曲線
-            ctx.beginPath();
-            ctx.moveTo(mapX(pts[0].dist), mapY(pts[0].ele));
-            for (let i = 1; i < pts.length; i++) {
-                ctx.lineTo(mapX(pts[i].dist), mapY(pts[i].ele));
-            }
-            
-            // 地形線條美化
-            ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--primary-color');
-            ctx.lineWidth = 3;
-            ctx.stroke();
-
-            // 建立下方陰影填充
-            ctx.lineTo(mapX(pts[pts.length - 1].dist), mapY(minEle));
-            ctx.lineTo(mapX(pts[0].dist), mapY(minEle));
-            ctx.closePath();
-            let gradient = ctx.createLinearGradient(0, padding.top, 0, height - padding.bottom);
-            gradient.addColorStop(0, 'rgba(0, 123, 255, 0.25)');
-            gradient.addColorStop(1, 'rgba(0, 123, 255, 0.00)');
-            ctx.fillStyle = gradient;
-            ctx.fill();
-
-            // 標註里程軸 (X軸)
-            const numLabels = 6;
-            for(let i = 0; i <= numLabels; i++) {
-                const dVal = (i / numLabels) * maxDist;
-                const x = mapX(dVal);
-                ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--text-color');
-                ctx.fillText(`${(dVal/1000).toFixed(1)}k`, x - 10, height - 15);
-            }
-        }
-
-        return {
-            state: state,
-            parseGPX: parseGPX,
-            extractPoints: extractRegressionPoints,
-            optimize: runGaussNewtonOptimization,
-            calculateSpeed: calculateModelSpeed,
-            drawProfile: drawProfileCanvas
-        };
-    })();
-
-    // 介面與事件綁定處理模組
-    document.addEventListener("DOMContentLoaded", function() {
-        const consoleEl = document.getElementById("consoleOutput");
-        const targetStatus = document.getElementById("targetStatus");
-        const historyStatus = document.getElementById("historyStatus");
-
-        // A. 計畫航跡通道監聽
-        document.getElementById("targetFile").addEventListener("change", function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const pts = MOUNTAIN_ENGINE.parseGPX(evt.target.result);
-                MOUNTAIN_ENGINE.state.targetRoute = pts;
-                targetStatus.innerText = `成功載入計畫航跡：共 ${pts.length} 個點，總長 ${(pts[pts.length-1].dist/1000).toFixed(2)} 公里。`;
-                MOUNTAIN_ENGINE.drawProfile(pts);
-                logToConsole("計畫航跡載入成功。高度圖表已繪製。");
-            };
-            reader.readAsText(file);
-        });
-
-        // B. 歷史多檔案與 ZIP 批次載入處理通道
-        document.getElementById("historyFiles").addEventListener("change", async function(e) {
-            const files = e.target.files;
-            if (files.length === 0) return;
-
-            historyStatus.innerText = "批次解析軌跡中...";
-            MOUNTAIN_ENGINE.state.historicalPoints = [];
-            
-            const W = parseFloat(document.getElementById("paramW").value);
-            const L = parseFloat(document.getElementById("paramLHeavy").value);
-            const terrain = document.getElementById("paramTerrain").value;
-            const weather = document.getElementById("paramWeather").value;
-
-            let loadedCount = 0;
-
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-                if (file.name.endsWith(".gpx")) {
-                    const text = await file.text();
-                    const pts = MOUNTAIN_ENGINE.parseGPX(text);
-                    const samples = MOUNTAIN_ENGINE.extractPoints(pts, W, L, terrain, weather);
-                    MOUNTAIN_ENGINE.state.historicalPoints.push(...samples);
-                    loadedCount++;
-                } else if (file.name.endsWith(".zip")) {
-                    // 解壓 ZIP 套件鏈處理
-                    try {
-                        const zip = await JSZip.loadAsync(file);
-                        const zipFiles = Object.keys(zip.files);
-                        for (let zName of zipFiles) {
-                            if (zName.endsWith(".gpx") && !zip.files[zName].dir) {
-                                const text = await zip.files[zName].async("text");
-                                const pts = MOUNTAIN_ENGINE.parseGPX(text);
-                                const samples = MOUNTAIN_ENGINE.extractPoints(pts, W, L, terrain, weather);
-                                MOUNTAIN_ENGINE.state.historicalPoints.push(...samples);
-                                loadedCount++;
-                            }
-                        }
-                    } catch (err) {
-                        logToConsole(`解壓 ZIP 發生錯誤: ${err.message}`);
-                    }
-                }
-            }
-
-            historyStatus.innerText = `成功融合載入 ${loadedCount} 個歷史軌跡檔，提取出 ${MOUNTAIN_ENGINE.state.historicalPoints.length} 個純淨移動運動數據切片點。`;
-            logToConsole(`歷史資料庫已完成全域融合。淨過濾完畢。`);
-        });
-
-        // C. 最佳化核心迴歸按鈕監聽
-        document.getElementById("btnOptimize").addEventListener("click", function() {
-            const samples = MOUNTAIN_ENGINE.state.historicalPoints;
-            if (!samples || samples.length < 15) {
-                alert("歷史樣本矩陣有效點小於 15 點，請先上傳足夠的歷史 GPX 或校準紀錄檔！");
-                return;
-            }
-
-            logToConsole("啟動高斯-牛頓法矩陣解算器，執行全方位參數鏈最佳化...");
-            const success = MOUNTAIN_ENGINE.optimize(samples);
-
-            if (success) {
-                const [a, b, c] = MOUNTAIN_ENGINE.state.lorentzParams;
-                logToConsole(`🎉 最佳化迭代收斂成功！求解出該特定團體專屬之勞侖茲特徵解：
------------------------------------------------
-全域最大標準移動時速 (a): ${a.toFixed(2)} km/h
-地形坡度寬度敏感度 (b)  : ${b.toFixed(2)}
-黃金省力坡度偏置偏置 (c): ${c.toFixed(3)} (對應最省力坡度為 ${(-c/b*100).toFixed(1)}%)
------------------------------------------------
-已自動鎖定並覆蓋全域模型控制鏈。`);
-                
-                // 若有計畫航跡，聯動重新計算
-                if (MOUNTAIN_ENGINE.state.targetRoute) {
-                    executeTimePrediction();
-                }
-            } else {
-                logToConsole("⚠️ 擬合收斂失敗。可能歷史 GPX 數據發散或包含異常交通手段雜訊，已還原原基準參數。");
-            }
-        });
-
-        // D. 重新預測按鈕監聽
-        document.getElementById("btnPredict").addEventListener("click", function() {
-            if (!MOUNTAIN_ENGINE.state.targetRoute) {
-                alert("請先上傳一個目標計畫航跡檔案！");
-                return;
-            }
-            executeTimePrediction();
-        });
-
-        // 核心時程預測推算執行鏈
-        function executeTimePrediction() {
-            const pts = MOUNTAIN_ENGINE.state.targetRoute;
-            const W = parseFloat(document.getElementById("paramW").value);
-            const LHeavy = parseFloat(document.getElementById("paramLHeavy").value);
-            const LLight = parseFloat(document.getElementById("paramLLight").value);
-            const weather = document.getElementById("paramWeather").value;
-            const terrain = document.getElementById("paramTerrain").value;
-            const restMin = parseFloat(document.getElementById("paramRest").value);
-
-            let pureWalkingTimeHrs = 0;
-
-            // 每 20 公尺微觀切片預測循環
-            for (let i = 0; i < pts.length - 1; i++) {
-                const p1 = pts[i];
-                const p2 = pts[i+1];
-                const dx = p2.dist - p1.dist;
-                if (dx <= 0) continue;
-
-                const dy = p2.ele - p1.ele;
-                const slope = dy / dx;
-
-                // 根據當前設定判定是否重裝（預設全段按目前面板控制決定，亦可自由擴展至分段勾選）
-                // 這裡採用面板的輕重裝設定，並與 Pandolf 動態加速模組串接
-                const currentLoad = LHeavy; 
-
-                const speed = MOUNTAIN_ENGINE.calculateSpeed(slope, p1.ele, W, currentLoad, terrain, weather);
-                pureWalkingTimeHrs += (dx / 1000) / speed;
-            }
-
-            // 途中停留比例乘數計算 (走47分、停13分思維)
-            const restMultiplier = 60 / (60 - restMin);
-            const totalEstimatedTimeHrs = pureWalkingTimeHrs * restMultiplier;
-
-            const formatTime = (hrs) => {
-                const h = Math.floor(hrs);
-                const m = Math.round((hrs % 1) * 60);
-                return `${h} 小時 ${m} 分鐘`;
-            };
-
-            const [a, b, c] = MOUNTAIN_ENGINE.state.lorentzParams;
-
-            consoleEl.innerText = `🏔️ 目標計畫航跡時程預報摘要
-===================================================
-[航跡長度] : ${(pts[pts.length-1].dist/1000).toFixed(2)} 公里
-[環境天候] : ${weather === 'sunny' ? '晴天舒適' : '雨霧路濕'} | 地形: ${terrain}
-[當前控制鏈參數] : a=${a.toFixed(2)}, b=${b.toFixed(2)}, c=${c.toFixed(3)}
----------------------------------------------------
-[純走路移動時間] : ${formatTime(pureWalkingTimeHrs)}
-[含微觀短停總時程] : ${formatTime(totalEstimatedTimeHrs)} (內含每小時短停整隊 ${restMin} 分鐘)
-===================================================
-純文字時間表預估已完成。模型邊界安全係數：穩定。`;
-        }
-
-        function logToConsole(msg) {
-            consoleEl.innerText = msg;
-        }
-
-        // 隨動視窗大小調整高度圖表
-        window.addEventListener("resize", function() {
-            if (MOUNTAIN_ENGINE.state.targetRoute) {
-                MOUNTAIN_ENGINE.drawProfile(MOUNTAIN_ENGINE.state.targetRoute);
-            }
-        });
+      }
+      var det = JtJ[0][0]*(JtJ[1][1]*JtJ[2][2]-JtJ[1][2]*JtJ[2][1])
+              - JtJ[0][1]*(JtJ[1][0]*JtJ[2][2]-JtJ[1][2]*JtJ[2][0])
+              + JtJ[0][2]*(JtJ[1][0]*JtJ[2][1]-JtJ[1][1]*JtJ[2][0]);
+      if (Math.abs(det) < 1e-12) break;
+      function detCol(col) {
+        var M = [[JtJ[0][0],JtJ[0][1],JtJ[0][2]],[JtJ[1][0],JtJ[1][1],JtJ[1][2]],[JtJ[2][0],JtJ[2][1],JtJ[2][2]]];
+        for (var i = 0; i < 3; i++) M[i][col] = Jtr[i];
+        return M[0][0]*(M[1][1]*M[2][2]-M[1][2]*M[2][1])
+             - M[0][1]*(M[1][0]*M[2][2]-M[1][2]*M[2][0])
+             + M[0][2]*(M[1][0]*M[2][1]-M[1][1]*M[2][0]);
+      }
+      var d0 = detCol(0)/det, d1 = detCol(1)/det, d2 = detCol(2)/det;
+      p[0] += d0 * 0.5; p[1] += d1 * 0.5; p[2] += d2 * 0.5;
+      if (Math.sqrt(d0*d0+d1*d1+d2*d2) < 1e-5) break;
+    }
+    if (p[0] > 1.2 && p[0] < 9 && p[1] > 0.5) return p;
+    return null;
+  }
+
+  // ----- sections & schedule -----
+  function newSec(a, b) {
+    return { a: a, b: b, terr: "trail", heavy: true, rain: false, real: null, zEnd: null };
+  }
+
+  function rebuild() {
+    if (!T.parsed) return;
+    var pts = T.parsed.pts;
+    if (T.reversed) {
+      pts = pts.slice().reverse();
+      var tot = pts[0].d;
+      pts.forEach(function (p) { p.d = tot - p.d; });
+    }
+    var r0 = T.range ? T.range[0] : 0, r1 = T.range ? T.range[1] : pts[pts.length-1].d;
+    var filtered = pts.filter(function (p) { return p.d >= r0 - 1 && p.d <= r1 + 1; });
+    if (filtered.length < 2) filtered = pts;
+    var offset = filtered[0].d;
+    filtered = filtered.map(function (p) { return { lat: p.lat, lon: p.lon, ele: p.ele, t: p.t, d: p.d - offset }; });
+    T.full = resample(filtered);
+    T.track = T.full;
+    if (!T.secsFull.length) T.secsFull = [newSec(0, T.full.total)];
+    if (!T.cps.length) {
+      T.cps = [
+        { id: 0, d: 0, name: "起點", kind: "start", stop: 0 },
+        { id: 1, d: T.full.total, name: "終點", kind: "end", stop: 0 }
+      ];
+      T.seq = 2;
+    }
+  }
+
+  function computeSchedule() {
+    if (!T.track) return null;
+    var stopH = numOr($("stopH").value, 13);
+    var restMul = 60 / Math.max(1, 60 - stopH);
+    var secs = T.secsFull.slice().sort(function (a, b) { return a.a - b.a; });
+    var pureH = 0;
+    secs.forEach(function (q) {
+      pureH += stretchHours(T.track, q.a, q.b, q.terr || "trail", q.heavy !== false, !!q.rain);
     });
-    </script>
+    var totalH = pureH * restMul;
+    var startMin = 0;
+    var st = ($("start").value || "08:00").split(":");
+    startMin = (+st[0] || 0) * 60 + (+st[1] || 0);
+    var rows = [], t = startMin, prevD = 0;
+    T.cps.slice().sort(function (a, b) { return a.d - b.d; }).forEach(function (cp, i) {
+      var segH = 0;
+      if (i > 0) {
+        // accumulate hours from prevD to cp.d
+        secs.forEach(function (q) {
+          var a = Math.max(prevD, q.a), b = Math.min(cp.d, q.b);
+          if (b > a) segH += stretchHours(T.track, a, b, q.terr || "trail", q.heavy !== false, !!q.rain);
+        });
+        segH *= restMul;
+      }
+      t += segH * 60;
+      var arr = t;
+      var stop = cp.stop || 0;
+      if (i < T.cps.length - 1) t += stop;
+      rows.push({ cp: cp, arr: arr, dep: t, seg: segH * 60, stop: stop });
+      prevD = cp.d;
+    });
+    var up = 0, dn = 0, zmax = -1e9, zmin = 1e9;
+    for (var i = 1; i < T.track.z.length; i++) {
+      var dz = T.track.z[i] - T.track.z[i-1];
+      if (dz > 0) up += dz; else dn -= dz;
+      zmax = Math.max(zmax, T.track.z[i]);
+      zmin = Math.min(zmin, T.track.z[i]);
+    }
+    return { pureH: pureH, totalH: totalH, rows: rows, startMin: startMin, st: { up: up, dn: dn, zmax: zmax, zmin: zmin }, total: T.track.total };
+  }
+
+  // ----- render -----
+  function renderProfile() {
+    var box = $("profile");
+    if (!T.track) { box.innerHTML = ""; return; }
+    var W = 800, H = 220, pad = { t: 20, r: 20, b: 30, l: 50 };
+    var maxD = T.track.total, maxZ = Math.max.apply(null, T.track.z) + 50, minZ = Math.min.apply(null, T.track.z) - 30;
+    function mx(d) { return pad.l + (d / maxD) * (W - pad.l - pad.r); }
+    function my(z) { return pad.t + (1 - (z - minZ) / (maxZ - minZ)) * (H - pad.t - pad.b); }
+    var path = "";
+    for (var i = 0; i < T.track.x.length; i++) {
+      path += (i ? "L" : "M") + mx(T.track.x[i]).toFixed(1) + "," + my(T.track.z[i]).toFixed(1);
+    }
+    var area = path + "L" + mx(maxD).toFixed(1) + "," + my(minZ).toFixed(1) + "L" + mx(0).toFixed(1) + "," + my(minZ).toFixed(1) + "Z";
+    // terrain strips
+    var strips = "";
+    T.secsFull.forEach(function (q) {
+      var col = q.terr === "root" ? "var(--t-root)" : q.terr === "mud" ? "var(--t-mud)" : q.terr === "road" ? "var(--t-road)" : "var(--t-trail)";
+      var x0 = mx(q.a), x1 = mx(q.b);
+      strips += '<rect x="' + x0.toFixed(1) + '" y="' + (H - 12) + '" width="' + Math.max(1, x1 - x0).toFixed(1) + '" height="8" fill="' + col + '" opacity=".85"/>';
+      if (q.rain) strips += '<rect x="' + x0.toFixed(1) + '" y="' + (H - 4) + '" width="' + Math.max(1, x1 - x0).toFixed(1) + '" height="3" fill="var(--rain)"/>';
+    });
+    var labels = "";
+    for (var k = 0; k <= 5; k++) {
+      var z = maxZ - (k / 5) * (maxZ - minZ);
+      var y = my(z);
+      labels += '<line x1="' + pad.l + '" y1="' + y + '" x2="' + (W - pad.r) + '" y2="' + y + '" stroke="var(--line)" stroke-width=".5"/>';
+      labels += '<text x="8" y="' + (y + 3) + '" font-size="10" fill="var(--ink2)">' + Math.round(z) + "m</text>";
+    }
+    for (var k = 0; k <= 5; k++) {
+      var d = (k / 5) * maxD, x = mx(d);
+      labels += '<text x="' + x + '" y="' + (H - 8) + '" font-size="10" fill="var(--ink2)" text-anchor="middle">' + (d/1000).toFixed(1) + "k</text>";
+    }
+    box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" height="auto">' +
+      labels +
+      '<path d="' + area + '" fill="url(#g)" opacity=".35"/>' +
+      '<path d="' + path + '" fill="none" stroke="var(--accent)" stroke-width="2.5"/>' +
+      strips +
+      '<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--accent)" stop-opacity=".4"/><stop offset="100%" stop-color="var(--accent)" stop-opacity="0"/></linearGradient></defs>' +
+      '</svg>';
+  }
+
+  function renderSecs() {
+    var body = $("secBody");
+    if (!T.secsFull.length) { body.innerHTML = '<p class="hint">請先載入路線</p>'; return; }
+    var html = "";
+    T.secsFull.forEach(function (q, i) {
+      var spd = 0;
+      if (T.track) {
+        var h = stretchHours(T.track, q.a, q.b, q.terr || "trail", q.heavy !== false, !!q.rain);
+        var len = (q.b - q.a) / 1000;
+        spd = h > 0 ? (len / h) : 0;
+      }
+      html += '<div class="secrow" data-i="' + i + '">' +
+        '<div class="sectop"><span class="secno">第 ' + (i+1) + ' 段</span><span class="secrange">' + km(q.a) + '–' + km(q.b) + ' km · 約 ' + spd.toFixed(1) + ' km/h</span></div>' +
+        '<div class="terrs">' +
+        ['trail','road','root','mud'].map(function (t) {
+          return '<label class="tchip"><input type="radio" name="terr' + i + '" value="' + t + '"' + (q.terr === t ? ' checked' : '') + '> ' + (PP.terr[t]||{}).name + '</label>';
+        }).join('') +
+        '</div>' +
+        '<div class="conds">' +
+        '<label class="hv"><input type="checkbox" data-k="heavy" ' + (q.heavy !== false ? 'checked' : '') + '> 重裝</label>' +
+        '<label class="hv"><input type="checkbox" data-k="rain" ' + (q.rain ? 'checked' : '') + '> 雨天</label>' +
+        '</div></div>';
+    });
+    body.innerHTML = html;
+    body.querySelectorAll("input[type=radio]").forEach(function (el) {
+      el.addEventListener("change", function () {
+        var i = +el.closest(".secrow").dataset.i;
+        T.secsFull[i].terr = el.value;
+        render();
+      });
+    });
+    body.querySelectorAll("input[type=checkbox]").forEach(function (el) {
+      el.addEventListener("change", function () {
+        var i = +el.closest(".secrow").dataset.i;
+        T.secsFull[i][el.dataset.k] = el.checked;
+        render();
+      });
+    });
+  }
+
+  function renderTable(sch) {
+    var tb = $("tbody");
+    if (!sch) { tb.innerHTML = ""; return; }
+    var html = "";
+    sch.rows.forEach(function (r, i) {
+      var first = i === 0, last = i === sch.rows.length - 1;
+      html += '<tr><td><span class="idx">' + i + '</span></td>' +
+        '<td>' + r.cp.name + '<div class="meta" style="font-size:.76rem;color:var(--muted)">' + km(r.cp.d) + ' km</div></td>' +
+        '<td class="num"><span class="t">' + (first ? "—" : hm(r.arr)) + '</span></td>' +
+        '<td class="num">' + (last ? "" : '<input class="stop" type="number" min="0" step="5" value="' + (r.stop||0) + '" data-id="' + r.cp.id + '" style="width:3.5rem;text-align:right">') + '</td>' +
+        '<td class="num"><span class="t">' + (last ? "—" : hm(r.dep)) + '</span></td><td></td></tr>';
+    });
+    tb.innerHTML = html;
+    tb.querySelectorAll(".stop").forEach(function (el) {
+      el.addEventListener("change", function () {
+        var id = +el.dataset.id;
+        var cp = T.cps.filter(function (c) { return c.id === id; })[0];
+        if (cp) { cp.stop = Math.max(0, +el.value || 0); render(); }
+      });
+    });
+  }
+
+  function renderSummary(sch) {
+    var k = $("kpis");
+    if (!sch) { k.innerHTML = ""; return; }
+    k.innerHTML =
+      '<div class="kpi main"><span class="k">總時程</span><span class="v">' + dur(sch.totalH * 60) + '</span></div>' +
+      '<div class="kpi"><span class="k">移動時間</span><span class="v">' + dur(sch.pureH * 60) + '</span></div>' +
+      '<div class="kpi"><span class="k">距離</span><span class="v">' + km(sch.total) + ' <small>km</small></span></div>' +
+      '<div class="kpi"><span class="k">爬升 / 下降</span><span class="v">' + nf(sch.st.up) + ' / ' + nf(sch.st.dn) + ' <small>m</small></span></div>';
+    $("liveTotal").textContent = dur(sch.totalH * 60);
+    $("liveMove").textContent = dur(sch.pureH * 60);
+    $("liveBar").hidden = false;
+    // copy text
+    var L = ["步程試算｜" + (T.name || "路線")];
+    L.push("・距離 " + km(sch.total) + " km｜爬升 " + nf(sch.st.up) + " m｜下降 " + nf(sch.st.dn) + " m");
+    L.push("・移動 " + dur(sch.pureH * 60) + "｜含途中停留總時程 " + dur(sch.totalH * 60));
+    if (lorentzParams) L.push("・勞侖茲參數 a=" + lorentzParams[0].toFixed(2) + " b=" + lorentzParams[1].toFixed(2) + " c=" + lorentzParams[2].toFixed(3));
+    sch.rows.forEach(function (r, i) {
+      L.push("・" + i + " " + r.cp.name + "　" + km(r.cp.d) + " km　" + (i === 0 ? "出發 " + hm(r.dep) : "抵達 " + hm(r.arr)));
+    });
+    $("copyText").value = L.join("\n");
+  }
+
+  function render() {
+    renderProfile();
+    renderSecs();
+    var sch = computeSchedule();
+    renderTable(sch);
+    renderSummary(sch);
+    $("teamNote").textContent = "上坡×" + numOr($("teamUp").value,1).toFixed(2) + "、下坡×" + numOr($("teamDn").value,1).toFixed(2) +
+      (lorentzParams ? "　｜　已套用勞侖茲參數" : "　｜　使用 Tobler+DIN 混合");
+  }
+
+  // ----- events -----
+  function handleFile(file) {
+    if (!file) return;
+    file.text().then(function (text) {
+      var parsed = parseTrackText(text);
+      if (!parsed.name) parsed.name = file.name.replace(/\.(gpx|kml)$/i, "");
+      T.parsed = parsed; T.name = parsed.name; T.reversed = false; T.range = null;
+      T.secsFull = []; T.cps = [];
+      rebuild();
+      $("fileStatus").textContent = "已載入：" + T.name + "（" + km(T.full.total) + " km，" + parsed.pts.length + " 點）";
+      $("fileError").hidden = true;
+      $("rFrom").value = "0"; $("rTo").value = km(T.full.total);
+      render();
+    }).catch(function (e) {
+      $("fileError").textContent = e.message || "讀取失敗";
+      $("fileError").hidden = false;
+    });
+  }
+
+  $("file").addEventListener("change", function (e) { handleFile(e.target.files[0]); });
+  $("btnSample").addEventListener("click", function () {
+    // minimal sample
+    var pts = [];
+    for (var i = 0; i <= 100; i++) {
+      pts.push({ lat: 24.48 + i * 0.0003, lon: 121.43 + i * 0.0002, ele: 900 + Math.sin(i/10)*80 + i*3, t: null, d: i * 50 });
+    }
+    T.parsed = { name: "範例路線", pts: pts, total: 5000 };
+    T.name = "範例路線"; T.reversed = false; T.range = null; T.secsFull = []; T.cps = [];
+    rebuild();
+    $("fileStatus").textContent = "已載入範例（5.00 km）";
+    render();
+  });
+  $("btnReverse").addEventListener("click", function () {
+    if (!T.parsed) return;
+    T.reversed = !T.reversed;
+    rebuild();
+    render();
+  });
+  $("btnRange").addEventListener("click", function () {
+    if (!T.full) return;
+    var a = numOr($("rFrom").value, 0) * 1000, b = numOr($("rTo").value, T.full.total/1000) * 1000;
+    if (b < a) { var t = a; a = b; b = t; }
+    T.range = [Math.max(0,a), Math.min(T.parsed.pts[T.parsed.pts.length-1].d, b)];
+    rebuild();
+    render();
+  });
+  $("btnRangeAll").addEventListener("click", function () {
+    T.range = null; rebuild(); render();
+  });
+  ["date","start","deadline","stopH","teamUp","teamDn"].forEach(function (id) {
+    $(id).addEventListener("input", render);
+  });
+  $("btnAddSec").addEventListener("click", function () {
+    if (!T.full) return;
+    if (!T.secsFull.length) { T.secsFull = [newSec(0, T.full.total)]; render(); return; }
+    var last = T.secsFull[T.secsFull.length-1];
+    var mid = (last.a + last.b) / 2;
+    if (last.b - last.a < 200) return;
+    last.b = mid;
+    T.secsFull.push(newSec(mid, T.full.total));
+    render();
+  });
+
+  // history batch + Lorentz
+  $("histFiles").addEventListener("change", async function (e) {
+    var files = e.target.files;
+    if (!files.length) return;
+    $("histStatus").textContent = "解析中…";
+    histSamples = [];
+    var count = 0;
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
+      if (/\.gpx$/i.test(f.name)) {
+        try {
+          var text = await f.text();
+          var parsed = parseTrackText(text);
+          var samp = extractSamples(parsed.pts);
+          histSamples = histSamples.concat(samp);
+          count++;
+        } catch (err) {}
+      } else if (/\.zip$/i.test(f.name) && typeof JSZip !== "undefined") {
+        try {
+          var zip = await JSZip.loadAsync(f);
+          for (var name in zip.files) {
+            if (/\.gpx$/i.test(name) && !zip.files[name].dir) {
+              var text = await zip.files[name].async("text");
+              var parsed = parseTrackText(text);
+              histSamples = histSamples.concat(extractSamples(parsed.pts));
+              count++;
+            }
+          }
+        } catch (err) {}
+      }
+    }
+    $("histStatus").textContent = "已載入 " + count + " 個檔案，提取 " + histSamples.length + " 個純淨移動點。";
+  });
+
+  $("btnOptimize").addEventListener("click", function () {
+    if (histSamples.length < 20) {
+      alert("有效樣本不足 20 點，請先上傳足夠的歷史 GPX。");
+      return;
+    }
+    var p = gaussNewton(histSamples);
+    if (p) {
+      lorentzParams = p;
+      $("lorentzParams").textContent = "已鎖定勞侖茲參數：a=" + p[0].toFixed(2) + " km/h　b=" + p[1].toFixed(2) + "　c=" + p[2].toFixed(3) +
+        "（最省力坡度約 " + ((-p[2]/p[1])*100).toFixed(1) + "%）";
+      render();
+    } else {
+      alert("擬合未收斂，請檢查資料品質或增加樣本。");
+    }
+  });
+  $("btnClearLorentz").addEventListener("click", function () {
+    lorentzParams = null;
+    $("lorentzParams").textContent = "目前：使用 Tobler + DIN 混合（尚未最佳化）";
+    render();
+  });
+
+  $("btnCopy").addEventListener("click", function () {
+    var ta = $("copyText");
+    if (navigator.clipboard) navigator.clipboard.writeText(ta.value).then(function () { $("copyMsg").textContent = "已複製"; });
+    else { ta.select(); $("copyMsg").textContent = "已選取，請手動複製"; }
+  });
+
+  // param sync (simplified)
+  $("btnResetP").addEventListener("click", function () {
+    PP = JSON.parse(JSON.stringify(DEFAULTS));
+    $("pTobF").value = PP.F; $("pWTob").value = PP.wTob; $("pDinH").value = PP.dinH;
+    $("pDinUp").value = PP.dinUp; $("pDinDown").value = PP.dinDown;
+    render();
+  });
+  ["pTobF","pWTob","pDinH","pDinUp","pDinDown","pAltPct","pAltRef","pBody","pLightKg","pLightDnMax",
+   "rootSun0","rootSun1","rootSun2","rootRain0","rootRain1","rootRain2",
+   "mudSun0","mudSun1","mudSun2","mudRain0","mudRain1","mudRain2","trailRain0","roadRain0"].forEach(function (id) {
+    var el = $(id);
+    if (el) el.addEventListener("change", function () {
+      // light update of PP
+      PP.F = numOr($("pTobF").value, 0.734);
+      PP.wTob = numOr($("pWTob").value, 0.5);
+      PP.dinH = numOr($("pDinH").value, 3.62);
+      PP.dinUp = numOr($("pDinUp").value, 468);
+      PP.dinDown = numOr($("pDinDown").value, 791);
+      PP.altPct = numOr($("pAltPct").value, 6.3);
+      PP.altRef = numOr($("pAltRef").value, 300);
+      PP.terr.trail.rain[0] = numOr($("trailRain0").value, 0.90);
+      PP.terr.road.rain[0] = numOr($("roadRain0").value, 0.95);
+      PP.terr.root.sun = [numOr($("rootSun0").value,0.7), numOr($("rootSun1").value,260), numOr($("rootSun2").value,300)];
+      PP.terr.root.rain = [numOr($("rootRain0").value,0.6), numOr($("rootRain1").value,220), numOr($("rootRain2").value,230)];
+      PP.terr.mud.sun = [numOr($("mudSun0").value,0.75), numOr($("mudSun1").value,260), numOr($("mudSun2").value,300)];
+      PP.terr.mud.rain = [numOr($("mudRain0").value,0.6), numOr($("mudRain1").value,220), numOr($("mudRain2").value,230)];
+      render();
+    });
+  });
+
+  // init date
+  var now = new Date();
+  $("date").value = now.toISOString().slice(0,10);
+  $("start").value = "08:00";
+})();
+</script>
 </body>
 </html>
