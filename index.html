@@ -272,7 +272,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
   <header>
     <div class="eyebrow">10/6 實測校正 · 揹重 13 kg · 可選勞侖茲函數再最佳化</div>
     <h1>步程試算</h1>
-    <p class="sub">預設使用 Tobler 與 DIN 33466 各半的混合公式（10/6 班級揹 13 kg 實測校正，10/20–21 四季林道再修正）。上傳足夠的歷史實走 GPX 後，可用高斯-牛頓法解出團體專屬<strong>勞侖茲函數參數</strong>，之後改以勞侖茲函數為基底速度，再套用各路段的地形／雨天／重裝／高度修正。<br><br>別的隊伍可在「<a href="#setCard" data-jump="setCard">設定</a>」調整隊伍速度，並<a href="#calBox" data-jump="calBox">用自己的 GPS 紀錄校準</a>，或批次上傳歷史軌跡做<strong>勞侖茲函數再最佳化</strong>。</p>
+    <p class="sub">預設使用 Tobler 與 DIN 33466 各半的混合公式（10/6 班級揹 13 kg 實測校正，10/20–21 四季林道再修正）。上傳足夠的歷史實走 GPX 後，可用高斯-牛頓法解出團體專屬<strong>勞侖茲函數參數</strong>，之後改以勞侖茲函數為基底速度，再套用各路段的地形／雨天／重裝／高度修正。<br><br>別的隊伍可在「<a href="#setCard" data-jump="setCard">設定</a>」調整隊伍速度，並<a href="#calBox" data-jump="calBox">用歷史 GPX 做勞侖茲函數最佳化</a>，或批次上傳歷史軌跡做<strong>勞侖茲函數再最佳化</strong>。</p>
   </header>
 
   <section class="card" id="fileCard" aria-labelledby="hFile">
@@ -320,26 +320,20 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
       <p class="teamnote" id="runNote"></p>
     </div>
     <details class="calbox disc" id="calBox">
-      <summary>怎麼定倍數：用 GPS 紀錄校準</summary>
+      <summary>怎麼定倍數：用歷史 GPX 做勞侖茲函數最佳化</summary>
       <div class="calbody">
-        <div class="row"><label class="btn primary" for="calFile"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9 1.75H4.5A1.75 1.75 0 0 0 2.75 3.5v9a1.75 1.75 0 0 0 1.75 1.75h7a1.75 1.75 0 0 0 1.75-1.75V6z"/><path d="M9 1.75V6h4.25"/><path d="M8 12V8.25M6.4 9.85 8 8.25l1.6 1.6"/></svg>載入自己的紀錄</label><input type="file" id="calFile" hidden></div>
-        <p class="error" id="calError" hidden></p>
-        <p class="hint">用自己（或同一群人）最近一次、有時間紀錄的 GPX 來算，手機 App 或手錶錄的都可以。<br><br>1. 按「載入自己的紀錄」選那次的 GPX。要去的路線會先收起來，路段與檢查點都保留；一次只算一筆，後載入的取代前一筆，不會疊加。<br><br>2. 在「路段與地形」照那天的實況設定地形、重裝、雨天；用跑的路段勾「跑」。搭車、在停車場或營地走動的部分，用「只算其中一段」裁掉。<br><br>3. 那天沒勾重裝的路段揹幾公斤，填在下面。<br><br>4. 下面會比對實際移動的時間（停下來的時間已扣掉）和模型，算出倍數，按「套用」。<br><br>5. 按「回到」那顆按鈕，回到要去的路線，倍數會保留。<br><br>直接在最上面載入有時間紀錄的 GPX 也能校準，但會取代目前的路線。<br><br>載入別人的紀錄，算出來的是那個人的倍數；隊伍以最慢的人為準，要用最慢的那位也在的紀錄。<br><br>例：上坡實際走了 2 小時，模型算 1 小時 48 分，倍數＝108 ÷ 120＝0.9。<br><br>紀錄最好上坡、下坡各有 1 小時以上，路況也和要去的路線相近。<br><br>沒有紀錄只能猜：寧可填慢一點，並先訂好最晚折返時間。</p>
-        <div class="inline calkg"><label for="calKg">紀錄那天沒勾重裝的路段揹</label><input type="number" id="calKg" min="0" max="30" step="0.5" inputmode="decimal"> kg<span class="hint">空白＝用「公式參數」的輕裝負重</span></div>
-        <div id="calOut"></div>
-        <div class="lorentz-box" style="border:1px dashed var(--accent-line);border-radius:9px;padding:10px;background:var(--accent-soft);margin-top:12px">
-          <h3 style="margin:0 0 6px;font-size:.9rem;color:var(--accent)">勞侖茲函數再最佳化（批次歷史 GPX）</h3>
-          <p class="hint" style="margin:0 0 8px">一次上傳多個歷史實走 GPX 或含多檔的 ZIP。系統過濾淨速 &lt;0.6 km/h（整隊停頓）與 &gt;15 km/h（車輛雜訊），用高斯-牛頓法解出該團體專屬<strong>勞侖茲函數參數</strong> [a, b, c]。解出後所有路段改以勞侖茲函數為基底速度，再套用各段原本的地形／雨天／重裝／高度修正。資料不足時自動維持 Tobler + DIN 混合。</p>
-          <div class="row">
-            <label class="btn" for="histFiles" style="border-color:var(--accent)">上傳歷史 GPX / ZIP</label>
-            <input type="file" id="histFiles" hidden accept=".gpx,.zip" multiple>
-            <button class="btn primary" id="btnOptimizeLorentz" type="button">執行勞侖茲函數最佳化</button>
-            <button class="btn ghost sm" id="btnClearLorentz" type="button">清除勞侖茲函數參數</button>
-          </div>
-          <p class="status" id="histStatus" style="margin:6px 0 0"></p>
-          <div id="lorentzParamsView" style="font-family:var(--font-num);font-weight:600;font-size:.95rem;margin-top:4px">目前：使用 Tobler + DIN 混合（尚未解出勞侖茲函數參數）</div>
+        <p class="hint">一次上傳一個或多個歷史實走 GPX（或含多檔的 ZIP）。系統過濾淨速 &lt;0.6 km/h（整隊停頓）與 &gt;15 km/h（車輛雜訊），用高斯-牛頓法解出該團體專屬<strong>勞侖茲函數參數</strong> [a, b, c]。解出後所有路段改以勞侖茲函數為基底速度，再套用各段原本的地形／雨天／重裝／高度修正。資料不足或擬合失敗時，自動維持 Tobler + DIN 混合。<br><br>紀錄最好上坡、下坡各有一段，路況與要去的路線相近。隊伍以最慢的人為準時，請用最慢那位也在的紀錄。</p>
+        <div class="row" style="margin-top:8px">
+          <label class="btn primary" for="histFiles">上傳歷史 GPX / ZIP</label>
+          <input type="file" id="histFiles" hidden accept=".gpx,.zip" multiple>
+          <button class="btn primary" id="btnOptimizeLorentz" type="button">最佳化</button>
+          <button class="btn ghost sm" id="btnClearLorentz" type="button">清除參數</button>
         </div>
-
+        <p class="error" id="calError" hidden></p>
+        <p class="status" id="histStatus" style="margin:6px 0 0"></p>
+        <div id="lorentzParamsView" style="font-family:var(--font-num);font-weight:600;font-size:.95rem;margin-top:6px">目前：使用 Tobler + DIN 混合（尚未解出勞侖茲函數參數）</div>
+        <div id="calOut" hidden></div>
+        <input type="file" id="calFile" hidden>
       </div>
     </details>
     <details class="disc">
@@ -1641,7 +1635,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   }
   function renderCal() {
     var box = $('calOut'), G = calGrid(), back = stashBar();
-    if (!G) { setHTML(box, back + '<p class="calmsg">目前的路線沒有時間紀錄，還不能校準。<br><br>按上面「載入自己的紀錄」選一筆有時間紀錄的 GPX，這裡就會算出建議的倍數。</p>'); return; }
+    if (!G) { setHTML(box, back + '<p class="calmsg">目前的路線沒有時間紀錄，還不能校準。<br><br>在上方上傳有時間紀錄的歷史 GPX 並按「最佳化」，解出勞侖茲函數參數後即可用於預測。</p>'); return; }
     if (T.reversed) { setHTML(box, back + '<p class="calmsg">路線已反轉，但紀錄是照原方向走的。<br><br>按「反轉方向」轉回來，才能校準。</p>'); return; }
     var ck = calKg(), Pc = PP;
     if (ck !== null) { Pc = clone(PP); Pc.lightKg = ck; }
@@ -2071,7 +2065,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   function applyInputs() {
     $('date').value = S.date; $('start').value = S.start; $('deadline').value = S.deadline;
     $('stopH').value = S.stopH; $('teamUp').value = S.teamUp; $('teamDn').value = S.teamDn;
-    $('runUp').value = S.runUp; $('runDn').value = S.runDn; $('calKg').value = isNum(S.calKg) ? S.calKg : ''; $('calKg').placeholder = nf1(isNum(PP.lightKg) ? +PP.lightKg : 2);
+    $('runUp').value = S.runUp; $('runDn').value = S.runDn; if ($('calKg')) { $('calKg').value = isNum(S.calKg) ? S.calKg : ''; $('calKg').placeholder = nf1(isNum(PP.lightKg) ? +PP.lightKg : 2); }
     PMAP.forEach(function (pm) { $(pm[0]).value = PP[pm[1]]; });
     ['root', 'mud'].forEach(function (k) { ['Sun', 'Rain'].forEach(function (w) { for (var i = 0; i < 3; i++) $(k + w + i).value = PP.terr[k][w.toLowerCase()][i]; }); });
     ['trail', 'road'].forEach(function (k) { $(k + 'Rain0').value = PP.terr[k].rain[0]; });
@@ -2168,7 +2162,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
       rebuild(false); setRangeInputs(); render();
     });
     $('btnRangeAll').addEventListener('click', function () { T.range = null; rebuild(false); setRangeInputs(); render(); });
-    ['date', 'start', 'deadline', 'stopH', 'teamUp', 'teamDn', 'runUp', 'runDn', 'calKg'].forEach(function (id) {
+    ['date', 'start', 'deadline', 'stopH', 'teamUp', 'teamDn', 'runUp', 'runDn'].forEach(function (id) {
       $(id).addEventListener('input', function () { S[id] = $(id).value; render(); });
     });
     PMAP.forEach(function (pm) { $(pm[0]).addEventListener('change', function () { PP[pm[1]] = numOr($(pm[0]).value, C.DEFAULTS[pm[1]]); render(); }); });
