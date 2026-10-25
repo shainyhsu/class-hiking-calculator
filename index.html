@@ -308,19 +308,30 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
       <label for="stopH" class="full">途中停留（每小時內含幾分鐘）<input type="number" id="stopH" min="0" max="45" step="0.5" inputmode="decimal"></label>
     </div>
     <p class="hint">途中停留＝休息、整裝、集合、等人等短停的合計，算在同一小時之內。<br><br>預設 13 分：每小時走 47 分、停 13 分。<br><br>13 分取自 10/6：休息 4 次、平均 8.3 分，短停 8 次、平均 4.2 分，合計約佔總時間的 22%。<br><br>停留不分晴雨：10/6 雨天每小時約停 15 分，10/20 晴天上坡約 16 分。<br><br>午餐、儀式等長停留，另外填在時間表各點的「停留」。<br><br>雨天只放慢走路速度，依各路段的「雨天」勾選。</p>
-    <div class="teamrow">
-      <span>隊伍速度（倍數；1＝八年級學生實測）</span>
-      <div class="inline"><label for="teamUp">上坡與平路 ×</label><input type="number" id="teamUp" min="0.3" max="2.5" step="0.05" inputmode="decimal"><label for="teamDn">下坡 ×</label><input type="number" id="teamDn" min="0.3" max="2.5" step="0.05" inputmode="decimal"></div>
+    <div class="teamrow" id="bodyLightRow">
+      <span>體重與輕裝負重（沒勾「重裝」的路段用輕裝）</span>
+      <div class="inline">
+        <label for="mainBodyKg">體重</label><input type="number" id="mainBodyKg" min="30" max="120" step="1" value="50" inputmode="numeric"> kg
+        <label for="mainLightKg">輕裝背包</label><input type="number" id="mainLightKg" min="1" max="9" step="0.5" value="2" inputmode="decimal"> kg
+      </div>
+      <p class="hint" style="margin:4px 0 0">輕裝 1–9 kg 會用 Pandolf 相對 13 kg 重裝換算速度；體重影響換算曲線。</p>
     </div>
-    <p class="teamnote" id="teamNote"></p>
-    <p class="hint">只調人的差別：體能、年紀、經驗。<br><br>有沒有揹大背包、晴雨、地形、停下來的時間，各有自己的設定，不要重複算進倍數。<br><br>填 1.2＝比基準快 20%，走路時間少約 17%；填 0.8＝慢 20%，走路時間多 25%。<br><br>下坡分開填：年紀較大或膝蓋不好的人，陡下坡常比上坡慢得多；比 −5% 陡的下坡用「下坡」倍數。</p>
+    <div id="teamBox">
+      <div class="teamrow">
+        <span>隊伍速度（倍數；1＝八年級學生實測）</span>
+        <div class="inline"><label for="teamUp">上坡與平路 ×</label><input type="number" id="teamUp" min="0.3" max="2.5" step="0.05" inputmode="decimal"><label for="teamDn">下坡 ×</label><input type="number" id="teamDn" min="0.3" max="2.5" step="0.05" inputmode="decimal"></div>
+      </div>
+      <p class="teamnote" id="teamNote"></p>
+      <p class="hint">僅在尚未解出勞侖茲函數參數時使用。解出並按「最佳化」後，團體步速已寫進參數，上下坡倍數固定為 1。</p>
+    </div>
+    <p class="teamnote" id="lorentzTeamNote" hidden style="color:var(--accent)">已套用勞侖茲函數參數：團體步速由歷史 GPX 擬合，上下坡倍數固定為 1。</p>
     <div class="teamrow" id="runRow" hidden>
       <span>跑步速度（倍數；只用在勾「跑」的路段；1＝平地每小時 <span id="runFlatTxt">8</span> km）</span>
       <div class="inline"><label for="runUp">上坡與平路 ×</label><input type="number" id="runUp" min="0.3" max="2.5" step="0.05" inputmode="decimal"><label for="runDn">下坡 ×</label><input type="number" id="runDn" min="0.3" max="2.5" step="0.05" inputmode="decimal"></div>
       <p class="teamnote" id="runNote"></p>
     </div>
-    <details class="calbox disc" id="calBox">
-      <summary>怎麼定倍數：用歷史 GPX 做勞侖茲函數最佳化</summary>
+    <details class="calbox disc" id="calBox" open>
+      <summary>勞侖茲函數最佳化（歷史 GPX）</summary>
       <div class="calbody">
         <p class="hint">一次上傳一個或多個歷史實走 GPX（或含多檔的 ZIP）。系統過濾淨速 &lt;0.6 km/h（整隊停頓）與 &gt;15 km/h（車輛雜訊），用高斯-牛頓法解出該團體專屬<strong>勞侖茲函數參數</strong> [a, b, c]。上傳後會立刻顯示擬合出的勞侖茲函數參數；按「最佳化」後才套用到行程時間。資料不足或擬合失敗時，維持 Tobler + DIN 混合。<br><br>紀錄最好上坡、下坡各有一段，路況與要去的路線相近。隊伍以最慢的人為準時，請用最慢那位也在的紀錄。</p>
         <div class="row" style="margin-top:8px">
@@ -2071,6 +2082,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     if ($('lorentzTeamNote')) $('lorentzTeamNote').hidden = !hasL;
     if (hasL) { S.teamUp = 1; S.teamDn = 1; $('teamUp').value = 1; $('teamDn').value = 1; }
     if ($('mainLightKg') && isNum(PP.lightKg)) $('mainLightKg').value = PP.lightKg;
+    if ($('mainBodyKg') && isNum(PP.bodyKg)) $('mainBodyKg').value = PP.bodyKg;
     $('runUp').value = S.runUp; $('runDn').value = S.runDn; if ($('calKg')) { $('calKg').value = isNum(S.calKg) ? S.calKg : ''; $('calKg').placeholder = nf1(isNum(PP.lightKg) ? +PP.lightKg : 2); }
     PMAP.forEach(function (pm) { $(pm[0]).value = PP[pm[1]]; });
     ['root', 'mud'].forEach(function (k) { ['Sun', 'Rain'].forEach(function (w) { for (var i = 0; i < 3; i++) $(k + w + i).value = PP.terr[k][w.toLowerCase()][i]; }); });
@@ -2571,11 +2583,29 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
         render();
       });
     }
+    if ($('mainBodyKg')) {
+      $('mainBodyKg').value = isNum(PP.bodyKg) ? PP.bodyKg : 50;
+      $('mainBodyKg').addEventListener('change', function () {
+        var v = Math.max(30, Math.min(120, numOr($('mainBodyKg').value, 50)));
+        PP.bodyKg = v;
+        $('mainBodyKg').value = v;
+        if ($('pBody')) $('pBody').value = v;
+        render();
+      });
+    }
     if ($('pLightKg')) {
       $('pLightKg').addEventListener('change', function () {
         var v = Math.max(1, Math.min(9, numOr($('pLightKg').value, 2)));
         PP.lightKg = v;
         if ($('mainLightKg')) $('mainLightKg').value = v;
+        render();
+      });
+    }
+    if ($('pBody')) {
+      $('pBody').addEventListener('change', function () {
+        var v = Math.max(30, Math.min(120, numOr($('pBody').value, 50)));
+        PP.bodyKg = v;
+        if ($('mainBodyKg')) $('mainBodyKg').value = v;
         render();
       });
     }
