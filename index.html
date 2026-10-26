@@ -419,6 +419,12 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
         <h3>跑（勾「跑」的路段）</h3>
         <label for="pRunFlat">平地跑速 km/h<input type="number" id="pRunFlat" step="0.5" min="3" inputmode="decimal"></label>
         <label for="pRunCapX">樹根、泥濘上限×<input type="number" id="pRunCapX" step="0.1" min="1" inputmode="decimal"></label>
+        <h3>跑・陡下坡煞車上限（坡度 −20% 以下）</h3>
+        <label for="pBrkRootV">樹根 最快 km/h<input type="number" id="pBrkRootV" step="0.1" min="0" inputmode="decimal"></label>
+        <label for="pBrkRootP">樹根 ≤ 一般步道×<input type="number" id="pBrkRootP" step="0.05" min="0" max="1" inputmode="decimal"></label>
+        <span aria-hidden="true"></span>
+        <label for="pBrkMudV">泥濘 最快 km/h<input type="number" id="pBrkMudV" step="0.1" min="0" inputmode="decimal"></label>
+        <label for="pBrkMudP">泥濘 ≤ 一般步道×<input type="number" id="pBrkMudP" step="0.05" min="0" max="1" inputmode="decimal"></label>
         <h3>林道（時間倍數）</h3>
         <label for="pRoadHF">重裝×<input type="number" id="pRoadHF" step="0.01" inputmode="decimal"></label>
         <label for="pRoadLU">輕裝上坡×<input type="number" id="pRoadLU" step="0.01" inputmode="decimal"></label>
@@ -508,7 +514,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
       <li>林道揹重裝：速度和一般步道相同（「林道重裝×」1.00）。<br><br>依據 10/20、10/21 四季林道揹 13 kg 實走，只算移動時間：上坡紅柵欄→廢棄護管所（3.3 km、爬升 468 m）實際 95 分、模型 100 分；下坡同段反向（下降 470 m）實際 72 分、模型 73 分。</li>
       <li>總時間＝走路時間 × 60 ÷（60 − 每小時停留）＋各點停留。<br><br>預設每小時停 13 分，等於每小時走 47 分：走 47 分鐘的路要花 1 小時。<br><br>13 分取自 10/6 步道段：休息 4 次、平均 8.3 分；短停 8 次、平均 4.2 分，合計約佔總時間的 22%。<br><br>集合、整隊、等人都算在這裡，不另外加。</li>
       <li>隊伍速度：每 20 m 的走路時間 ÷ 倍數；比 −5% 陡的下坡用「下坡」倍數，其餘用「上坡與平路」。<br><br>樹根陡坡、泥濘草徑的爬升與下降上限也一起乘上倍數。<br><br>基準 1＝10/6、10/20–21 的八年級學生實測。<br><br>校準時把紀錄每 5 秒取一點，前後各 60 秒的淨位移換算不到每小時 0.6 km 就算停下來，其餘算走路。<br><br>走路的時間依當時的位置分到每 20 m，再和倍數 1 的模型比：倍數＝模型時間 ÷ 實際走路時間。<br><br>10 分鐘以內的停留換算成「途中停留」每小時幾分；更長的（午餐、儀式）只列出來，不算進去。<br><br>跑的路段改用「跑步速度」倍數；校準時跑和走分開算，跑的部分有 5 分鐘以上才算倍數。</li>
-      <li>勾「跑」的路段：配速隨坡度的變化用 Kay（2012）分析 91 場上坡、15 場下坡賽事紀錄擬合的曲線（四次式；比 −26% 或 +32% 更陡時用文中的二次式延伸），只取形狀，快慢由「平地跑速」與「跑步速度」倍數決定。<br><br>平地每小時 8 km 時：−10% 下坡約 9.3 km、−20% 約 7.5 km、−30% 約 5.2 km（每小時下降約 1,550 m）；+10% 上坡約 5.3 km、+20% 約 3.4 km（每小時爬升約 680 m）。<br><br>高度、雨天、地形係數同走路；樹根陡坡、泥濘草徑的爬升與下降上限放寬 2.5 倍，是推估、沒有實測。<br><br>跑的路段不看重裝，負重當輕裝。<br><br>Kay 的資料裡比賽每多 1 小時，配速慢約 16%，這裡沒有算；跑很久的路段，平地跑速填慢一點，或用自己長跑的紀錄校準。</li>
+      <li>勾「跑」的路段：配速隨坡度的變化用 Kay（2012）分析 91 場上坡、15 場下坡賽事紀錄擬合的曲線（四次式；比 −26% 或 +32% 更陡時用文中的二次式延伸），只取形狀，快慢由「平地跑速」與「跑步速度」倍數決定。<br><br>平地每小時 8 km 時：−10% 下坡約 9.3 km、−20% 約 7.5 km、−30% 約 5.2 km（每小時下降約 1,550 m）；+10% 上坡約 5.3 km、+20% 約 3.4 km（每小時爬升約 680 m）。<br><br>高度、雨天、地形係數同走路；樹根陡坡、泥濘草徑的爬升與下降上限放寬 2.5 倍，是推估、沒有實測。<br><br>陡下坡煞車上限：樹根陡坡、泥濘草徑坡度 −20% 以下，跑速最快每小時 3.8／4.0 km，也不超過同一個人在一般步道同坡度跑速的 0.55／0.60 倍。數值取自勞侖茲健行預測 App 的 vMaxDown、brakePenalty，沒有實測，只當上限，不用它的 4.2 km/h 基底與負重折減；在「跑步速度」倍數之後才套用，一般步道、林道不受限。<br><br>跑的路段不看重裝，負重當輕裝。<br><br>Kay 的資料裡比賽每多 1 小時，配速慢約 16%，這裡沒有算；跑很久的路段，平地跑速填慢一點，或用自己長跑的紀錄校準。</li>
       <li>範例是 10/20 第 1 天實走：09:04 從四季公墓停車處起步（乘車段不列），紅柵欄（舊柵門）停 63 分取裝、入山儀式，途中午餐 25 分，加納富溪停 30 分，終點是巨木登山口後 450 m 的營地，當天 14:45 抵達。<br><br>紅柵欄以前行李上菜車、學生不揹大背包，這段設成林道、不勾重裝；紅柵欄到營地是林道、揹重裝；當天晴天，都不勾雨天。<br><br>範例估 14:57 抵達（隊伍速度 ×1），比實際晚 12 分，其中 10 分在紅柵欄以前（估 10:17，實際 10:07）：林道輕裝那 63 分鐘實際只停 6 分，模型每小時停 13 分。<br><br>距離與高度用 GPX 原值（當天 Garmin 實測高度和 GPX 相差 3 m 內）；巨木登山口到營地取自隨隊家長的 Garmin 軌跡，距離按 450 m 計。<br><br>其餘沒有算進去：拍照、天候突變與隊伍狀況。</li>
       <li>高度用檔案內的數值，每 20 m 取一點；錄製的軌跡（有時間記錄）先做 3 點平滑。<br><br>填了實測海拔的段落，高度在兩個已知點之間按距離線性修正。<br><br>日出、日落、民用曙光與暮光以起點座標、海平面、台灣時間（UTC+8）計算；天黑（暮光結束）至曙光之間標「夜間」。</li>
     </ul>
@@ -887,6 +893,7 @@ var CORE = (function () {
     bodyKg: 50, lightKg: 2, calKg: 13, fatiguePct: 8, fatigueOn: true, vo2max: 0, fatB0: 1.05, fatAlpha: 0.15, fatBeta: 0.22, fatGammaS: 2.5, fatGammaL: 1.2,  // 0 = use default altPct; else scale altitude penalty vs ref 45         // light sections: same effort (Pandolf 1977) with lightKg instead of the 13 kg calibration load
     lightDnMax: 1.25,                          // v31: on descents the lighter pack makes you at most x1.25 faster (footing and braking limit steep descents, not effort)
     runFlat: 8, runCapX: 2.5,                  // v31 跑: flat running speed km/h; vertical caps of 樹根陡坡／泥濘草徑 x2.5 when running (assumed, no data)
+    brkRootV: 3.8, brkRootP: 0.55, brkMudV: 4.0, brkMudP: 0.60,   // v36 跑, grade <= -20 % on 樹根陡坡／泥濘草徑: at most km/h, and at most x the same runner on 一般步道 (Lorentz app vMaxDown / brakePenalty; assumed, no data)
     roadHeavyF: 1.00,                          // 林道 with 13 kg: time x1.00 (四季林道 moving time, 10/20 up 95 vs model 100 min, 10/21 down 72 vs 73 min)
     roadLightUp: 0.92, roadLightDown: 0.75,    // 林道 without the big pack: light time x0.92 uphill, x0.75 downhill (moving time 10/20 up 57 vs 62 min, 10/21 down 34 vs 46 min)
     terr: {
@@ -1060,6 +1067,7 @@ var CORE = (function () {
     if (m > 0.3152) return 0.0314 + 1.7544 * m + 0.3162 * m * m;
     return 0.1707 + m * (0.5656 + m * (3.2209 + m * (-0.3211 - 4.3635 * m)));
   }
+  var BRAKE_S = -0.20;   // v36: grade where the brake limiter starts
   function runHours(dx, dz, zm, terr, rain, P) {
     var S = dz / dx, t = (P.terr[terr] || P.terr.trail)[rain ? 'rain' : 'sun'];
     var aK = (P.altPct || 0) / 100, a = Math.max(0, (zm - P.altRef) / 1000 * aK), fu = 1 - a, ff = 1 - a / 2, fd = 1 - a / 3;
@@ -1069,7 +1077,16 @@ var CORE = (function () {
     if (dz > 0 && t[1] > 0) h = Math.max(h, dz / (t[1] * cx * fu));
     else if (dz < 0 && t[2] > 0) h = Math.max(h, -dz / (t[2] * cx * fd));
     var v = S <= -0.05 ? P.runDn : P.runUp;                            // running factor, kept apart from the walking team speed
-    return h * (P.f > 0 ? P.f : 1) / (v > 0 ? v : 1);
+    h = h * (P.f > 0 ? P.f : 1) / (v > 0 ? v : 1);
+    // v36 steep-downhill brake limiter: only 樹根陡坡／泥濘草徑 at S <= -0.20, applied to the final speed (after the personal 跑步速度).
+    // Upper limits only: the Lorentz app's 4.2 km/h base and load factor are not used, so the running calibration is untouched.
+    var bk = S <= BRAKE_S && dx > 0 ? (terr === 'root' ? [P.brkRootV, P.brkRootP] : (terr === 'mud' ? [P.brkMudV, P.brkMudP] : null)) : null;
+    if (bk) {
+      var vCap = +bk[0] > 0 ? +bk[0] : Infinity;                                                       // vMaxDown, km/h
+      if (+bk[1] > 0) vCap = Math.min(vCap, +bk[1] * dx / 1000 / runHours(dx, dz, zm, 'trail', rain, P));   // brakePenalty x the same runner on 一般步道
+      if (isFinite(vCap) && dx / 1000 / h > vCap) h = dx / 1000 / vCap;
+    }
+    return h;
   }
   // hours for one step: dx real metres, dz metres, zm mean altitude, terrain key, rain flag, light (true = no big pack), run (true = 跑)
   function stepHours(dx, dz, zm, terr, rain, P, light, run) {
@@ -1937,7 +1954,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
      [true, 'rain', '重裝・雨天', '晴天速度乘雨天係數（推估）；10/6 草嶺古道、桃源谷陣雨實測比這組快 10–14%'],
      [false, 'sun', '輕裝・晴天', '林道：10/20–21 實測；其餘依能量公式換算（推估）'],
      [false, 'rain', '輕裝・雨天', '無實測：雨天係數同重裝，輕裝加速同晴天'],
-     [false, 'sun', '跑・晴天', 'Kay（2012）賽事紀錄的坡度曲線，平地每小時 ' + nf1(runFlat()) + ' km；樹根、泥濘的上限是推估', true]].forEach(function (g) {
+     [false, 'sun', '跑・晴天', 'Kay（2012）賽事紀錄的坡度曲線，平地每小時 ' + nf1(runFlat()) + ' km；樹根、泥濘的上限與 −20% 以下的煞車上限是推估', true]].forEach(function (g) {
       trs.push('<tr class="grp"><td colspan="6">' + g[2] + '<span class="basis">' + g[3] + '</span></td></tr>');
       C.TERRAIN_KEYS.forEach(function (k) {
         var r = C.refSpeeds(k, g[1], PM || MP(), zRef, g[0], g[4] === true);
@@ -2168,7 +2185,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
   // ---------- inputs ----------
   var PMAP = [['pTobF', 'F'], ['pWTob', 'wTob'], ['pSunDown', 'sunDown'], ['pDinH', 'dinH'], ['pDinUp', 'dinUp'], ['pDinDown', 'dinDown'],
               ['pAltPct', 'altPct'], ['pAltRef', 'altRef'], ['pLightKg', 'lightKg'], ['pRoadHF', 'roadHeavyF'], ['pRoadLU', 'roadLightUp'], ['pRoadLD', 'roadLightDown'],
-              ['pLightDnMax', 'lightDnMax'], ['pRunFlat', 'runFlat'], ['pRunCapX', 'runCapX']];
+              ['pLightDnMax', 'lightDnMax'], ['pRunFlat', 'runFlat'], ['pRunCapX', 'runCapX'],
+              ['pBrkRootV', 'brkRootV'], ['pBrkRootP', 'brkRootP'], ['pBrkMudV', 'brkMudV'], ['pBrkMudP', 'brkMudP']];
   function applyInputs() {
     PP.bodyKg = 50; // Pandolf 固定參考體重，不開放以免時間不合理跳動
     $('date').value = S.date; $('start').value = S.start; $('deadline').value = S.deadline;
