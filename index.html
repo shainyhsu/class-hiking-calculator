@@ -353,7 +353,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
         <label for="mainLightKg">輕裝背包</label><input type="number" id="mainLightKg" min="1" max="9" step="0.5" value="2" inputmode="decimal"> kg
         <label class="inline" style="margin-left:8px"><input type="checkbox" id="mainFatigueOn" checked> 疲勞啟用</label>
       </div>
-      <p class="hint" style="margin:4px 0 0">輕裝 1–9 kg：未勾「重裝」的路段用 Pandolf 相對 13 kg 換算（體重固定 50 kg，避免單獨改體重造成不合理的時間跳動）。疲勞：<strong>V = V₀ × (0.92)<sup>移動小時/5</sup></strong>，約每 5 小時 ×0.92。個人基準步速以歷史 GPX 勞侖茲函數為準。</p>
+      <p class="hint" style="margin:4px 0 0">輕裝 1–9 kg：未勾「重裝」路段用 Pandolf 相對 13 kg（體重固定 50 kg）。疲勞為<strong>動態疲勞池</strong>：行進時依坡度與負重累積 F，速度 ×1/(1+F)；每移動小時套用途中短停恢復，時間表≥20 分長停留（午餐等）指數恢復。關閉則不計疲勞。</p>
     </div>
     <div id="teamBox">
       <div class="teamrow">
@@ -884,7 +884,7 @@ var CORE = (function () {
     sunDown: 1.00,                             // dry descents same speed as wet: 10/18 舊寮 dry walk (7 kg) down/up ratio matched the wet calibration
     altRef: 300, altPct: 6.3,                  // uphill speed -6.3 % per 1,000 m above 300 m (flat 1/2, down 1/3)
     f: 1.00,                                   // overall time factor (v27: kept at 1; the team speed teamUp / teamDn is a setting)
-    bodyKg: 50, lightKg: 2, calKg: 13, fatiguePct: 8, fatigueOn: true, vo2max: 0,  // 0 = use default altPct; else scale altitude penalty vs ref 45         // light sections: same effort (Pandolf 1977) with lightKg instead of the 13 kg calibration load
+    bodyKg: 50, lightKg: 2, calKg: 13, fatiguePct: 8, fatigueOn: true, vo2max: 0, fatB0: 1.05, fatAlpha: 0.15, fatBeta: 0.22, fatGammaS: 2.5, fatGammaL: 1.2,  // 0 = use default altPct; else scale altitude penalty vs ref 45         // light sections: same effort (Pandolf 1977) with lightKg instead of the 13 kg calibration load
     lightDnMax: 1.25,                          // v31: on descents the lighter pack makes you at most x1.25 faster (footing and braking limit steep descents, not effort)
     runFlat: 8, runCapX: 2.5,                  // v31 跑: flat running speed km/h; vertical caps of 樹根陡坡／泥濘草徑 x2.5 when running (assumed, no data)
     roadHeavyF: 1.00,                          // 林道 with 13 kg: time x1.00 (四季林道 moving time, 10/20 up 95 vs model 100 min, 10/21 down 72 vs 73 min)
@@ -1122,10 +1122,14 @@ var CORE = (function () {
     P = P || DEFAULTS;
     a = Math.max(0, Math.min(tr.total, a)); b = Math.max(a, Math.min(tr.total, b));
     var rain = wx === 'rain', light = heavy === false, sc = scale > 0 ? scale : 1, h = 0, xa = a, za = zAt(tr, a), x = tr.x;
-    // 疲勞：V = V0 * (0.92)^(t/5) → 時間倍率 = (0.92)^(-(baseH+h)/5)
-    var fatOn = P.fatigueOn !== false; // default on
-    var baseH = isFinite(cumH0) ? cumH0 : 0;
-    var kFat = Math.log(0.92) / 5; // ln(0.92)/5
+    // 動態疲勞池（與 runModelV3 同構簡化：本段內坡度+負重累積）
+    var fatOn = P.fatigueOn !== false;
+    var Fpool = 0;
+    var packKg = light ? (isFinite(P.lightKg) ? +P.lightKg : 2) : (isFinite(P.calKg) ? +P.calKg : 13);
+    var Lr = packKg / 50;
+    var b0 = isFinite(P.fatB0) ? P.fatB0 : 1.05;
+    var al = isFinite(P.fatAlpha) ? P.fatAlpha : 0.15;
+    var be = isFinite(P.fatBeta) ? P.fatBeta : 0.22;
     for (var i = Math.max(0, Math.floor(a / STEP) - 1); i <= x.length && xa < b; i++) {
       var xb = i < x.length ? Math.min(x[i], b) : b;
       if (xb <= xa) continue;
@@ -1133,10 +1137,10 @@ var CORE = (function () {
       var dxm = (xb - xa) * sc, dzm = zb - za;
       var dh = stepHours(dxm, dzm, (za + zb) / 2, terr, rain, P, light, run === true);
       if (fatOn && dh > 0) {
-        var tMid = baseH + h + dh * 0.5;
-        var speedRatio = Math.exp(kFat * tMid); // (0.92)^(t/5)
-        if (speedRatio < 0.5) speedRatio = 0.5; // 下限半速，避免極端
-        dh = dh / speedRatio;
+        var S = dxm > 0 ? dzm / dxm : 0;
+        var bDyn = b0 + al * Math.abs(S) + be * Lr;
+        Fpool += dh * Math.max(0, bDyn - 1);
+        dh = dh * (1 + Fpool);
       }
       h += dh;
       xa = xb; za = zb;
@@ -1148,6 +1152,7 @@ var CORE = (function () {
   function runModelV3(tr, secs, wx, P) {
     P = P || DEFAULTS;
     var x = tr.x, z = tr.z, cum = [0], xr = [0], rs = [false], rn = [false];
+    var Fpool = 0, shortRestMark = 0, longRestIdx = 0; // 動態疲勞池狀態
     for (var i = 1; i < x.length; i++) {
       var dxg = x[i] - x[i - 1];
       var mid = (x[i] + x[i - 1]) / 2, q = secAt(secs, mid);
@@ -1155,7 +1160,37 @@ var CORE = (function () {
       rs.push(rain); rn.push(q.run === true);
       if (dxg <= 0) { cum.push(cum[i - 1]); xr.push(xr[i - 1]); continue; }
       var dx = dxg * q.scale, dz = z[i] - z[i - 1], zm = (z[i] + z[i - 1]) / 2;
-      cum.push(cum[i - 1] + stepHours(dx, dz, zm, q.terr, rain, P, q.heavy === false, q.run === true));
+      var dh = stepHours(dx, dz, zm, q.terr, rain, P, q.heavy === false, q.run === true);
+      // 動態疲勞池：行進累積（坡度+負重），短停／長休指數消退；V *= 1/(1+F)
+      if (P.fatigueOn !== false && dh > 0) {
+        var S = dx > 0 ? (dz / dx) : 0;
+        var packKg = (q.heavy === false) ? (isFinite(P.lightKg) ? +P.lightKg : 2) : (isFinite(P.calKg) ? +P.calKg : 13);
+        var Lr = packKg / (isFinite(P.bodyKg) && P.bodyKg > 0 ? P.bodyKg : 50);
+        var b0 = isFinite(P.fatB0) ? P.fatB0 : 1.05;
+        var al = isFinite(P.fatAlpha) ? P.fatAlpha : 0.15;
+        var be = isFinite(P.fatBeta) ? P.fatBeta : 0.22;
+        var bDyn = b0 + al * Math.abs(S) + be * Lr;
+        // 先用基底 dh 累積疲勞，再以當下 F 修正耗時
+        Fpool += dh * Math.max(0, bDyn - 1);
+        // 短停：每滿 1 移動小時，套用途中停留分鐘的短休恢復
+        var stopHmin = isFinite(P._stopH) ? P._stopH : 13;
+        var gS = isFinite(P.fatGammaS) ? P.fatGammaS : 2.5;
+        while (cum[i - 1] + dh > shortRestMark + 1 - 1e-9) {
+          shortRestMark += 1;
+          Fpool *= Math.exp(-gS * (stopHmin / 60));
+        }
+        // 長休：通過檢查點距離時指數消退
+        var gL = isFinite(P.fatGammaL) ? P.fatGammaL : 1.2;
+        var longs = P._longRests || [];
+        while (longRestIdx < longs.length && mid >= longs[longRestIdx].d - 0.5) {
+          var rstH = Math.max(0, longs[longRestIdx].h || 0);
+          if (rstH > 0) Fpool *= Math.exp(-gL * rstH);
+          longRestIdx++;
+        }
+        if (Fpool < 0) Fpool = 0;
+        dh = dh * (1 + Fpool); // V_final = V_base / (1+F) ⇒ 時間 ×(1+F)
+      }
+      cum.push(cum[i - 1] + dh);
       xr.push(xr[i - 1] + dx);
     }
     rs[0] = rs.length > 1 ? rs[1] : false; rn[0] = rn.length > 1 ? rn[1] : false;
@@ -1652,6 +1687,16 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
     var p = {};
     Object.keys(PP).forEach(function (k) { p[k] = PP[k]; });
     p.f = 1; p.teamUp = teamV(S.teamUp); p.teamDn = teamV(S.teamDn); p.runUp = teamV(S.runUp); p.runDn = teamV(S.runDn);
+    p._stopH = isNum(S.stopH) ? +S.stopH : 13;
+    // 時間表長停留（≥20 分視為長休）供疲勞池指數恢復
+    p._longRests = [];
+    if (T.cps && T.cps.length) {
+      for (var i = 0; i < T.cps.length; i++) {
+        var st = Math.max(0, +T.cps[i].stop || 0);
+        if (st >= 20) p._longRests.push({ d: T.cps[i].d, h: st / 60 });
+      }
+      p._longRests.sort(function (a, b) { return a.d - b.d; });
+    }
     return p;
   }
   function f2(v) { return String(Math.round(v * 100) / 100); }
