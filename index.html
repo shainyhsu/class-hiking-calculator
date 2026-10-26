@@ -47,16 +47,16 @@
   .row{flex-wrap:wrap}
   .btn{min-height:44px}
   input[type=number]{min-width:0;max-width:100%}
-  .teamrow .inline input{width:4.2rem}
+  .teamrow .inline input{width:5.5rem;min-height:48px;font-size:18px;font-weight:700}
 }
 
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:15px;line-height:1.55;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:16px;line-height:1.55;-webkit-text-size-adjust:100%}
 .wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:18px 96px;display:grid;gap:14px}
-h1,h2{margin:0;text-wrap:balance}
+h1,h2{margin:0;text-wrap:balance;font-size:1.25rem}
 h1{font-size:1.45rem;letter-spacing:.02em}
 h2{font-size:1.02rem}
-.sub{margin:.25rem 0 0;color:var(--ink);font-size:.92rem;line-height:1.55;opacity:.92}
+.sub{margin:.25rem 0 0;color:var(--ink);font-size:1.02rem;line-height:1.65;opacity:1}
 .eyebrow{font-weight:600;letter-spacing:.06em;color:var(--accent);font-size:.8rem}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:10px;min-width:0}
 .cols{display:grid;gap:14px}
@@ -74,7 +74,10 @@ h2{font-size:1.02rem}
 .btn.add{width:100%;min-height:46px;background:var(--accent-soft);color:var(--accent);border-color:var(--accent-line);box-shadow:none}
 .btn.add:hover{border-color:var(--accent);color:var(--accent)}
 .tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.tools .hint{margin:0;color:var(--ink);font-size:.92rem;line-height:1.55;opacity:.92}
+.tools .hint{margin:0;color:var(--ink);font-size:1rem;line-height:1.65;opacity:1;font-weight:450}
+#histStatus,#lorentzParamsView{color:var(--ink);font-size:1.05rem;font-weight:600;line-height:1.5}
+#lorentzParamsView{font-family:var(--font-num);font-size:1.1rem;font-weight:700}
+
 /* disclosures look like rows you can open: chevron on the left, the whole row is the target */
 details.disc>summary{list-style:none;display:flex;align-items:center;gap:.55rem;min-height:44px;padding:.5rem .8rem;border:1px solid var(--ctl-line);border-radius:9px;background:var(--surface);color:var(--ink);font-weight:600;font-size:.9rem;box-shadow:0 1px 2px var(--shadow);transition:border-color .15s,color .15s}
 details.disc>summary::-webkit-details-marker{display:none}
@@ -92,11 +95,21 @@ details.disc[open]>summary{margin-bottom:10px}
 .error{margin:0;color:var(--crit);background:var(--crit-bg);border-radius:8px;padding:.55rem .7rem;font-size:.9rem}
 .warnbox{margin:0;color:var(--warn);background:var(--warn-bg);border-radius:8px;padding:.55rem .7rem;font-size:.9rem}
 .form{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
-.form label,.field{display:grid;gap:4px;font-size:.84rem;color:var(--ink);min-width:0}
+.form label,.field{display:grid;gap:6px;font-size:1rem;color:var(--ink);min-width:0;font-weight:500}
 .full{grid-column:1/-1}
-input,select{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.45rem .55rem;min-height:40px;width:100%;min-width:0}
-input[type=number]{font-family:var(--font-num);font-weight:600}
-.inline{display:flex;flex-wrap:wrap;align-items:center;gap:6px;color:var(--ink2);font-size:.88rem}
+input,select{
+  font:inherit;font-size:17px;color:var(--ink);background:var(--bg);
+  border:1.5px solid var(--ctl-line);border-radius:10px;
+  padding:.55rem .7rem;min-height:48px;width:100%;min-width:0;
+  box-sizing:border-box;
+}
+input[type=number],input[type=time],input[type=date]{
+  font-family:var(--font-num);font-weight:700;font-size:18px;
+  color:var(--ink);letter-spacing:.02em;
+}
+input[type=checkbox]{width:1.25rem;height:1.25rem;min-height:0;padding:0;accent-color:var(--accent)}
+.inline{display:flex;flex-wrap:wrap;align-items:center;gap:8px;color:var(--ink);font-size:1rem}
+
 .inline input{width:4.6rem}
 .hint{color:var(--muted);font-size:.8rem;margin:0}
 details>summary{cursor:pointer;color:var(--ink2);font-size:.9rem}
@@ -128,7 +141,7 @@ details>summary{cursor:pointer;color:var(--ink2);font-size:.9rem}
 svg text{font-family:var(--font-num);fill:var(--ink2)}
 /* table */
 .tblwrap{overflow-x:auto;margin-inline:-4px}
-table{border-collapse:collapse;width:100%;font-size:.9rem}
+table{border-collapse:collapse;width:100%;font-size:1rem}
 th{font-size:.74rem;color:var(--muted);font-weight:500;text-align:left;padding:4px 4px;border-bottom:1px solid var(--line);white-space:nowrap}
 td{padding:7px 3px;border-bottom:1px solid var(--line);vertical-align:top}
 td.num,th.num{text-align:right}
@@ -145,7 +158,7 @@ td .del{min-width:28px}
 .del svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .del:hover{color:var(--crit);border-color:var(--crit);background:var(--crit-bg)}
 /* live result: pinned to the bottom while the summary card is off screen */
-.livebar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 14px;margin:0;border:0;border-top:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:.88rem;cursor:pointer;padding-top:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom, 0px));padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));box-shadow:0 -2px 12px var(--shadow)}
+.livebar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 14px;margin:0;border:0;border-top:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:1.05rem;font-weight:600;cursor:pointer;padding-top:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom, 0px));padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));box-shadow:0 -2px 12px var(--shadow)}
 .livebar .lb{display:inline-flex;align-items:baseline;gap:5px}
 .livebar .lb-k{color:var(--ink2);font-size:.78rem}
 .livebar b{font-family:var(--font-num);font-weight:600;font-size:1.14rem;font-variant-numeric:tabular-nums}
@@ -196,9 +209,11 @@ td .del{min-width:28px}
 .tsw{display:inline-block;width:12px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
 .ck{display:inline-flex;align-items:center;gap:4px;font-size:.74rem;color:var(--ink2);margin-top:2px;cursor:pointer}
 .ck input{width:16px;height:16px;min-height:0;margin:0}
-.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px}
-.pgrid label{display:grid;gap:3px;font-size:.78rem;color:var(--ink2);min-width:0}
-.pgrid h3{grid-column:1/-1;margin:.4rem 0 0;font-size:.86rem;color:var(--ink)}
+.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 12px}
+.pgrid label{display:grid;gap:5px;font-size:.95rem;color:var(--ink);min-width:0;font-weight:500}
+.pgrid h3{grid-column:1/-1;margin:.5rem 0 0;font-size:1.05rem;color:var(--ink)}
+.pgrid input{min-height:48px;font-size:17px;font-weight:700}
+
 .secspd{margin:6px 2px 0;font-size:.74rem;color:var(--ink2);line-height:1.45}
 .spdref{margin-top:2px}
 .spdref>summary{font-size:.88rem}
@@ -214,12 +229,12 @@ td .del{min-width:28px}
 .spdtbl caption{caption-side:top;text-align:left;font-size:.78rem;color:var(--ink2);padding:0 0 4px}
 .spdtbl th{white-space:normal;line-height:1.25}
 .spdtbl td{padding:5px 3px;font-variant-numeric:tabular-nums}
-.teamrow{display:grid;gap:4px;font-size:.84rem;color:var(--ink);min-width:0}
+.teamrow{display:grid;gap:6px;font-size:1rem;color:var(--ink);min-width:0;font-weight:500}
 .teamrow .inline input{width:4.8rem}
 .teamnote{margin:0;font-size:.86rem;color:var(--ink);font-variant-numeric:tabular-nums}
 .calbody{display:grid;gap:8px;margin-top:8px;color:var(--ink)}
 #calOut{display:grid;gap:8px;border-top:1px dashed var(--line);padding-top:8px}
-.calmsg{margin:0;font-size:.84rem;color:var(--ink);opacity:.92}
+.calmsg{margin:0;font-size:1rem;color:var(--ink);line-height:1.6}
 .caltbl{font-size:.84rem}
 .caltbl td{padding:5px 3px;font-variant-numeric:tabular-nums}
 .caltbl td.num{font-family:var(--font-num);font-weight:600;white-space:nowrap}
