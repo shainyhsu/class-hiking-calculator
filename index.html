@@ -56,7 +56,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:
 h1,h2{margin:0;text-wrap:balance}
 h1{font-size:1.45rem;letter-spacing:.02em}
 h2{font-size:1.02rem}
-.sub{margin:.25rem 0 0;color:var(--ink2);font-size:.92rem;line-height:1.55}
+.sub{margin:.25rem 0 0;color:var(--ink);font-size:.92rem;line-height:1.55;opacity:.92}
 .eyebrow{font-weight:600;letter-spacing:.06em;color:var(--accent);font-size:.8rem}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:10px;min-width:0}
 .cols{display:grid;gap:14px}
@@ -74,7 +74,7 @@ h2{font-size:1.02rem}
 .btn.add{width:100%;min-height:46px;background:var(--accent-soft);color:var(--accent);border-color:var(--accent-line);box-shadow:none}
 .btn.add:hover{border-color:var(--accent);color:var(--accent)}
 .tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.tools .hint{margin:0;color:var(--ink2);font-size:.92rem;line-height:1.55}
+.tools .hint{margin:0;color:var(--ink);font-size:.92rem;line-height:1.55;opacity:.92}
 /* disclosures look like rows you can open: chevron on the left, the whole row is the target */
 details.disc>summary{list-style:none;display:flex;align-items:center;gap:.55rem;min-height:44px;padding:.5rem .8rem;border:1px solid var(--ctl-line);border-radius:9px;background:var(--surface);color:var(--ink);font-weight:600;font-size:.9rem;box-shadow:0 1px 2px var(--shadow);transition:border-color .15s,color .15s}
 details.disc>summary::-webkit-details-marker{display:none}
@@ -92,7 +92,7 @@ details.disc[open]>summary{margin-bottom:10px}
 .error{margin:0;color:var(--crit);background:var(--crit-bg);border-radius:8px;padding:.55rem .7rem;font-size:.9rem}
 .warnbox{margin:0;color:var(--warn);background:var(--warn-bg);border-radius:8px;padding:.55rem .7rem;font-size:.9rem}
 .form{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
-.form label,.field{display:grid;gap:4px;font-size:.84rem;color:var(--ink2);min-width:0}
+.form label,.field{display:grid;gap:4px;font-size:.84rem;color:var(--ink);min-width:0}
 .full{grid-column:1/-1}
 input,select{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:.45rem .55rem;min-height:40px;width:100%;min-width:0}
 input[type=number]{font-family:var(--font-num);font-weight:600}
@@ -214,12 +214,12 @@ td .del{min-width:28px}
 .spdtbl caption{caption-side:top;text-align:left;font-size:.78rem;color:var(--ink2);padding:0 0 4px}
 .spdtbl th{white-space:normal;line-height:1.25}
 .spdtbl td{padding:5px 3px;font-variant-numeric:tabular-nums}
-.teamrow{display:grid;gap:4px;font-size:.84rem;color:var(--ink2);min-width:0}
+.teamrow{display:grid;gap:4px;font-size:.84rem;color:var(--ink);min-width:0}
 .teamrow .inline input{width:4.8rem}
 .teamnote{margin:0;font-size:.86rem;color:var(--ink);font-variant-numeric:tabular-nums}
-.calbody{display:grid;gap:8px;margin-top:8px}
+.calbody{display:grid;gap:8px;margin-top:8px;color:var(--ink)}
 #calOut{display:grid;gap:8px;border-top:1px dashed var(--line);padding-top:8px}
-.calmsg{margin:0;font-size:.84rem;color:var(--ink2)}
+.calmsg{margin:0;font-size:.84rem;color:var(--ink);opacity:.92}
 .caltbl{font-size:.84rem}
 .caltbl td{padding:5px 3px;font-variant-numeric:tabular-nums}
 .caltbl td.num{font-family:var(--font-num);font-weight:600;white-space:nowrap}
@@ -323,17 +323,12 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
     </div>
     <p class="hint">途中停留＝休息、整裝、集合、等人等短停的合計，算在同一小時之內。<br><br>預設 13 分：每小時走 47 分、停 13 分。<br><br>13 分取自 10/6：休息 4 次、平均 8.3 分，短停 8 次、平均 4.2 分，合計約佔總時間的 22%。<br><br>停留不分晴雨：10/6 雨天每小時約停 15 分，10/20 晴天上坡約 16 分。<br><br>午餐、儀式等長停留，另外填在時間表各點的「停留」。<br><br>雨天只放慢走路速度，依各路段的「雨天」勾選。</p>
     <div class="teamrow" id="bodyLightRow">
-      <span>輕裝、體重（Pandolf）與當日疲勞</span>
+      <span>輕裝負重與當日疲勞</span>
       <div class="inline">
-        <label for="mainBodyKg">體重</label><input type="number" id="mainBodyKg" min="30" max="120" step="1" value="50" inputmode="numeric"> kg
         <label for="mainLightKg">輕裝背包</label><input type="number" id="mainLightKg" min="1" max="9" step="0.5" value="2" inputmode="decimal"> kg
+        <label class="inline" style="margin-left:8px"><input type="checkbox" id="mainFatigueOn" checked> 疲勞啟用</label>
       </div>
-      <div class="inline" style="margin-top:6px">
-        <label for="mainFatigue">疲勞</label>
-        <span class="hint">V = V₀ × (0.92)<sup>移動小時/5</sup>（每 5 小時約 ×0.92）</span>
-        <label class="inline" style="margin-left:8px"><input type="checkbox" id="mainFatigueOn" checked> 啟用</label>
-      </div>
-      <p class="hint" style="margin:4px 0 0">體重與輕裝用於 Pandolf：沒勾「重裝」的路段，相對 13 kg 重裝換算速度。疲勞：速度隨累積<strong>移動小時</strong>以指數下降，約每 5 小時 ×0.92（10 小時約 ×0.85）。關閉則不計疲勞。個人基準步速仍以歷史 GPX 勞侖茲函數為準。</p>
+      <p class="hint" style="margin:4px 0 0">輕裝 1–9 kg：未勾「重裝」的路段用 Pandolf 相對 13 kg 換算（體重固定 50 kg，避免單獨改體重造成不合理的時間跳動）。疲勞：<strong>V = V₀ × (0.92)<sup>移動小時/5</sup></strong>，約每 5 小時 ×0.92。個人基準步速以歷史 GPX 勞侖茲函數為準。</p>
     </div>
     <div id="teamBox">
       <div class="teamrow">
@@ -2105,6 +2100,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 450 m 營地", "pts": [
               ['pAltPct', 'altPct'], ['pAltRef', 'altRef'], ['pLightKg', 'lightKg'], ['pRoadHF', 'roadHeavyF'], ['pRoadLU', 'roadLightUp'], ['pRoadLD', 'roadLightDown'],
               ['pLightDnMax', 'lightDnMax'], ['pRunFlat', 'runFlat'], ['pRunCapX', 'runCapX']];
   function applyInputs() {
+    PP.bodyKg = 50; // Pandolf 固定參考體重，不開放以免時間不合理跳動
     $('date').value = S.date; $('start').value = S.start; $('deadline').value = S.deadline;
     $('stopH').value = S.stopH; $('teamUp').value = S.teamUp; $('teamDn').value = S.teamDn;
     var hasL = C.hasLorentz && C.hasLorentz();
