@@ -42,7 +42,7 @@
 .teamrow .inline label{flex:0 0 auto}
 @media (max-width:420px){
   .form{grid-template-columns:1fr}
-  .wrap{padding-inline:12px;padding-block:70px 24px}
+  .wrap{padding-inline:12px;padding-block:78px 24px}
   .card{padding:12px}
   .row{flex-wrap:wrap}
   .btn{min-height:44px}
@@ -52,7 +52,7 @@
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:16px;line-height:1.55;-webkit-text-size-adjust:100%}
-.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:72px 24px;display:grid;gap:14px}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:80px 24px;display:grid;gap:14px}
 h1,h2{margin:0;text-wrap:balance;font-size:1.25rem}
 h1{font-size:1.45rem;letter-spacing:.02em}
 h2{font-size:1.02rem}
@@ -168,11 +168,11 @@ td .del{min-width:28px}
 .del svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .del:hover{color:var(--crit);border-color:var(--crit);background:var(--crit-bg)}
 /* live result: pinned to the bottom while the summary card is off screen */
-.livebar{position:fixed;left:0;right:0;top:0;bottom:auto;z-index:30;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 14px;margin:0;border:0;border-bottom:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:1.05rem;font-weight:600;cursor:pointer;padding-top:calc(8px + env(safe-area-inset-top, 0px));padding-bottom:8px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));box-shadow:0 2px 12px var(--shadow)}
-.livebar .lb{display:inline-flex;align-items:baseline;gap:5px}
-.livebar .lb-k{color:var(--ink2);font-size:.78rem}
-.livebar b{font-family:var(--font-num);font-weight:600;font-size:1.14rem;font-variant-numeric:tabular-nums}
-.livebar .lb-go{display:inline-flex;align-items:center;gap:3px;color:var(--accent);font-size:.8rem;font-weight:600}
+.livebar{position:fixed;left:0;right:0;top:0;bottom:auto;z-index:30;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin:0;border:0;border-bottom:3px solid var(--accent);background:var(--accent-soft);color:var(--ink);font:inherit;font-size:1.2rem;font-weight:700;cursor:pointer;padding-top:calc(10px + env(safe-area-inset-top, 0px));padding-bottom:10px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));box-shadow:0 3px 14px var(--shadow)}
+.livebar .lb{display:inline-flex;align-items:baseline;gap:6px}
+.livebar .lb-k{color:var(--ink);font-size:1rem;font-weight:600}
+.livebar b{font-family:var(--font-num);font-weight:800;font-size:1.45rem;font-variant-numeric:tabular-nums;color:var(--ink)}
+.livebar .lb-go{display:inline-flex;align-items:center;gap:3px;color:var(--accent);font-size:1rem;font-weight:700}
 .livebar .lb-go svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .livebar:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
 .copybox{width:100%;min-height:9rem;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.6rem}
