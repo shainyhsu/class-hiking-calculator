@@ -56,7 +56,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:
 h1,h2{margin:0;text-wrap:balance;font-size:1.25rem}
 h1{font-size:1.45rem;letter-spacing:.02em}
 h2{font-size:1.02rem}
-.sub{margin:.25rem 0 0;color:var(--ink);font-size:1.02rem;line-height:1.65;opacity:1}
+.sub{margin:.25rem 0 0;color:var(--ink);font-size:1.1rem;line-height:1.7;opacity:1;font-weight:500}
 .eyebrow{font-weight:600;letter-spacing:.06em;color:var(--accent);font-size:.8rem}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:10px;min-width:0}
 .cols{display:grid;gap:14px}
@@ -74,7 +74,7 @@ h2{font-size:1.02rem}
 .btn.add{width:100%;min-height:46px;background:var(--accent-soft);color:var(--accent);border-color:var(--accent-line);box-shadow:none}
 .btn.add:hover{border-color:var(--accent);color:var(--accent)}
 .tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.tools .hint{margin:0;color:var(--ink);font-size:1rem;line-height:1.65;opacity:1;font-weight:450}
+.tools .hint{margin:0;color:var(--ink);font-size:1.08rem;line-height:1.7;opacity:1;font-weight:500}
 #histStatus,#lorentzParamsView{color:var(--ink);font-size:1.05rem;font-weight:600;line-height:1.5}
 #lorentzParamsView{font-family:var(--font-num);font-size:1.1rem;font-weight:700}
 
@@ -91,11 +91,21 @@ details.disc[open]>summary{margin-bottom:10px}
 .about>summary::-webkit-details-marker{display:none}
 .about>summary:hover{color:var(--accent)}
 .btn:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.status{margin:0;color:var(--ink2);font-size:.9rem}
+.status{margin:0;color:var(--ink);font-size:1.05rem;line-height:1.5}
+#fileStatus{
+  margin:.35rem 0 0;
+  color:var(--ink);
+  font-size:1.2rem;
+  font-weight:700;
+  font-family:var(--font-num),var(--font-ui);
+  letter-spacing:.01em;
+  line-height:1.45;
+}
+
 .error{margin:0;color:var(--crit);background:var(--crit-bg);border-radius:8px;padding:.55rem .7rem;font-size:.9rem}
 .warnbox{margin:0;color:var(--warn);background:var(--warn-bg);border-radius:8px;padding:.55rem .7rem;font-size:.9rem}
 .form{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
-.form label,.field{display:grid;gap:6px;font-size:1rem;color:var(--ink);min-width:0;font-weight:500}
+.form label,.field{display:grid;gap:6px;font-size:1.05rem;color:var(--ink);min-width:0;font-weight:600}
 .full{grid-column:1/-1}
 input,select{
   font:inherit;font-size:17px;color:var(--ink);background:var(--bg);
@@ -229,12 +239,12 @@ td .del{min-width:28px}
 .spdtbl caption{caption-side:top;text-align:left;font-size:.78rem;color:var(--ink2);padding:0 0 4px}
 .spdtbl th{white-space:normal;line-height:1.25}
 .spdtbl td{padding:5px 3px;font-variant-numeric:tabular-nums}
-.teamrow{display:grid;gap:6px;font-size:1rem;color:var(--ink);min-width:0;font-weight:500}
+.teamrow{display:grid;gap:6px;font-size:1.08rem;color:var(--ink);min-width:0;font-weight:600}
 .teamrow .inline input{width:4.8rem}
 .teamnote{margin:0;font-size:.86rem;color:var(--ink);font-variant-numeric:tabular-nums}
-.calbody{display:grid;gap:8px;margin-top:8px;color:var(--ink)}
+.calbody{display:grid;gap:8px;margin-top:8px;color:var(--ink);font-size:1.08rem;line-height:1.7}
 #calOut{display:grid;gap:8px;border-top:1px dashed var(--line);padding-top:8px}
-.calmsg{margin:0;font-size:1rem;color:var(--ink);line-height:1.6}
+.calmsg{margin:0;font-size:1.08rem;color:var(--ink);line-height:1.7;font-weight:500}
 .caltbl{font-size:.84rem}
 .caltbl td{padding:5px 3px;font-variant-numeric:tabular-nums}
 .caltbl td.num{font-family:var(--font-num);font-weight:600;white-space:nowrap}
