@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:calc(56px + env(safe-area-inset-top,0px))}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>步程試算</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -42,7 +42,7 @@
 .teamrow .inline label{flex:0 0 auto}
 @media (max-width:420px){
   .form{grid-template-columns:1fr}
-  .wrap{padding-inline:12px;padding-block:12px 110px}
+  .wrap{padding-inline:12px;padding-block:70px 24px}
   .card{padding:12px}
   .row{flex-wrap:wrap}
   .btn{min-height:44px}
@@ -52,7 +52,7 @@
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--font-ui);font-size:16px;line-height:1.55;-webkit-text-size-adjust:100%}
-.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:18px 96px;display:grid;gap:14px}
+.wrap{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:72px 24px;display:grid;gap:14px}
 h1,h2{margin:0;text-wrap:balance;font-size:1.25rem}
 h1{font-size:1.45rem;letter-spacing:.02em}
 h2{font-size:1.02rem}
@@ -168,7 +168,7 @@ td .del{min-width:28px}
 .del svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .del:hover{color:var(--crit);border-color:var(--crit);background:var(--crit-bg)}
 /* live result: pinned to the bottom while the summary card is off screen */
-.livebar{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 14px;margin:0;border:0;border-top:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:1.05rem;font-weight:600;cursor:pointer;padding-top:8px;padding-bottom:calc(8px + env(safe-area-inset-bottom, 0px));padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));box-shadow:0 -2px 12px var(--shadow)}
+.livebar{position:fixed;left:0;right:0;top:0;bottom:auto;z-index:30;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 14px;margin:0;border:0;border-bottom:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:1.05rem;font-weight:600;cursor:pointer;padding-top:calc(8px + env(safe-area-inset-top, 0px));padding-bottom:8px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));box-shadow:0 2px 12px var(--shadow)}
 .livebar .lb{display:inline-flex;align-items:baseline;gap:5px}
 .livebar .lb-k{color:var(--ink2);font-size:.78rem}
 .livebar b{font-family:var(--font-num);font-weight:600;font-size:1.14rem;font-variant-numeric:tabular-nums}
