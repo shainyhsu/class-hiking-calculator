@@ -175,6 +175,8 @@ td .del{min-width:28px}
 .livebar .lb-go{display:inline-flex;align-items:center;gap:3px;color:var(--accent);font-size:1rem;font-weight:700}
 .livebar .lb-go svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .livebar:focus-visible{outline:2px solid var(--accent);outline-offset:-4px}
+.snapbar{margin:0 0 14px;padding:10px 12px;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;background:var(--surface);color:var(--ink);font-size:1rem;line-height:1.65}
+.snapbar b{font-weight:700}
 .copybox{width:100%;min-height:9rem;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.82rem;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:.6rem}
 .about p,.about li{font-size:.88rem;color:var(--ink2);margin:.3rem 0}
 .about li{margin:0 0 1.55em}
@@ -492,11 +494,14 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
   </section>
 
   <section class="card" aria-labelledby="hCopy">
-    <h2 id="hCopy">純文字時間表</h2>
+    <h2 id="hCopy">分享</h2>
     <div class="tools">
-      <button class="btn primary" id="btnCopy" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.25" y="5.25" width="8.25" height="8.25" rx="1.5"/><path d="M10.75 5.25V3.75a1.25 1.25 0 0 0-1.25-1.25h-6A1.25 1.25 0 0 0 2.25 3.75v6A1.25 1.25 0 0 0 3.5 11h1.75"/></svg>複製全文</button>
+      <button class="btn primary" id="btnSnap" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7.25M5 7l3 3 3-3"/><path d="M2.75 11.25v1.5c0 .7.55 1.25 1.25 1.25h8c.7 0 1.25-.55 1.25-1.25v-1.5"/></svg>下載整頁</button>
+      <button class="btn primary" id="btnShare" type="button" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 9.75V2.5M5.25 5.25 8 2.5l2.75 2.75"/><path d="M5.5 7.25H4.25c-.7 0-1.25.55-1.25 1.25v4.25c0 .7.55 1.25 1.25 1.25h7.5c.7 0 1.25-.55 1.25-1.25V8.5c0-.7-.55-1.25-1.25-1.25H10.5"/></svg>分享整頁</button>
+      <button class="btn" id="btnCopy" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.25" y="5.25" width="8.25" height="8.25" rx="1.5"/><path d="M10.75 5.25V3.75a1.25 1.25 0 0 0-1.25-1.25h-6A1.25 1.25 0 0 0 2.25 3.75v6A1.25 1.25 0 0 0 3.5 11h1.75"/></svg>複製全文</button>
       <p class="hint" id="copyMsg" aria-live="polite"></p>
     </div>
+    <p class="hint">「下載整頁」把路線、路段、檢查點、所有設定與參數、高度剖面、時間表和下面的純文字存成一個 HTML 檔。對方用瀏覽器打開就能看，不用網路；在檔案裡改設定會重新計算，但只在那個視窗，重新整理就回到存檔時的內容。</p>
     <textarea class="copybox" id="copyText" readonly aria-label="純文字時間表"></textarea>
   </section>
 
@@ -1404,6 +1409,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   'use strict';
   var C = CORE;
   function $(id) { return document.getElementById(id); }
+  var SNAP = false;   // v41: opened from a shared page file: show its state, never write to storage
   var SAMPLE_REV = 2;   // v39: camp leg 239 m (GPX) instead of 450 m
   var LS_KEY = 'ctp.v45', LS_OLD = ['ctp.v44', 'ctp.v43', 'ctp.v42', 'ctp.v41', 'ctp.v40', 'ctp.v39', 'ctp.v38', 'ctp.v37', 'ctp.v36', 'ctp.v35', 'ctp.v34', 'ctp.v33', 'ctp.v32', 'ctp.v31', 'ctp.v3'];
   var WD = ['日', '一', '二', '三', '四', '五', '六'];
@@ -1445,11 +1451,13 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
 
   // ---------- storage ----------
   function save() {
+    if (SNAP) return;
     try {
       localStorage.setItem(LS_KEY, JSON.stringify({
         S: S, PP: PP, isSample: T.isSample, recorded: T.recorded, fileName: T.fileName, reversed: T.reversed, range: T.range,
         warn: T.warn, suggest: T.suggest, secsFull: T.secsFull, cps: T.cps, seq: T.seq, zStart: T.zStart,
-        track: T.parsed ? packTrack(T.parsed) : null, stash: T.stash, sampleRev: T.isSample ? SAMPLE_REV : null
+        track: T.parsed ? packTrack(T.parsed) : null, stash: T.stash, sampleRev: T.isSample ? SAMPLE_REV : null,
+        lorentz: C.getLorentzParams ? C.getLorentzParams() : null
       }));
     } catch (e) { /* storage unavailable: page still works */ }
   }
@@ -2200,6 +2208,71 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     if (act && /^(nm|st|tr)-/.test(act) && $(act)) $(act).focus();
   }
 
+  // ---------- v41: the whole page as one HTML file ----------
+  function two(n) { return (n < 10 ? '0' : '') + n; }
+  function snapName() {
+    var nm = String(T.name || T.fileName || '路線').replace(/[\\/:*?"<>|\s]+/g, '_').slice(0, 40);
+    return '步程試算_' + nm + '_' + (S.date || todayStr()) + '.html';
+  }
+  function snapState() {
+    return { v: 1, created: new Date().toISOString(), S: clone(S), PP: clone(PP), isSample: T.isSample, recorded: T.recorded, fileName: T.fileName,
+             reversed: T.reversed, range: T.range, warn: T.warn, suggest: T.suggest, secsFull: clone(T.secsFull), cps: clone(T.cps), seq: T.seq,
+             zStart: T.zStart, track: T.parsed ? packTrack(T.parsed) : null, sampleRev: T.isSample ? SAMPLE_REV : null,
+             lorentz: C.getLorentzParams ? C.getLorentzParams() : null };
+  }
+  function snapshotHtml() {
+    var live = document.documentElement, doc = live.cloneNode(true);
+    var li = live.querySelectorAll('input,textarea,select'), di = doc.querySelectorAll('input,textarea,select');
+    for (var i = 0; i < li.length && i < di.length; i++) {   // typed values into the markup, so the file shows them without scripts
+      var a = li[i], b = di[i];
+      if (a.type === 'file') continue;
+      if (a.type === 'checkbox' || a.type === 'radio') { if (a.checked) b.setAttribute('checked', ''); else b.removeAttribute('checked'); }
+      else if (a.tagName === 'TEXTAREA') b.textContent = a.value;
+      else if (a.tagName === 'SELECT') { for (var k = 0; k < a.options.length; k++) { if (a.options[k].selected) b.options[k].setAttribute('selected', ''); else b.options[k].removeAttribute('selected'); } }
+      else b.setAttribute('value', a.value);
+    }
+    ['ctpSnap', 'snapBanner'].forEach(function (id) { var e = doc.querySelector('#' + id); if (e) e.parentNode.removeChild(e); });
+    var lb = doc.querySelector('#liveBar'); if (lb) lb.setAttribute('hidden', '');
+    var now = new Date(), ban = document.createElement('div');
+    ban.className = 'snapbar'; ban.id = 'snapBanner'; ban.setAttribute('role', 'note');
+    ban.innerHTML = '分享檔：<b>' + esc(T.name || T.fileName || '路線') + '</b>，' + esc(S.date || todayStr()) + ' ' + esc(S.start || '') + ' 出發（' +
+      now.getFullYear() + '-' + two(now.getMonth() + 1) + '-' + two(now.getDate()) + ' ' + two(now.getHours()) + ':' + two(now.getMinutes()) + ' 存檔）。<br>' +
+      '可以直接看；改設定或路段會重新計算，只在這個視窗，重新整理就回到存檔時的內容。';
+    var mn = doc.querySelector('main'); if (mn) mn.insertBefore(ban, mn.firstChild);
+    var js = document.createElement('script');
+    js.type = 'application/json'; js.id = 'ctpSnap';
+    js.textContent = JSON.stringify(snapState()).replace(/</g, '\\u003c');
+    doc.querySelector('head').appendChild(js);
+    // a shared file is often opened offline: the web font and JSZip must not hold the page up
+    var fl = doc.querySelector('link[rel="stylesheet"][href*="fonts.googleapis"]');
+    if (fl) { fl.setAttribute('media', 'print'); fl.setAttribute('onload', "this.media='all'"); }
+    var zs = doc.querySelector('script[src*="jszip"]'); if (zs) zs.setAttribute('defer', '');
+    return '<!doctype html>\n' + doc.outerHTML;
+  }
+  var DL = null, IN_CLAUDE = !!(window.claude && typeof window.claude.use === 'function');   // claude.ai viewer: files go through its downloads capability
+  if (IN_CLAUDE) { try { window.claude.use('downloads').then(function (d) { DL = d; }, function () { DL = null; }); } catch (e) { DL = null; } }
+  function saveSnapshot() {
+    var html = snapshotHtml(), name = snapName(), blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    if (DL) {
+      DL.save({ filename: name, data: blob }).then(function () { $('copyMsg').textContent = '已存成「' + name + '」，把這個檔傳給對方。'; },
+        function (err) { $('copyMsg').textContent = err && err.code === 'declined' ? '已取消下載。' : '這個視窗不能下載，請到 GitHub 上的步程試算操作。'; });
+      return;
+    }
+    if (IN_CLAUDE) { $('copyMsg').textContent = '這個視窗不能下載，請到 GitHub 上的步程試算操作。'; return; }
+    var url = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = url; a.download = name; a.style.display = 'none';
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); if (a.parentNode) a.parentNode.removeChild(a); }, 1500);
+    $('copyMsg').textContent = '已存成「' + name + '」（' + Math.max(1, Math.round(blob.size / 1024)) + ' KB），把這個檔傳給對方。';
+  }
+  function shareSnapshot() {
+    var name = snapName(), file = null;
+    try { file = new File([snapshotHtml()], name, { type: 'text/html' }); } catch (e) { file = null; }
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: '步程試算｜' + (T.name || '路線') }).then(function () { $('copyMsg').textContent = '已分享「' + name + '」。'; },
+        function (err) { if (!err || err.name !== 'AbortError') saveSnapshot(); });   // cancelled: nothing; share not allowed here: save instead
+    } else saveSnapshot();
+  }
   function renderCopy(c) {
     var p = (S.date || todayStr()).split('-').map(Number), d = new Date(p[0], p[1] - 1, p[2]), dl = parseHM(S.deadline);
     var L = [];
@@ -2792,6 +2865,13 @@ if ($('mainFatigue')) {
     }
 
 
+    $('btnSnap').addEventListener('click', saveSnapshot);   // v41
+    $('btnShare').addEventListener('click', shareSnapshot);
+    try {
+      if (navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.html', { type: 'text/html' })] })) {
+        $('btnShare').hidden = false; $('btnSnap').classList.remove('primary');
+      }
+    } catch (err) { /* no file sharing: download only */ }
     $('btnCopy').addEventListener('click', function () {
       var ta = $('copyText'), msg = $('copyMsg');
       function fallback() { ta.focus(); ta.select(); msg.textContent = '已選取全文，請用系統的複製。'; }
@@ -2816,7 +2896,10 @@ if ($('mainFatigue')) {
   }
 
   function init() {
-    var saved = loadSaved();
+    var snapEl = document.getElementById('ctpSnap'), snap = null;   // v41: a shared page file carries its own state
+    if (snapEl) { try { snap = JSON.parse(snapEl.textContent); } catch (e) { snap = null; } }
+    SNAP = !!(snap && snap.S);
+    var saved = SNAP ? snap : loadSaved();
     if (saved && saved.S) {
       var os = saved.S;   // v20: one buffer and one regroup time for sun and rain
       if (os.trans === undefined && (isNum(os.transSun) || isNum(os.transRain))) os.trans = Math.max(isNum(os.transSun) ? +os.transSun : 0, isNum(os.transRain) ? +os.transRain : 0);
@@ -2835,6 +2918,10 @@ if ($('mainFatigue')) {
         if (!(saved.S && isNum(saved.S.teamUp))) { S.teamUp = Math.round(100 / +PP.f) / 100; S.teamDn = S.teamUp; }
         PP.f = 1;
       }
+    }
+    if (saved && saved.lorentz && C.setLorentzParams && C.setLorentzParams(saved.lorentz)) {   // v41: fitted parameters are kept and shared
+      var lp = C.getLorentzParams();
+      $('lorentzParamsView').textContent = '已鎖定勞侖茲函數參數：a=' + lp[0].toFixed(2) + ' km/h　b=' + lp[1].toFixed(2) + '　c=' + lp[2].toFixed(3) + '（最省力坡度約 ' + ((-lp[2] / lp[1]) * 100).toFixed(1) + '%）';
     }
     applyInputs();
     var ok = false;
