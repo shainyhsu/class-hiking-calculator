@@ -464,7 +464,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
 
   <section class="card" aria-labelledby="hSec">
     <h2 id="hSec">路段與地形</h2>
-    <p class="lead">地形後面的數字是該段的平均水平速度（km/h）：坡度、海拔、隊伍速度都已算進去，只算移動、不含停留；點一下就換地形。<br><br>勾「重裝」＝揹 13 kg 大背包，不勾＝輕裝。<br><br>勾「雨天」＝下雨或起霧、路濕，不勾＝晴天。<br><br>勾「跑」＝這段用跑的（輕裝），用跑步的速度與「跑步速度」倍數。<br><br>分界直接在上面的高度剖面拖拉；要多切一段，在剖面選「切路段」再點要切的位置。</p>
+    <p class="lead">地形後面的數字是該段的平均水平速度（km/h）：坡度、海拔、隊伍速度、疲勞（接續前面的路段）都已算進去，只算移動、不含停留；點一下就換地形。各段時間加起來等於時間表的移動時間。<br><br>勾「重裝」＝揹 13 kg 大背包，不勾＝輕裝。<br><br>勾「雨天」＝下雨或起霧、路濕，不勾＝晴天。<br><br>勾「跑」＝這段用跑的（輕裝），用跑步的速度與「跑步速度」倍數。<br><br>分界直接在上面的高度剖面拖拉；要多切一段，在剖面選「切路段」再點要切的位置。</p>
     <div class="seclist" id="secBody"></div>
     <button class="btn add" id="btnAddSec" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>新增路段</button>
     <p class="profmsg" id="secMsg" aria-live="polite"></p>
@@ -1167,15 +1167,17 @@ var CORE = (function () {
   // wx: 'sun' or 'rain' forces the whole track; anything else uses each section's rain flag
   function runModelV3(tr, secs, wx, P) {
     P = P || DEFAULTS;
-    var x = tr.x, z = tr.z, cum = [0], xr = [0], rs = [false], rn = [false];
+    var x = tr.x, z = tr.z, cum = [0], xr = [0], rs = [false], rn = [false], wr = [0], bd = [];
     var Fpool = 0, shortRestMark = 0, longRestIdx = 0; // 動態疲勞池狀態
-    for (var i = 1; i < x.length; i++) {
-      var dxg = x[i] - x[i - 1];
-      var mid = (x[i] + x[i - 1]) / 2, q = secAt(secs, mid);
+    // v40: a grid step that straddles a section boundary is split there (each part with its own section), and the exact
+    //      moving hours at every boundary are kept in bd, so the section table adds up to the timetable
+    var cuts = [], ci = 0, hc = 0, hRain = 0;
+    (secs || []).forEach(function (q, k) { if (k > 0 && q.a > 1e-6 && q.a < tr.total - 1e-6) cuts.push(q.a); });
+    cuts.sort(function (p, r) { return p - r; });
+    function piece(xa, xb, za, zb) {   // hours of the stretch [xa, xb] GPX m inside one section; hc = hours before it
+      var mid = (xa + xb) / 2, q = secAt(secs, mid);
       var rain = wx === 'rain' ? true : (wx === 'sun' ? false : q.rain === true);
-      rs.push(rain); rn.push(q.run === true);
-      if (dxg <= 0) { cum.push(cum[i - 1]); xr.push(xr[i - 1]); continue; }
-      var dx = dxg * q.scale, dz = z[i] - z[i - 1], zm = (z[i] + z[i - 1]) / 2;
+      var dx = (xb - xa) * q.scale, dz = zb - za, zm = (za + zb) / 2;
       var dh = stepHours(dx, dz, zm, q.terr, rain, P, q.heavy === false, q.run === true);
       // 動態疲勞池：行進累積（坡度+負重），短停／長休指數消退；V *= 1/(1+F)
       if (P.fatigueOn !== false && dh > 0) {
@@ -1191,7 +1193,7 @@ var CORE = (function () {
         // 短停：每滿 1 移動小時，套用途中停留分鐘的短休恢復
         var stopHmin = isFinite(P._stopH) ? P._stopH : 13;
         var gS = isFinite(P.fatGammaS) ? P.fatGammaS : 2.5;
-        while (cum[i - 1] + dh > shortRestMark + 1 - 1e-9) {
+        while (hc + dh > shortRestMark + 1 - 1e-9) {
           shortRestMark += 1;
           Fpool *= Math.exp(-gS * (stopHmin / 60));
         }
@@ -1206,8 +1208,28 @@ var CORE = (function () {
         if (Fpool < 0) Fpool = 0;
         dh = dh * (1 + Fpool); // V_final = V_base / (1+F) ⇒ 時間 ×(1+F)
       }
-      cum.push(cum[i - 1] + dh);
-      xr.push(xr[i - 1] + dx);
+      hc += dh; if (rain) hRain += dh;
+      return { dh: dh, dx: dx, rain: rain };
+    }
+    for (var i = 1; i < x.length; i++) {
+      var dxg = x[i] - x[i - 1];
+      var mid = (x[i] + x[i - 1]) / 2, q = secAt(secs, mid);
+      var rain = wx === 'rain' ? true : (wx === 'sun' ? false : q.rain === true);
+      rs.push(rain); rn.push(q.run === true);
+      if (dxg <= 0) { cum.push(cum[i - 1]); xr.push(xr[i - 1]); wr.push(0); continue; }
+      var xa = x[i - 1], za = z[i - 1], sh = 0, sx = 0, sr = 0;
+      while (ci < cuts.length && cuts[ci] < x[i] - 1e-6) {
+        var xc = cuts[ci];
+        if (xc > xa + 1e-6) {
+          var zc = z[i - 1] + (z[i] - z[i - 1]) * (xc - x[i - 1]) / dxg, pc = piece(xa, xc, za, zc);
+          sh += pc.dh; sx += pc.dx; if (pc.rain) sr += pc.dh;
+          xa = xc; za = zc;
+        }
+        bd.push({ d: xc, h: hc, hr: hRain }); ci++;
+      }
+      var pe = piece(xa, x[i], za, z[i]);
+      sh += pe.dh; sx += pe.dx; if (pe.rain) sr += pe.dh;
+      cum.push(cum[i - 1] + sh); xr.push(xr[i - 1] + sx); wr.push(sr);
     }
     rs[0] = rs.length > 1 ? rs[1] : false; rn[0] = rn.length > 1 ? rn[1] : false;
     // colour bins: 100 m of GPX distance, grade on real distance
@@ -1220,7 +1242,7 @@ var CORE = (function () {
       var g = 100 * (zAt(tr, edges[b + 1]) - zAt(tr, edges[b])) / ((rb - ra) || 1);
       binCls.push(gradeClass(g));
     }
-    return { x: x, cum: cum, xr: xr, rs: rs, rn: rn, total: cum[cum.length - 1], realTotal: xr[xr.length - 1], edges: edges, binCls: binCls };
+    return { x: x, cum: cum, xr: xr, rs: rs, rn: rn, wr: wr, bd: bd, total: cum[cum.length - 1], realTotal: xr[xr.length - 1], edges: edges, binCls: binCls };
   }
   function interpAt(m, arr, d) {
     var x = m.x;
@@ -1232,16 +1254,21 @@ var CORE = (function () {
     var t = (d - x[i]) / ((x[i + 1] - x[i]) || 1);
     return arr[i] + (arr[i + 1] - arr[i]) * t;
   }
-  function movingAtV3(m, d) { return interpAt(m, m.cum, d); }
+  function bdAt(m, d) { var b = m.bd || []; for (var k = 0; k < b.length; k++) if (Math.abs(b[k].d - d) < 0.01) return b[k]; return null; }   // v40
+  function movingAtV3(m, d) { var e = bdAt(m, d); return e ? e.h : interpAt(m, m.cum, d); }
   // buf: {rest, transSun, transRain (min per moving hour), pointSun, pointRain (min at transition checkpoints)}
   function bufK(buf, rain) { return 1 + ((+buf.rest || 0) + (+(rain ? buf.transRain : buf.transSun) || 0)) / 60; }
   function applyBuffer(m, buf) {   // m.cumB: hours with rest and transition buffer, step by step in each step's weather
-    var cb = [0];
-    for (var i = 1; i < m.cum.length; i++) cb.push(cb[i - 1] + (m.cum[i] - m.cum[i - 1]) * bufK(buf, m.rs ? m.rs[i] : false));
+    var cb = [0], ks = bufK(buf, false), kr = bufK(buf, true);
+    for (var i = 1; i < m.cum.length; i++) {
+      var dh = m.cum[i] - m.cum[i - 1], w = m.wr ? m.wr[i] : (m.rs && m.rs[i] ? dh : 0);   // v40: rain hours of the step
+      cb.push(cb[i - 1] + (dh - w) * ks + w * kr);
+    }
+    (m.bd || []).forEach(function (e) { e.hb = (e.h - e.hr) * ks + e.hr * kr; });
     m.cumB = cb; m.totalB = cb[cb.length - 1];
     return m;
   }
-  function bufferedAtV3(m, d) { return interpAt(m, m.cumB || m.cum, d); }
+  function bufferedAtV3(m, d) { var e = m.cumB ? bdAt(m, d) : null; return e && e.hb !== undefined ? e.hb : interpAt(m, m.cumB || m.cum, d); }
   function rainAtV3(m, d) {   // weather of the stretch just ahead of distance d
     var x = m.x, rs = m.rs || [];
     for (var i = 1; i < x.length; i++) if (x[i] > d + 0.5) return !!rs[i];
@@ -1918,19 +1945,33 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     var h = C.stretchHours(f, a, b, sc, terr, heavy, rain ? 'rain' : 'sun', PM || MP(), run, cumH0), k = (b - a) * sc / 1000;
     return { h: h, km: k, kmh: h > 0 ? k / h : 0 };
   }
+  function secModel(q) {   // v40: this section's share of the timetable (fatigue carried over from the sections before it)
+    var c = LAST;
+    if (!c || !c.m || !T.track) return null;
+    var r0 = T.range ? T.range[0] : 0, a = q.a - r0, b = q.b - r0, tot = T.track.total;
+    if (a < -0.5 || b > tot + 0.5 || b - a <= 1) return null;
+    a = Math.max(0, a); b = Math.min(tot, b);
+    return { h0: C.movingAtV3(c.m, a), h1: C.movingAtV3(c.m, b), b0: C.bufferedAtV3(c.m, a), b1: C.bufferedAtV3(c.m, b) };
+  }
   function renderSections() {
     var act = document.activeElement && document.activeElement.id ? document.activeElement.id : null;
     var zRef = refAlt(), b0 = buf();
     var html = [];
     if (!T.secsFull.length) html.push('<p class="secempty">全段當一般步道、揹重裝、晴天，距離與高度用 GPX 原值。<br><br>按下方「新增路段」，整條路線會變成第 1 段，再設定地形、重裝、雨天；要分段就在上面的剖面選「切路段」。</p>');
     T.secsFull.forEach(function (q, i) {
-      var n = i + 1, run = q.run === true, heavy = !run && q.heavy !== false, rain = q.rain === true, terr = C.TERRAIN_KEYS.indexOf(q.terr) >= 0 ? q.terr : 'trail', ud = secUpDn(q), cur = null;
+      var n = i + 1, run = q.run === true, heavy = !run && q.heavy !== false, rain = q.rain === true, terr = C.TERRAIN_KEYS.indexOf(q.terr) >= 0 ? q.terr : 'trail', ud = secUpDn(q);
       var kk = 1 + b0.pause / 60;
+      var cur = secRun(q, terr, heavy, rain, run), sm = secModel(q), f = 1;
+      var hNow = cur.h, hB = cur.h * kk, mvMin = cur.h * 60, bMin = cur.h * 60 * kk;
+      if (sm && cur.h > 0 && sm.h1 > sm.h0) {   // v40: same hours as the timetable; minutes rounded on the running total so the sections add up
+        hNow = sm.h1 - sm.h0; hB = sm.b1 - sm.b0; f = hNow / cur.h;
+        mvMin = Math.round(sm.h1 * 60) - Math.round(sm.h0 * 60);
+        bMin = Math.round(sm.b1 * 60) - Math.round(sm.b0 * 60);
+      }
       var chips = C.TERRAIN_KEYS.map(function (k) {
-        var r = secRun(q, k, heavy, rain, run), id = 'sxt-' + i + '-' + k;
-        if (k === terr) cur = r;
+        var r = k === terr ? cur : secRun(q, k, heavy, rain, run), id = 'sxt-' + i + '-' + k, v = r.h > 0 ? r.km / (r.h * f) : 0;
         return '<label class="tchip" for="' + id + '"><input type="radio" name="sxt-' + i + '" id="' + id + '" value="' + k + '"' + (terr === k ? ' checked' : '') + '>' +
-          '<span class="tsw" style="background:var(' + TERR_COLOR[k] + ')"></span><span class="tn">' + PP.terr[k].name + '</span><span class="tv">' + r.kmh.toFixed(1) + '<small>km/h</small></span></label>';
+          '<span class="tsw" style="background:var(' + TERR_COLOR[k] + ')"></span><span class="tn">' + PP.terr[k].name + '</span><span class="tv">' + v.toFixed(1) + '<small>km/h</small></span></label>';
       }).join('');
       html.push('<div class="secrow" id="secrow-' + i + '">' +
         '<div class="sectop"><span class="secno">第 ' + n + ' 段</span><span class="secrange">GPX ' + (Math.max(0, q.a) / 1000).toFixed(2) + '–' + (q.b / 1000).toFixed(2) + ' km</span>' +
@@ -1945,7 +1986,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
         '<label for="sxr-' + i + '">實際 km<input type="number" step="0.1" min="0" inputmode="decimal" id="sxr-' + i + '" value="' + (q.real ? (q.real / 1000).toFixed(2) : '') + '" placeholder="同 GPX"></label>' +
         '<label for="sxz-' + i + '">終點海拔 m<input type="number" step="1" inputmode="numeric" id="sxz-' + i + '" value="' + (isNum(q.zEnd) ? Math.round(q.zEnd) : '') + '" placeholder="' + Math.round(C.zAt(T.full, Math.min(q.b, T.full.total))) + '"></label>' +
         '</div>' +
-        '<p class="secspd">本段 ' + cur.km.toFixed(cur.km < 0.995 ? 2 : 1) + ' km，爬升 ' + nf(ud.up) + ' m、下降 ' + nf(ud.dn) + ' m。<br>' + (run ? '跑' : (heavy ? '重裝' : '輕裝')) + '、' + (rain ? '雨天' : '晴天') + '：' + (run ? '跑 ' : '走路 ') + durZh(cur.h * 60) + '，平均每小時 ' + cur.kmh.toFixed(1) + ' km；含途中停留 ' + durZh(cur.h * 60 * kk) + '，約每小時 ' + (cur.kmh / kk).toFixed(1) + ' km。</p>' +
+        '<p class="secspd">本段 ' + cur.km.toFixed(cur.km < 0.995 ? 2 : 1) + ' km，爬升 ' + nf(ud.up) + ' m、下降 ' + nf(ud.dn) + ' m。<br>' + (run ? '跑' : (heavy ? '重裝' : '輕裝')) + '、' + (rain ? '雨天' : '晴天') + '：' + (run ? '跑 ' : '走路 ') + durZh(mvMin) + '，平均每小時 ' + (hNow > 0 ? cur.km / hNow : 0).toFixed(1) + ' km；含途中停留 ' + durZh(bMin) + '，約每小時 ' + (hB > 0 ? cur.km / hB : 0).toFixed(1) + ' km。</p>' +
         '</div>');
     });
     $('secBody').innerHTML = html.join('');
