@@ -496,12 +496,12 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
   <section class="card" aria-labelledby="hCopy">
     <h2 id="hCopy">分享</h2>
     <div class="tools">
-      <button class="btn primary" id="btnSnap" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7.25M5 7l3 3 3-3"/><path d="M2.75 11.25v1.5c0 .7.55 1.25 1.25 1.25h8c.7 0 1.25-.55 1.25-1.25v-1.5"/></svg>下載整頁</button>
-      <button class="btn primary" id="btnShare" type="button" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 9.75V2.5M5.25 5.25 8 2.5l2.75 2.75"/><path d="M5.5 7.25H4.25c-.7 0-1.25.55-1.25 1.25v4.25c0 .7.55 1.25 1.25 1.25h7.5c.7 0 1.25-.55 1.25-1.25V8.5c0-.7-.55-1.25-1.25-1.25H10.5"/></svg>分享整頁</button>
+      <button class="btn primary" id="btnPic" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.25" y="3" width="11.5" height="10" rx="1.5"/><path d="M2.75 11.25 6 8l2.5 2.5 1.75-1.75 3 3"/><circle cx="10.5" cy="5.9" r="1"/></svg><span id="btnPicTxt">下載圖片</span></button>
+      <button class="btn" id="btnSnap" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7.25M5 7l3 3 3-3"/><path d="M2.75 11.25v1.5c0 .7.55 1.25 1.25 1.25h8c.7 0 1.25-.55 1.25-1.25v-1.5"/></svg>下載完整版</button>
       <button class="btn" id="btnCopy" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.25" y="5.25" width="8.25" height="8.25" rx="1.5"/><path d="M10.75 5.25V3.75a1.25 1.25 0 0 0-1.25-1.25h-6A1.25 1.25 0 0 0 2.25 3.75v6A1.25 1.25 0 0 0 3.5 11h1.75"/></svg>複製全文</button>
       <p class="hint" id="copyMsg" aria-live="polite"></p>
     </div>
-    <p class="hint">「下載整頁」把路線、路段、檢查點、所有設定與參數、高度剖面、時間表和下面的純文字存成一個 HTML 檔。對方用瀏覽器打開就能看，不用網路；在檔案裡改設定會重新計算，但只在那個視窗，重新整理就回到存檔時的內容。</p>
+    <p class="hint">圖片只有高度剖面和時間表，可以直接用 LINE 傳。完整版是整頁 HTML，能改設定重新計算。</p>
     <textarea class="copybox" id="copyText" readonly aria-label="純文字時間表"></textarea>
   </section>
 
@@ -2251,27 +2251,162 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   }
   var DL = null, IN_CLAUDE = !!(window.claude && typeof window.claude.use === 'function');   // claude.ai viewer: files go through its downloads capability
   if (IN_CLAUDE) { try { window.claude.use('downloads').then(function (d) { DL = d; }, function () { DL = null; }); } catch (e) { DL = null; } }
-  function saveSnapshot() {
-    var html = snapshotHtml(), name = snapName(), blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  function saveBlob(blob, name) {
+    var msg = $('copyMsg');
     if (DL) {
-      DL.save({ filename: name, data: blob }).then(function () { $('copyMsg').textContent = '已存成「' + name + '」，把這個檔傳給對方。'; },
-        function (err) { $('copyMsg').textContent = err && err.code === 'declined' ? '已取消下載。' : '這個視窗不能下載，請到 GitHub 上的步程試算操作。'; });
+      DL.save({ filename: name, data: blob }).then(function () { msg.textContent = '已存成「' + name + '」。'; },
+        function (err) { msg.textContent = err && err.code === 'declined' ? '已取消下載。' : '這個視窗不能下載，請到 GitHub 上的步程試算操作。'; });
       return;
     }
-    if (IN_CLAUDE) { $('copyMsg').textContent = '這個視窗不能下載，請到 GitHub 上的步程試算操作。'; return; }
+    if (IN_CLAUDE) { msg.textContent = '這個視窗不能下載，請到 GitHub 上的步程試算操作。'; return; }
     var url = URL.createObjectURL(blob), a = document.createElement('a');
     a.href = url; a.download = name; a.style.display = 'none';
     document.body.appendChild(a); a.click();
     setTimeout(function () { URL.revokeObjectURL(url); if (a.parentNode) a.parentNode.removeChild(a); }, 1500);
-    $('copyMsg').textContent = '已存成「' + name + '」（' + Math.max(1, Math.round(blob.size / 1024)) + ' KB），把這個檔傳給對方。';
+    msg.textContent = '已存成「' + name + '」（' + Math.max(1, Math.round(blob.size / 1024)) + ' KB）。';
   }
-  function shareSnapshot() {
-    var name = snapName(), file = null;
-    try { file = new File([snapshotHtml()], name, { type: 'text/html' }); } catch (e) { file = null; }
-    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
-      navigator.share({ files: [file], title: '步程試算｜' + (T.name || '路線') }).then(function () { $('copyMsg').textContent = '已分享「' + name + '」。'; },
-        function (err) { if (!err || err.name !== 'AbortError') saveSnapshot(); });   // cancelled: nothing; share not allowed here: save instead
-    } else saveSnapshot();
+  function saveSnapshot() { saveBlob(new Blob([snapshotHtml()], { type: 'text/html;charset=utf-8' }), snapName()); }
+
+  // ---------- v42: one picture to share: route line, charts, timetable ----------
+  var PIC_W = 480;   // laid out like a phone screen, drawn 4.5x (2160 px wide) so text and lines stay sharp
+  var SVG_PROPS = ['fill', 'fill-opacity', 'stroke', 'stroke-width', 'stroke-opacity', 'stroke-dasharray', 'stroke-linecap', 'stroke-linejoin', 'opacity', 'font-size', 'font-family', 'font-weight', 'text-anchor', 'dominant-baseline'];
+  function picName() { return snapName().replace(/\.html$/, '.png'); }
+  function svgImage(svg, k) {   // the rendered chart with its computed colours written in; editing handles and hit areas left out
+    var copy = svg.cloneNode(true), a = svg.querySelectorAll('*'), b = copy.querySelectorAll('*');
+    for (var i = 0; i < a.length; i++) {
+      var cs = getComputedStyle(a[i]);
+      if (cs.display === 'none' || cs.visibility === 'hidden') { b[i].setAttribute('data-drop', '1'); continue; }
+      b[i].setAttribute('style', SVG_PROPS.map(function (p) { return p + ':' + cs.getPropertyValue(p); }).join(';'));
+    }
+    Array.prototype.forEach.call(copy.querySelectorAll('[data-drop],.bd,.stag,.plot-hit,.strip-hit,#cutG,#pTip,title'), function (e) { if (e.parentNode) e.parentNode.removeChild(e); });
+    var vb = svg.viewBox.baseVal;
+    copy.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    copy.setAttribute('width', Math.round(vb.width * k)); copy.setAttribute('height', Math.round(vb.height * k));
+    return { src: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(new XMLSerializer().serializeToString(copy)), w: vb.width, h: vb.height };
+  }
+  function picCharts(k) {   // render both charts at picture width in the light theme, copy them, then put the page back
+    var root = document.documentElement, prev = root.getAttribute('data-theme'), boxes = [$('strip'), $('profile')], keep = boxes.map(function (b) { return b.style.width; });
+    var out = null;
+    root.setAttribute('data-theme', 'light');
+    boxes.forEach(function (b) { b.style.width = (PIC_W - 32) + 'px'; });
+    try {
+      renderStrip(LAST); renderProfile(LAST);
+      var cs = getComputedStyle(root), col = {};
+      ['--surface', '--ink', '--ink2', '--line', '--time', '--time-ink', '--night', '--dusk', '--warn', '--warn-bg', '--crit', '--crit-bg', '--rain',
+       '--t-root', '--t-mud', '--t-road', '--t-trail', '--font-ui', '--font-num', '--b0', '--b1', '--b2', '--b3', '--b4', '--b5', '--b6'].forEach(function (v) { col[v] = cs.getPropertyValue(v).trim(); });
+      out = { strip: svgImage($('strip').querySelector('svg'), k), prof: svgImage($('profile').querySelector('svg'), k), col: col };
+    } finally {
+      boxes.forEach(function (b, i) { b.style.width = keep[i]; });
+      if (prev === null) root.removeAttribute('data-theme'); else root.setAttribute('data-theme', prev);
+      renderStrip(LAST); renderProfile(LAST);
+    }
+    return out;
+  }
+  function loadImg(src) { return new Promise(function (ok, no) { var im = new Image(); im.onload = function () { ok(im); }; im.onerror = no; im.src = src; }); }
+  function drawPicture(cap, imS, imP) {
+    var c = LAST, col = cap.col, W = PIC_W, X = 16, CW = W - 2 * X, fu = col['--font-ui'] || 'sans-serif', fnum = col['--font-num'] || fu;
+    var mc = document.createElement('canvas').getContext('2d'), ops = [], y = 18;
+    function tw(t, f) { mc.font = f; return mc.measureText(t).width; }
+    function fit(t, f, w) { if (tw(t, f) <= w) return t; while (t.length > 1 && tw(t + '…', f) > w) t = t.slice(0, -1); return t + '…'; }
+    function wrap(t, f, w) { var out = [], line = ''; Array.from(t).forEach(function (ch) { if (line && tw(line + ch, f) > w) { out.push(line); line = ch; } else line += ch; }); if (line) out.push(line); return out; }
+    function text(t, x, yy, f, color, align) { ops.push(function (g) { g.font = f; g.fillStyle = color; g.textAlign = align || 'left'; g.textBaseline = 'alphabetic'; g.fillText(t, x, yy); }); }
+    function chip(t, x, yy, kind) {   // rounded tag, returns its width
+      var f = '600 11px ' + fu, w = tw(t, f) + 12, fg = col[kind === 'crit' ? '--crit' : '--warn'], bg = col[kind === 'crit' ? '--crit-bg' : '--warn-bg'];
+      ops.push(function (g) { g.fillStyle = bg; rr(g, x, yy - 12, w, 16, 8); g.fill(); g.font = f; g.fillStyle = fg; g.textAlign = 'left'; g.fillText(t, x + 6, yy); });
+      return w;
+    }
+    function rr(g, x, yy, w, h, r) { g.beginPath(); g.moveTo(x + r, yy); g.arcTo(x + w, yy, x + w, yy + h, r); g.arcTo(x + w, yy + h, x, yy + h, r); g.arcTo(x, yy + h, x, yy, r); g.arcTo(x, yy, x + w, yy, r); g.closePath(); }
+    var rows = c.rows, last = rows[rows.length - 1], dl = parseHM(S.deadline);
+    var dp = (S.date || todayStr()).split('-').map(Number), dd = new Date(dp[0], dp[1] - 1, dp[2]);
+    // header
+    wrap(T.name || T.fileName || '路線', '700 20px ' + fu, CW).forEach(function (ln) { y += 22; text(ln, X, y, '700 20px ' + fu, col['--ink']); });
+    var heads = [[(S.date || todayStr()) + '（' + WD[dd.getDay()] + '）' + hm(c.startMin) + ' 出發，' + hm(last.arr) + ' 抵達', '600 15px ' + fu, col['--ink'], 22],
+                 [km(R(c.tr.total)) + ' km｜爬升 ' + nf(c.st.up) + ' m｜下降 ' + nf(c.st.dn) + ' m｜移動 ' + durZh(c.m.total * 60), '400 13px ' + fu, col['--ink2'], 19]];
+    if (c.sun) heads.push(['日落 ' + hhmmFromHours(c.sun.set) + '｜天黑 ' + hhmmFromHours(c.sun.dusk), '400 13px ' + fu, col['--ink2'], 19]);
+    heads.forEach(function (h) { wrap(h[0], h[1], CW).forEach(function (ln) { y += h[3]; text(ln, X, y, h[1], h[2]); }); });
+    // charts
+    y += 12;
+    var ys = y; ops.push(function (g) { g.drawImage(imS, X, ys, cap.strip.w, cap.strip.h); }); y += cap.strip.h + 6;
+    var yp = y; ops.push(function (g) { g.drawImage(imP, X, yp, cap.prof.w, cap.prof.h); }); y += cap.prof.h + 4;
+    // legend: only what this route shows
+    var lg = [], seen = {}, terr = {}, rain = false, light = {};
+    c.m.binCls.forEach(function (k) { seen[k] = 1; });
+    for (var g0 = 0; g0 < 7; g0++) if (seen[g0]) lg.push([col['--b' + g0], BAND_LABEL[g0]]);
+    T.secs.forEach(function (q) { terr[q.terr] = 1; if (q.rain) rain = true; });
+    if (Object.keys(terr).length > 1 || !terr.trail) ['trail', 'root', 'mud', 'road'].forEach(function (k) { if (terr[k]) lg.push([col[TERR_COLOR[k]], PP.terr[k].name]); });
+    if (rain) lg.push([col['--rain'], '雨天']);
+    if (c.sun) for (var tm = c.startMin; tm <= last.arr; tm += 5) light[lightState(c.sun, tm)] = 1;
+    if (light[1] || light[3]) lg.push([col['--dusk'], '暮光／曙光']);
+    if (light[2]) lg.push([col['--night'], '夜間']);
+    var lx = X, lf = '400 11px ' + fu;
+    y += 16;
+    lg.forEach(function (it) {
+      var w = 14 + tw(it[1], lf) + 12;
+      if (lx + w > X + CW) { lx = X; y += 17; }
+      var px = lx, py = y;
+      ops.push(function (g) { g.fillStyle = it[0]; rr(g, px, py - 9, 10, 10, 2); g.fill(); g.strokeStyle = col['--line']; g.lineWidth = 0.6; g.stroke(); });
+      text(it[1], lx + 14, y, lf, col['--ink2']);
+      lx += w;
+    });
+    // timetable
+    y += 14;
+    var line0 = y; ops.push(function (g) { g.fillStyle = col['--ink']; g.fillRect(X, line0, CW, 1.2); });
+    rows.forEach(function (r, i) {
+      var cp = r.cp, first = i === 0, isLast = i === rows.length - 1, kd = cp.kind, top = y + 10;
+      var cx = X + 11, cy = top + 11;
+      ops.push(function (g) {
+        g.beginPath(); g.arc(cx, cy, 10.5, 0, Math.PI * 2);
+        g.fillStyle = kd === 'hour' ? col['--time'] : (kd === 'km' ? col['--surface'] : col['--ink']); g.fill();
+        if (kd === 'km') { g.strokeStyle = col['--ink2']; g.lineWidth = 1.2; g.stroke(); }
+        g.font = '700 12px ' + fnum; g.fillStyle = kd === 'hour' ? col['--time-ink'] : (kd === 'km' ? col['--ink2'] : col['--surface']);
+        g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(i), cx, cy + 0.5); g.textBaseline = 'alphabetic';
+      });
+      var tLab = first ? '出發' : '抵達', tVal = hm(first ? r.dep : r.arr), tf = '700 19px ' + fnum, lf2 = '400 12px ' + fu;
+      var rw = tw(tVal, tf), right = X + CW;
+      text(tVal, right, top + 17, tf, col['--ink'], 'right');
+      text(tLab, right - rw - 5, top + 17, lf2, col['--ink2'], 'right');
+      var nx = X + 30, avail = right - rw - tw(tLab, lf2) - 14 - nx, ls = c.sun ? lightState(c.sun, first ? r.dep : r.arr) : 0, chips = [];
+      if (ls) chips.push([lightLabel(ls), ls === 2 ? 'crit' : 'warn']);
+      if (!first && dl !== null && r.arr > dl) chips.push(['超過最晚抵達', 'crit']);
+      var chipW = chips.reduce(function (sum, ch) { return sum + tw(ch[0], '600 11px ' + fu) + 18; }, 0), nf2 = '700 15px ' + fu;
+      var nm = fit(cp.name || '', nf2, Math.max(40, avail - chipW));
+      text(nm, nx, top + 16, nf2, col['--ink']);
+      var chx = nx + tw(nm, nf2) + 6;
+      chips.forEach(function (ch) { chx += chip(ch[0], chx, top + 15, ch[1]) + 4; });
+      var meta = km(R(cp.d)) + ' km｜' + nf(C.zAt(c.tr, cp.d)) + ' m' + (first ? '' : '｜移動 ' + dur(r.seg) + (r.rest >= 1 ? '＋途中停留 ' + Math.round(r.rest) + ' 分' : ''));
+      var yy = top + 16;
+      wrap(meta, lf2, right - nx).forEach(function (ln) { yy += 17; text(ln, nx, yy, lf2, col['--ink2']); });
+      if (!first && !isLast && r.stop > 0) { yy += 17; text('停 ' + Math.round(r.stop) + ' 分，' + hm(r.dep) + ' 出發', nx, yy, '600 12px ' + fu, col['--ink']); }
+      y = yy + 10;
+      if (!isLast) { var ly = y; ops.push(function (g) { g.fillStyle = col['--line']; g.fillRect(nx, ly, right - nx, 1); }); }
+    });
+    var lineE = y; ops.push(function (g) { g.fillStyle = col['--ink']; g.fillRect(X, lineE, CW, 1.2); });
+    y += 20; text('步程試算', X, y, '400 11px ' + fu, col['--ink2']);
+    var H = Math.ceil(y + 14), k = Math.min(4.5, Math.sqrt(16e6 / (W * H)));
+    var cv = document.createElement('canvas'); cv.width = Math.round(W * k); cv.height = Math.round(H * k);
+    var g = cv.getContext('2d'); g.scale(k, k);
+    g.fillStyle = col['--surface'] || '#fff'; g.fillRect(0, 0, W, H);
+    ops.forEach(function (op) { g.save(); op(g); g.restore(); });
+    return new Promise(function (ok, no) { cv.toBlob(function (b) { if (b) ok(b); else no(new Error('toBlob')); }, 'image/png'); });
+  }
+  function makePicture() {
+    var cap = picCharts(4.5), fonts = document.fonts && document.fonts.ready ? document.fonts.ready.catch(function () { return null; }) : null;
+    return Promise.all([loadImg(cap.strip.src), loadImg(cap.prof.src), fonts]).then(function (r) { return drawPicture(cap, r[0], r[1]); });
+  }
+  function sharePicture() {
+    var name = picName(), msg = $('copyMsg');
+    if (!LAST) return;
+    msg.textContent = '製作圖片中…';
+    makePicture().then(function (blob) {
+      var file = null;
+      try { file = new File([blob], name, { type: 'image/png' }); } catch (e) { file = null; }
+      if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], title: '步程試算｜' + (T.name || '路線') }).then(function () { msg.textContent = '已分享圖片。'; },
+          function (err) { if (err && err.name === 'AbortError') msg.textContent = ''; else saveBlob(blob, name); });   // cancelled: nothing; not allowed here: save
+        return;
+      }
+      saveBlob(blob, name);
+    }, function () { msg.textContent = '圖片做不出來，請改用「複製全文」。'; });
   }
   function renderCopy(c) {
     var p = (S.date || todayStr()).split('-').map(Number), d = new Date(p[0], p[1] - 1, p[2]), dl = parseHM(S.deadline);
@@ -2865,13 +3000,9 @@ if ($('mainFatigue')) {
     }
 
 
-    $('btnSnap').addEventListener('click', saveSnapshot);   // v41
-    $('btnShare').addEventListener('click', shareSnapshot);
-    try {
-      if (navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.html', { type: 'text/html' })] })) {
-        $('btnShare').hidden = false; $('btnSnap').classList.remove('primary');
-      }
-    } catch (err) { /* no file sharing: download only */ }
+    $('btnSnap').addEventListener('click', saveSnapshot);   // v41: the whole page
+    $('btnPic').addEventListener('click', sharePicture);    // v42: one picture with the charts and the timetable
+    try { if (navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.png', { type: 'image/png' })] })) $('btnPicTxt').textContent = '分享圖片'; } catch (err) { /* save only */ }
     $('btnCopy').addEventListener('click', function () {
       var ta = $('copyText'), msg = $('copyMsg');
       function fallback() { ta.focus(); ta.select(); msg.textContent = '已選取全文，請用系統的複製。'; }
