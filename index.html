@@ -11,7 +11,7 @@
   --bg:#f2f4f1; --surface:#ffffff; --ink:#16201a; --ink2:#4a574f; --muted:#7a877f; --line:#d8ded9; --soft:#eaeeea;
   --accent:#0c6a5d; --accent-ink:#ffffff; --accent-soft:#dcefe9;
   --accent-hover:#09584d; --accent-line:#a3cdc3; --ctl-line:#c2cbc4; --shadow:rgba(22,32,26,.08);
-  --warn:#9a5a00; --warn-bg:#fff0d4; --crit:#a32632; --crit-bg:#fbe2e4;
+  --warn:#9a5a00; --warn-bg:#fff0d4; --crit:#a32632; --crit-bg:#fbe2e4; --shade:#235d93; --shade-bg:#e1edf9;
   --night:rgba(22,32,26,.16); --dusk:rgba(22,32,26,.07); --sun:rgba(255,205,60,.28);
   --b0:#08519d; --b1:#3186e9; --b2:#87bafc; --b3:#d8d7d4; --b4:#fd978f; --b5:#e24947; --b6:#9b0d1a;
   --profile-line:#2f3833; --strip:#5b6a61; --t-root:#7a4b22; --t-mud:#8a8a3a; --t-trail:#c9cfc9; --t-road:#c2a878; --rain:#6b4fbb; --time:#f0a51c; --time-ink:#2a1c00;
@@ -23,7 +23,7 @@
   --bg:#0f1411; --surface:#172019; --ink:#e4ebe6; --ink2:#c8d4cd; --muted:#87958c; --line:#2a352e; --soft:#1e2822;
   --accent:#5cc4b2; --accent-ink:#0b1512; --accent-soft:#18332d;
   --accent-hover:#7fd6c7; --accent-line:#2f6a5f; --ctl-line:#3b4a41; --shadow:rgba(0,0,0,.45);
-  --warn:#f1b24f; --warn-bg:#3a2b0e; --crit:#ff8a93; --crit-bg:#3d161b;
+  --warn:#f1b24f; --warn-bg:#3a2b0e; --crit:#ff8a93; --crit-bg:#3d161b; --shade:#9cc8f0; --shade-bg:#162a3c;
   --night:rgba(0,0,0,.38); --dusk:rgba(0,0,0,.18); --sun:rgba(255,205,60,.16);
   --b0:#3a78c8; --b1:#4f98ee; --b2:#94c3f8; --b3:#545b56; --b4:#f39c93; --b5:#ea5e5f; --b6:#c93545;
   --profile-line:#dfe7e2; --strip:#9fb0a6; --t-root:#c58a52; --t-mud:#b9b65a; --t-trail:#3a443d; --t-road:#a48c5e; --rain:#a58cf0; --time:#fbbf24; --time-ink:#2a1c00; color-scheme:dark;
@@ -32,7 +32,7 @@
   --bg:#0f1411; --surface:#172019; --ink:#e4ebe6; --ink2:#c8d4cd; --muted:#87958c; --line:#2a352e; --soft:#1e2822;
   --accent:#5cc4b2; --accent-ink:#0b1512; --accent-soft:#18332d;
   --accent-hover:#7fd6c7; --accent-line:#2f6a5f; --ctl-line:#3b4a41; --shadow:rgba(0,0,0,.45);
-  --warn:#f1b24f; --warn-bg:#3a2b0e; --crit:#ff8a93; --crit-bg:#3d161b;
+  --warn:#f1b24f; --warn-bg:#3a2b0e; --crit:#ff8a93; --crit-bg:#3d161b; --shade:#9cc8f0; --shade-bg:#162a3c;
   --night:rgba(0,0,0,.38); --dusk:rgba(0,0,0,.18); --sun:rgba(255,205,60,.16);
   --b0:#3a78c8; --b1:#4f98ee; --b2:#94c3f8; --b3:#545b56; --b4:#f39c93; --b5:#ea5e5f; --b6:#c93545;
   --profile-line:#dfe7e2; --strip:#9fb0a6; --t-root:#c58a52; --t-mud:#b9b65a; --t-trail:#3a443d; --t-road:#a48c5e; --rain:#a58cf0; --time:#fbbf24; --time-ink:#2a1c00; color-scheme:dark;
@@ -141,6 +141,7 @@ details>summary{cursor:pointer;color:var(--ink2);font-size:.9rem}
 .chip{display:inline-block;font-size:.72rem;line-height:1.4;padding:0 .45rem;border-radius:999px;font-weight:600;white-space:nowrap}
 .chip.warn{color:var(--warn);background:var(--warn-bg)}
 .chip.crit{color:var(--crit);background:var(--crit-bg)}
+.chip.shade{color:var(--shade);background:var(--shade-bg)}
 .chip.ok{color:var(--accent);background:var(--accent-soft)}
 .scen{font-size:.82rem;color:var(--ink2)}
 .scen b{color:var(--ink)}
@@ -465,7 +466,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
     <div class="svgbox" id="profile"></div>
     <p class="profmsg" id="profMsg" aria-live="polite"></p>
     <div class="legend" id="legend"></div>
-    <p class="hint">點一下剖面：選「加檢查點」就在那裡加一個檢查點，檢查點從起點 0 開始編號；選「切路段」就在那裡把路段切成兩段，新的一段沿用原本的設定；選「刪除」再點檢查點或分界線就刪掉，起點、終點除外，刪錯了按「復原」。<br><br>勾「每公里」就每公里加一個點；勾「每整點」就在預計每個整點走到的位置加點，改了出發時間、速度或停留，這些點會跟著移動；勾「路段分界」就在每個路段分界加一個點，分界移到哪裡，點就跟到哪裡。<br><br>整點剛好落在某個點的停留時間裡（例如午餐），就不另外加點，看那一點的抵達、出發時間。<br><br>整點或分界的點在時間表改了名稱或停留，就固定在那個位置。<br><br>琥珀色的圓是整點的點，和上緣「時刻」同色；空心灰圓是每公里的點，和下緣 km 同色；綠色的圓是路段分界的點，和分界虛線同色；「清除自訂點」會清掉自己加的點、公里點和整點的點。<br><br>綠色虛線是路段分界，左右拖拉下方的把手就能移動。<br><br>點一下把手後，也能用方向鍵微調：每次 20 m，按住 Shift 每次 100 m；按 Delete 刪掉這個分界。<br><br>剖面底部的小方框是路段編號；點剖面下方的地形細條，會跳到那一段的設定。<br><br>上緣琥珀色「時刻」那一排是預計經過的整點，例如 10 代表 10:00 會走到那條琥珀色虛線的位置；下緣灰色是里程（km）。<br><br>光線底色：淡黃是無遮蔽日照，依每個位置和預計經過的時間，太陽高過山稜、照得到；白底是日間但太陽被山擋住；灰底是暮光（日落～暮光結束）或曙光（曙光開始～日出）；深灰是夜間（暮光結束～曙光開始）。地形資料沒下載到時不標淡黃。整夜（暮光結束後到曙光前）都標「夜間」。<br><br>剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，斷斷續續的是跑的路段，下方紫線是雨天路段。</p>
+    <p class="hint">點一下剖面：選「加檢查點」就在那裡加一個檢查點，檢查點從起點 0 開始編號；選「切路段」就在那裡把路段切成兩段，新的一段沿用原本的設定；選「刪除」再點檢查點或分界線就刪掉，起點、終點除外，刪錯了按「復原」。<br><br>勾「每公里」就每公里加一個點；勾「每整點」就在預計每個整點走到的位置加點，改了出發時間、速度或停留，這些點會跟著移動；勾「路段分界」就在每個路段分界加一個點，分界移到哪裡，點就跟到哪裡。<br><br>整點剛好落在某個點的停留時間裡（例如午餐），就不另外加點，看那一點的抵達、出發時間。<br><br>整點或分界的點在時間表改了名稱或停留，就固定在那個位置。<br><br>琥珀色的圓是整點的點，和上緣「時刻」同色；空心灰圓是每公里的點，和下緣 km 同色；綠色的圓是路段分界的點，和分界虛線同色；「清除自訂點」會清掉自己加的點、公里點和整點的點。<br><br>綠色虛線是路段分界，左右拖拉下方的把手就能移動。<br><br>點一下把手後，也能用方向鍵微調：每次 20 m，按住 Shift 每次 100 m；按 Delete 刪掉這個分界。<br><br>剖面底部的小方框是路段編號；點剖面下方的地形細條，會跳到那一段的設定。<br><br>上緣琥珀色「時刻」那一排是預計經過的整點，例如 10 代表 10:00 會走到那條琥珀色虛線的位置；下緣灰色是里程（km）。<br><br>光線底色：淡黃是無地形遮蔽日照，依每個位置和預計經過的時間，太陽高過山稜、照得到；白底是日間但太陽被山擋住，時間表在這樣的點標藍色「地形遮蔽無日照」；灰底是暮光（日落～暮光結束）或曙光（曙光開始～日出）；深灰是夜間（暮光結束～曙光開始）。地形資料沒下載到時不標淡黃。整夜（暮光結束後到曙光前）都標「夜間」。<br><br>剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，斷斷續續的是跑的路段，下方紫線是雨天路段。</p>
   </section>
 
   <section class="card" aria-labelledby="hSec">
@@ -524,7 +525,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
       <li>隊伍速度：每 20 m 的走路時間 ÷ 倍數；比 −5% 陡的下坡用「下坡」倍數，其餘用「上坡與平路」。<br><br>樹根陡坡、泥濘草徑的爬升與下降上限也一起乘上倍數。<br><br>基準 1＝10/6、10/20–21 的八年級學生實測。<br><br>校準時把紀錄每 5 秒取一點，前後各 60 秒的淨位移換算不到每小時 0.6 km 就算停下來，其餘算走路。<br><br>走路的時間依當時的位置分到每 20 m，再和倍數 1 的模型比：倍數＝模型時間 ÷ 實際走路時間。<br><br>10 分鐘以內的停留換算成「途中停留」每小時幾分；更長的（午餐、儀式）只列出來，不算進去。<br><br>跑的路段改用「跑步速度」倍數；校準時跑和走分開算，跑的部分有 5 分鐘以上才算倍數。</li>
       <li>勾「跑」的路段：配速隨坡度的變化用 Kay（2012）分析 91 場上坡、15 場下坡賽事紀錄擬合的曲線（四次式；比 −26% 或 +32% 更陡時用文中的二次式延伸），只取形狀，快慢由「平地跑速」與「跑步速度」倍數決定。<br><br>平地每小時 8 km 時：−10% 下坡約 9.3 km、−20% 約 7.5 km、−30% 約 5.2 km（每小時下降約 1,550 m）；+10% 上坡約 5.3 km、+20% 約 3.4 km（每小時爬升約 680 m）。<br><br>高度、雨天、地形係數同走路；樹根陡坡、泥濘草徑的爬升與下降上限放寬 2.5 倍，是推估、沒有實測。<br><br>陡下坡煞車上限：樹根陡坡、泥濘草徑坡度 −20% 以下，跑速最快每小時 3.8／4.0 km，也不超過同一個人在一般步道同坡度跑速的 0.55／0.60 倍。數值取自勞侖茲健行預測 App 的 vMaxDown、brakePenalty，沒有實測，只當上限，不用它的 4.2 km/h 基底與負重折減；在「跑步速度」倍數之後才套用，一般步道、林道不受限。<br><br>跑的路段不看重裝，負重當輕裝。<br><br>Kay 的資料裡比賽每多 1 小時，配速慢約 16%，這裡沒有算；跑很久的路段，平地跑速填慢一點，或用自己長跑的紀錄校準。</li>
       <li>範例是 10/20 第 1 天實走：09:04 從四季公墓停車處起步（乘車段不列），紅柵欄（舊柵門）停 63 分取裝、入山儀式，途中午餐 25 分，加納富溪停 30 分，終點是巨木登山口後 239 m 的營地，當天 14:45 抵達。<br><br>紅柵欄以前行李上菜車、學生不揹大背包，這段設成林道、不勾重裝；紅柵欄到營地是林道、揹重裝；當天晴天，都不勾雨天。<br><br>範例估 15:10 抵達（隊伍速度 ×1、疲勞啟用），比實際晚 25 分。紅柵欄以前晚 13 分（估 10:20，實際 10:07）：林道輕裝那 63 分鐘實際只停 6 分，模型每小時停 13 分，多算 10 分；疲勞再多 3 分。紅柵欄以後晚 12 分，其中疲勞佔 14 分，不算疲勞這段反而早 2 分。不勾「疲勞啟用」時估 14:53，晚 8 分。<br><br>距離與高度用 GPX 原值（和當天 Garmin 實測高度相比，差距中位數約 3 m，九成在 8 m 內）；巨木登山口到營地取自隨隊家長的 Garmin 軌跡。<br><br>其餘沒有算進去：拍照、天候突變與隊伍狀況。</li>
-      <li>高度用檔案內的數值，每 20 m 取一點；錄製的軌跡（有時間記錄）先做 3 點平滑。<br><br>填了實測海拔的段落，高度在兩個已知點之間按距離線性修正。<br><br>曙光、暮光：太陽在地平線下 6° 的時刻（民用曙暮光）。日出、日落：太陽上緣在平地地平線上的時刻（海平面，含大氣折射）。曙光、日出用起點，日落、暮光用終點的座標，台灣時間（UTC+8）。時間表與剖面的光線標示用這四個時間：曙光開始～日出標「曙光」，日落～暮光結束標「暮光」，暮光結束到曙光之間標「夜間」。<br><br>地形遮蔽日出、地形遮蔽日落：地形遮蔽日出看起點、地形遮蔽日落看終點。下載內政部 20 公尺網格數值地形模型（涵蓋台灣本島與龜山島、綠島、蘭嶼、小琉球；澎湖、金門、馬祖沒有），往太陽方向算 40 km 內山稜的仰角，含地球曲率、大氣折射與所在高度；太陽上緣高過山稜才算日出，落到山稜後就算日落；樹木高度不計（地形模型是地面高度）；整個上午（下午）都被山擋住時標「—」。站得高、遠處又沒有更高的山時，會比平地的日出早、日落晚。<br><br>無遮蔽日照（剖面淡黃底）：沿路每一點用預計經過的時間，往太陽方向算山稜仰角，太陽上緣高過山稜就標淡黃；路線很長時每隔幾點算一次。下載時只送出地圖圖塊的編號，GPX 不會上傳；下載不到（例如離線）時標「無資料」，日出、日落、曙光、暮光照常顯示。<br><br>地形資料：內政部 20 公尺網格數值地形模型資料；圖磚由 OsmHackTW terrain-rgb 於 2023 年轉製。此開放資料依政府資料開放授權條款（Open Government Data License）進行公眾釋出，使用者於遵守本條款各項規定之前提下，得利用之。政府資料開放授權條款：<a href="https://data.gov.tw/license" target="_blank" rel="noopener">https://data.gov.tw/license</a></li>
+      <li>高度用檔案內的數值，每 20 m 取一點；錄製的軌跡（有時間記錄）先做 3 點平滑。<br><br>填了實測海拔的段落，高度在兩個已知點之間按距離線性修正。<br><br>曙光、暮光：太陽在地平線下 6° 的時刻（民用曙暮光）。日出、日落：太陽上緣在平地地平線上的時刻（海平面，含大氣折射）。曙光、日出用起點，日落、暮光用終點的座標，台灣時間（UTC+8）。時間表與剖面的光線標示用這四個時間：曙光開始～日出標「曙光」，日落～暮光結束標「暮光」，暮光結束到曙光之間標「夜間」。<br><br>地形遮蔽日出、地形遮蔽日落：依行程算一整天，出發前在起點，途中照預計時間，抵達後在終點；第一次照到太陽是地形遮蔽日出，最後一次是地形遮蔽日落，括號是當時的位置，和剖面的淡黃底一致。下載內政部 20 公尺網格數值地形模型（涵蓋台灣本島與龜山島、綠島、蘭嶼、小琉球；澎湖、金門、馬祖沒有），往太陽方向算 40 km 內山稜的仰角，含地球曲率、大氣折射與所在高度；太陽上緣高過山稜才算日出，落到山稜後就算日落；樹木高度不計（地形模型是地面高度）；整天都照不到太陽時標「—」。站得高、遠處又沒有更高的山時，會比平地的日出早、日落晚。<br><br>無地形遮蔽日照（剖面淡黃底）：沿路每一點用預計經過的時間，往太陽方向算山稜仰角，太陽上緣高過山稜就標淡黃；路線很長時每隔幾點算一次。下載時只送出地圖圖塊的編號，GPX 不會上傳；下載不到（例如離線）時標「無資料」，日出、日落、曙光、暮光照常顯示。<br><br>地形資料：內政部 20 公尺網格數值地形模型資料；圖磚由 OsmHackTW terrain-rgb 於 2023 年轉製。此開放資料依政府資料開放授權條款（Open Government Data License）進行公眾釋出，使用者於遵守本條款各項規定之前提下，得利用之。政府資料開放授權條款：<a href="https://data.gov.tw/license" target="_blank" rel="noopener">https://data.gov.tw/license</a></li>
     </ul>
   </details>
   <footer class="rights">© 2026 shainyhsu｜步程試算<br>歡迎使用試算；未經作者書面同意，不得重製、改作或散布本網站的程式碼與內容，也不得放進任何商業產品、服務或網站。</footer>
@@ -1924,6 +1925,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     try { sun = C.sunDay(S.date || todayStr(), tr.raw[0].lat, tr.raw[0].lon, TZ); } catch (e) { sun = null; }
     sun = terrainSun(sun, tr);   // v46
     var ctx = { tr: tr, st: st, m: m, mSun: mSun, mRain: mRain, buf: b, rows: rows, sun: sun, startMin: startMin, arrSun: arrSun, arrRain: arrRain };
+    ctx.clocks = tr.x.map(function (d) { return C.clockAtV3(rows, m, b, d); });   // v51
+    ctx.lit = sunBand(ctx, ctx.clocks);
+    groupSun(ctx);
     LAST = ctx;
     renderStatus(); renderSections(); renderSummary(ctx); renderTeam(); renderStrip(ctx); renderProfile(ctx); renderTable(ctx); renderCopy(ctx);
     $('kmTog').checked = hasKm(); $('hrTog').checked = !!S.hourPts; $('cutTog').checked = S.cutPts !== false;   // v33, v50
@@ -2058,12 +2062,14 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     var t = [trow('出發', hm(c.startMin)), trow('全晴／全雨抵達', hm(c.arrSun) + '／' + hm(c.arrRain))];
     if (c.sun) {
       t.push(trow('曙光／日出', hhmmFromHours(c.sun.dawn) + '／' + hhmmFromHours(c.sun.rise)));
-      t.push(trow('地形遮蔽日出／日落', c.sun.terr === 'ok' ? terrTxt(c.sun.tRise, c.sun.blockedAM) + '／' + terrTxt(c.sun.tSet, c.sun.blockedPM) : terrPend(c.sun)));   // v48
+      t.push(trow('地形遮蔽日出', c.sun.terr === 'ok' ? terrAt(c.sun, 'AM') : terrPend(c.sun)));   // v51: the group's first and last direct sun
+      t.push(trow('地形遮蔽日落', c.sun.terr === 'ok' ? terrAt(c.sun, 'PM') : terrPend(c.sun)));
       t.push(trow('日落／暮光', hhmmFromHours(c.sun.set) + '／' + hhmmFromHours(c.sun.dusk)));
       t.push(trow('夜間', hhmmFromHours(c.sun.dusk) + '～' + hhmmFromHours(c.sun.dawn)));
       var ls = lightState(c.sun, last.arr);
       if (ls === 2) t.push(trow('終點時的光線', '<span class="chip crit">' + lightLabel(ls, true) + '</span>'));
       else if (ls === 1 || ls === 3) t.push(trow('終點時的光線', '<span class="chip warn">' + lightLabel(ls, true) + '</span>'));
+      else if (shadeAt(c, last.cp.d, last.arr)) t.push(trow('終點時的光線', '<span class="chip shade">地形遮蔽無日照</span>'));
     }
     var dl = parseHM(S.deadline);
     if (dl !== null) {
@@ -2107,9 +2113,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     function sx(r) { return L + pw * r / D; }
     function sy(zv) { return Tp + ph * (1 - (zv - zlo) / (zhi - zlo)); }
     var o = [];
-    var clocks = tr.x.map(function (d) { return C.clockAtV3(c.rows, c.m, c.buf, d); });
+    var clocks = c.clocks || tr.x.map(function (d) { return C.clockAtV3(c.rows, c.m, c.buf, d); });
     if (c.sun) {
-      var lit = sunBand(c, clocks);   // v49: pale yellow where the sun clears the terrain
+      var lit = c.lit !== undefined ? c.lit : sunBand(c, clocks);   // v49: pale yellow where the sun clears the terrain
       var runStart = null, runState = 0;
       for (var i = 0; i <= tr.x.length; i++) {
         var s = i < tr.x.length ? (lit && lit[i] === 1 ? 4 : lightState(c.sun, clocks[i])) : -1;
@@ -2204,7 +2210,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     var lg = [];
     for (var g = 0; g < 7; g++) lg.push('<span><i class="sw" style="background:var(--b' + g + ')"></i>' + BAND_LABEL[g] + '</span>');
     lg.push('<span><i class="sw" style="background:var(--t-root)"></i>樹根陡坡</span>', '<span><i class="sw" style="background:var(--t-mud)"></i>泥濘草徑</span>', '<span><i class="sw" style="background:var(--t-road)"></i>林道</span>', '<span><i class="sw" style="background:var(--rain)"></i>雨天路段</span>');
-    if (c.sun) lg.push('<span><i class="sw lit" style="background:var(--sun)"></i>無遮蔽日照</span>', '<span><i class="sw lit" style="background:var(--dusk)"></i>暮光／曙光</span>', '<span><i class="sw lit" style="background:var(--night)"></i>夜間</span>');   // v49
+    if (c.sun) lg.push('<span><i class="sw lit" style="background:var(--sun)"></i>無地形遮蔽日照</span>', '<span><i class="sw lit" style="background:var(--dusk)"></i>暮光／曙光</span>', '<span><i class="sw lit" style="background:var(--night)"></i>夜間</span>');   // v49
     if (hasRun()) lg.push('<span><i class="sw dash"></i>跑的路段</span>');
     if (BDS.length) lg.push('<span><i class="sw bdl"></i>路段分界（可拖拉）</span>');
     if (T.cps.some(function (q) { return q.kind === 'cut'; })) lg.push('<span><i class="sw dot" style="background:var(--accent)"></i>路段分界的點</span>');   // v50
@@ -2220,6 +2226,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       var cp = r.cp, zv = C.zAt(c.tr, cp.d), first = i === 0, last = i === c.rows.length - 1, chips = '';
       var ls = lightState(c.sun, first ? r.dep : r.arr);
       if (ls === 2 || ls === 1 || ls === 3) chips += ' ' + lightChip(ls);
+      else if (shadeAt(c, cp.d, first ? r.dep : r.arr)) chips += ' <span class="chip shade">地形遮蔽無日照</span>';   // v51
       if (!first && dl !== null && r.arr > dl) chips += ' <span class="chip crit">超過最晚抵達</span>';
       var meta = km(R(cp.d)) + ' km｜' + nf(zv) + ' m' + (first ? '' : '<br>移動 ' + dur(r.seg) + (r.rest >= 1 ? '＋途中停留 ' + Math.round(r.rest) + ' 分' : ''));
       var transBox = '';   // v23: transition regroups are part of the hourly stop
@@ -2407,13 +2414,16 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       Object.keys(bins).forEach(function (k) { rayPts(pt.lat, pt.lon, +k / 4, bins[k], function (la, lo2, d) { addTile(need, la, lo2, zFor(d)); }); });
       addTile(need, pt.lat, pt.lon, 13);
     }
-    fan(a, fa.rise - 0.75, noonA); fan(b, noonB, fb.set + 0.75);
+    fan(a, fa.rise - 0.75, noonA); fan(a, noonA, fa.set + 0.75); fan(b, fb.rise - 0.75, noonB); fan(b, noonB, fb.set + 0.75);   // v51: both ends, morning and evening
     return loadTiles(need).then(function () {
       function z0(pt) { var d = demAt(pt.lat, pt.lon, 13); return Math.max(d === null ? -1e4 : d, pt.z) + 2; }   // eyes 2 m above the ground (DTM or GPX, the higher)
-      var za = z0(a), zb = z0(b), ha = horizonFn(a.lat, a.lon, za), hb = horizonFn(b.lat, b.lon, zb);
-      var rise = edgeTime(day + (fa.rise - 0.75) * 3600e3, day + noonA * 3600e3, 60e3, function (t) { return sunSeen(t, a.lat, a.lon, za, ha); });
-      var set = edgeTime(day + (fb.set + 0.75) * 3600e3, day + noonB * 3600e3, -60e3, function (t) { return sunSeen(t, b.lat, b.lon, zb, hb); });
-      return { rise: rise === null ? null : (rise - day) / 3600e3, set: set === null ? null : (set - day) / 3600e3, dawn: fa.dawn, dusk: fb.dusk };
+      function hrs(t) { return t === null ? null : (t - day) / 3600e3; }
+      function edges(pt, f) {   // { rise, set }: the first and the last moment of the day the sun clears the terrain here, hours after midnight; null: never
+        var zz = z0(pt), hz = horizonFn(pt.lat, pt.lon, zz), t0 = day + (f.rise - 0.75) * 3600e3, t1 = day + (f.set + 0.75) * 3600e3, seen = function (t) { return sunSeen(t, pt.lat, pt.lon, zz, hz); };
+        return { rise: hrs(edgeTime(t0, t1, 60e3, seen)), set: hrs(edgeTime(t1, t0, -60e3, seen)) };
+      }
+      var ea = edges(a, fa), eb = edges(b, fb);
+      return { riseA: ea.rise, setA: ea.set, riseB: eb.rise, setB: eb.set };
     });
   }
   function withTimeout(pr, ms) { return new Promise(function (ok, no) { var t = setTimeout(function () { no(new Error('timeout')); }, ms); pr.then(function (v) { clearTimeout(t); ok(v); }, function (e) { clearTimeout(t); no(e); }); }); }
@@ -2434,28 +2444,37 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
         .then(function () { if (TSUN === my) render(); });
     }
     out.terr = TSUN.state;
-    if (TSUN.state === 'ok' && TSUN.res) {
+    if (TSUN.state === 'ok' && TSUN.res) {   // the ends for now; groupSun() moves them onto the group's day once the route is in
       var r = TSUN.res;
-      out.blockedAM = r.rise === null; out.blockedPM = r.set === null;
-      out.tRise = r.rise; out.tSet = r.set;
+      out.tRes = r;
+      out.tRise = r.riseA; out.tRiseAt = '起點'; out.tSet = r.setB; out.tSetAt = '終點';
+      out.blockedAM = r.riseA === null; out.blockedPM = r.setB === null;
     }
     return out;
   }
   function terrTxt(h, blocked) { return blocked ? '—' : hhmmFromHours(h); }
+  function terrAt(sun, w) {   // v51: time and where: 06:55（2.4 km）
+    var am = w === 'AM', h = am ? sun.tRise : sun.tSet, at = am ? sun.tRiseAt : sun.tSetAt;
+    return (am ? sun.blockedAM : sun.blockedPM) || h === null || h === undefined ? '—' : hhmmFromHours(h) + (at ? '（' + at + '）' : '');
+  }
   function terrPend(sun, final) { return sun.terr === 'busy' && !final ? '計算中' : '無資料'; }
   function sunLines(sun, final) {   // [morning, evening]: 曙光｜日出｜地形遮蔽日出, 地形遮蔽日落｜日落｜暮光; final: a picture, so no 計算中
     var am = '曙光 ' + hhmmFromHours(sun.dawn) + '｜日出 ' + hhmmFromHours(sun.rise), pm = '日落 ' + hhmmFromHours(sun.set) + '｜暮光 ' + hhmmFromHours(sun.dusk);
     if (sun.terr !== 'ok') return [am + '｜' + pm, '地形遮蔽日出、日落：' + terrPend(sun, final)];
-    return [am + '｜地形遮蔽日出 ' + terrTxt(sun.tRise, sun.blockedAM), '地形遮蔽日落 ' + terrTxt(sun.tSet, sun.blockedPM) + '｜' + pm];
+    return [am + '｜地形遮蔽日出 ' + terrAt(sun, 'AM'), '地形遮蔽日落 ' + terrAt(sun, 'PM') + '｜' + pm];
   }
   function sunNote(sun) {
-    if (sun.terr === 'ok') return '日出看起點、日落看終點，用內政部 20 公尺地形算';
+    if (sun.terr === 'ok') {
+      var r = sun.tRes || {};
+      return '依行程算：出發前在起點，途中照預計時間，抵達後在終點；第一次照到太陽是地形遮蔽日出，最後一次是地形遮蔽日落，括號是當時的位置（內政部 20 公尺地形）。起點本身 ' +
+        (r.riseA === null || r.riseA === undefined ? '整天照不到太陽' : hhmmFromHours(r.riseA) + ' 照到太陽') + '，終點本身 ' + (r.setB === null || r.setB === undefined ? '整天照不到太陽' : hhmmFromHours(r.setB) + ' 照不到太陽');
+    }
     if (sun.terr === 'busy') return '正在下載地形資料';
     if (sun.terr === 'out') return '無資料，起點或終點不在地形資料範圍（台灣本島與龜山島、綠島、蘭嶼、小琉球）';
     return '無資料，抓不到地形資料；連上網路後會自動重算';
   }
   window.addEventListener('online', function () { BAND_FAIL = {}; if (TSUN.state === 'fail') TSUN.at = 0; render(); });
-  // ---------- v49: 無遮蔽日照 along the route: at each point, at the time we pass it, does the sun clear the terrain? ----------
+  // ---------- v49: 無地形遮蔽日照 along the route: at each point, at the time we pass it, does the sun clear the terrain? ----------
   var SUNLIT = {}, SUNLIT_N = 0, BAND_WAIT = false, BAND_FAIL = {};
   function sunlitAt(lat, lon, zt, ms, miss) {   // 1 sun, 0 behind the terrain or below the horizon, null: a tile is not in yet
     var zd = demAt(lat, lon, 13);
@@ -2490,13 +2509,68 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       }
       out[i] = last = v;
     }
-    var keys = Object.keys(miss).filter(function (q) { return !DEM_READY[q] && !BAND_FAIL[q]; });
-    if (keys.length && !BAND_WAIT) {   // fetch what the rays reached, then draw again
-      BAND_WAIT = true;
-      Promise.all(keys.map(function (q) { var a = miss[q]; return demTile(a[0], a[1], a[2]).then(function (t) { if (t) DEM_READY[q] = t; else BAND_FAIL[q] = 1; }); }))
-        .then(function () { BAND_WAIT = false; render(); });
-    }
+    bandFetch(miss);
+    out.k = k;
     return out;
+  }
+  function bandFetch(miss) {   // fetch what the rays reached, then draw again
+    var keys = Object.keys(miss).filter(function (q) { return !DEM_READY[q] && !BAND_FAIL[q]; });
+    if (!keys.length || BAND_WAIT) return;
+    BAND_WAIT = true;
+    Promise.all(keys.map(function (q) { var a = miss[q]; return demTile(a[0], a[1], a[2]).then(function (t) { if (t) DEM_READY[q] = t; else BAND_FAIL[q] = 1; }); }))
+      .then(function () { BAND_WAIT = false; render(); });
+  }
+  function dayMs() { var p = (S.date || todayStr()).split('-').map(Number); return Date.UTC(p[0], p[1] - 1, p[2]) - TZ * 3600e3; }
+  function litAt(c, d, minute) {   // v51: sun at this point of the route at this clock minute? 1 / 0 / null
+    if (!c.sun || c.sun.terr !== 'ok') return null;
+    var tr = c.tr, p = ptAt(tr, d), mi = Math.round(minute), ds = S.date || todayStr();
+    var key = ds + '|' + p.lat.toFixed(5) + ',' + p.lon.toFixed(5) + '|' + mi, v = SUNLIT[key];
+    if (v === undefined) {
+      var miss = {};
+      v = sunlitAt(p.lat, p.lon, C.zAt(tr, d), dayMs() + mi * 60e3, miss);
+      if (v !== null) { if (++SUNLIT_N > 30000) { SUNLIT = {}; SUNLIT_N = 0; } SUNLIT[key] = v; } else bandFetch(miss);
+    }
+    return v;
+  }
+  function shadeAt(c, d, minute) {   // v51: 1 = daylight, but the sun is behind the terrain here (地形遮蔽無日照)
+    if (!c.sun || c.sun.terr !== 'ok' || lightState(c.sun, minute) !== 0) return 0;
+    var v = litAt(c, d, minute);
+    return v === 0 ? 1 : 0;
+  }
+  function litEdge(c, e0, e1) {   // where the band changes between samples e0 and e1: the first moment of the new state { t: minutes, d: GPX m }
+    var tr = c.tr, cl = c.clocks, va = c.lit[e0], day = dayMs(), da = tr.x[e0], db = tr.x[e1], ta = cl[e0], tb = cl[e1];
+    for (var it = 0; it < 7; it++) {
+      var dm = (da + db) / 2, tm = ta + (tb - ta) * (dm - da) / ((db - da) || 1), pt = ptAt(tr, dm), v = sunlitAt(pt.lat, pt.lon, C.zAt(tr, dm), day + tm * 60e3, {});
+      if (v === null) break;
+      if (v === va) { da = dm; ta = tm; } else { db = dm; tb = tm; }
+    }
+    return { t: tb, d: db };
+  }
+  function groupSun(c) {   // v51: the group's first and last direct sun of the day: at the start until departure, on the route as planned, at the end after arrival
+    var s = c.sun;
+    if (!s || s.terr !== 'ok' || !s.tRes) return;
+    var r = s.tRes, lit = c.lit, n = lit ? lit.length : 0, D = c.startMin, A = c.rows[c.rows.length - 1].arr, k = lit && lit.k ? lit.k : 1;
+    if (!n || lit.some(function (v) { return v === null; })) return;   // the route is not in yet: the ends for now
+    function at(d) { return km(R(d)) + ' km'; }
+    var rise = null, riseAt = '', set = null, setAt = '';
+    if (lit[0] === 1) { rise = r.riseA !== null ? Math.min(r.riseA, D / 60) : D / 60; riseAt = '起點'; }   // already in the sun at departure
+    else if (r.riseA !== null && r.riseA * 60 <= D) { rise = r.riseA; riseAt = '起點'; }
+    else {
+      var i1 = -1;
+      for (var i = 0; i < n; i++) if (lit[i] === 1) { i1 = i; break; }
+      if (i1 > 0) { var e = litEdge(c, i1 === n - 1 && (n - 1) % k ? Math.floor((n - 1) / k) * k : i1 - k, i1); rise = e.t / 60; riseAt = at(e.d); }
+      else if (r.riseB !== null && r.riseB * 60 >= A) { rise = r.riseB; riseAt = '終點'; }
+    }
+    if (lit[n - 1] === 1) { set = r.setB !== null ? Math.max(r.setB, A / 60) : A / 60; setAt = '終點'; }   // still in the sun on arrival
+    else if (r.setB !== null && r.setB * 60 >= A) { set = r.setB; setAt = '終點'; }
+    else {
+      var i2 = -1;
+      for (var j = n - 1; j >= 0; j--) if (lit[j] === 1) { i2 = j; break; }
+      if (i2 >= 0) { var e0 = Math.floor(i2 / k) * k, e2 = litEdge(c, e0, Math.min(e0 + k, n - 1)); set = e2.t / 60; setAt = at(e2.d); }
+      else if (r.setA !== null && r.setA * 60 <= D) { set = r.setA; setAt = '起點'; }
+    }
+    s.tRise = rise; s.tRiseAt = riseAt; s.blockedAM = rise === null;
+    s.tSet = set; s.tSetAt = setAt; s.blockedPM = set === null;
   }
   function waitTerrain(ms) { return TSUN.state === 'busy' && TSUN.promise ? withTimeout(TSUN.promise, ms).catch(function () { return null; }) : Promise.resolve(null); }
 
@@ -2525,7 +2599,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     try {
       renderStrip(LAST); renderProfile(LAST);
       var cs = getComputedStyle(root), col = {};
-      ['--surface', '--ink', '--ink2', '--line', '--time', '--time-ink', '--accent', '--accent-ink', '--night', '--dusk', '--sun', '--warn', '--warn-bg', '--crit', '--crit-bg', '--rain',
+      ['--surface', '--ink', '--ink2', '--line', '--time', '--time-ink', '--accent', '--accent-ink', '--night', '--dusk', '--sun', '--warn', '--warn-bg', '--crit', '--crit-bg', '--shade', '--shade-bg', '--rain',
        '--t-root', '--t-mud', '--t-road', '--t-trail', '--font-ui', '--font-num', '--b0', '--b1', '--b2', '--b3', '--b4', '--b5', '--b6'].forEach(function (v) { col[v] = cs.getPropertyValue(v).trim(); });
       out = { strip: svgImage($('strip').querySelector('svg'), k), prof: svgImage($('profile').querySelector('svg'), k), col: col };
     } finally {
@@ -2544,7 +2618,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     function wrap(t, f, w) { var out = [], line = ''; Array.from(t).forEach(function (ch) { if (line && tw(line + ch, f) > w) { out.push(line); line = ch; } else line += ch; }); if (line) out.push(line); return out; }
     function text(t, x, yy, f, color, align) { ops.push(function (g) { g.font = f; g.fillStyle = color; g.textAlign = align || 'left'; g.textBaseline = 'alphabetic'; g.fillText(t, x, yy); }); }
     function chip(t, x, yy, kind) {   // rounded tag, returns its width
-      var f = '600 11px ' + fu, w = tw(t, f) + 12, fg = col[kind === 'crit' ? '--crit' : '--warn'], bg = col[kind === 'crit' ? '--crit-bg' : '--warn-bg'];
+      var f = '600 11px ' + fu, w = tw(t, f) + 12, fg = col[kind === 'crit' ? '--crit' : kind === 'shade' ? '--shade' : '--warn'], bg = col[kind === 'crit' ? '--crit-bg' : kind === 'shade' ? '--shade-bg' : '--warn-bg'];
       ops.push(function (g) { g.fillStyle = bg; rr(g, x, yy - 12, w, 16, 8); g.fill(); g.font = f; g.fillStyle = fg; g.textAlign = 'left'; g.fillText(t, x + 6, yy); });
       return w;
     }
@@ -2569,7 +2643,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     if (Object.keys(terr).length > 1 || !terr.trail) ['trail', 'root', 'mud', 'road'].forEach(function (k) { if (terr[k]) lg.push([col[TERR_COLOR[k]], PP.terr[k].name]); });
     if (rain) lg.push([col['--rain'], '雨天']);
     if (c.sun) {   // v49: the light bands always listed
-      if (c.sun.terr === 'ok') lg.push([col['--sun'], '無遮蔽日照']);
+      if (c.sun.terr === 'ok') lg.push([col['--sun'], '無地形遮蔽日照']);
       lg.push([col['--dusk'], '暮光／曙光'], [col['--night'], '夜間']);
     }
     var lx = X, lf = '400 11px ' + fu;
@@ -2601,6 +2675,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       text(tLab, right - rw - 5, top + 17, lf2, col['--ink2'], 'right');
       var nx = X + 30, avail = right - rw - tw(tLab, lf2) - 14 - nx, ls = c.sun ? lightState(c.sun, first ? r.dep : r.arr) : 0, chips = [];
       if (ls) chips.push([lightLabel(ls), ls === 2 ? 'crit' : 'warn']);
+      else if (shadeAt(c, cp.d, first ? r.dep : r.arr)) chips.push(['地形遮蔽無日照', 'shade']);
       if (!first && dl !== null && r.arr > dl) chips.push(['超過最晚抵達', 'crit']);
       var chipW = chips.reduce(function (sum, ch) { return sum + tw(ch[0], '600 11px ' + fu) + 18; }, 0), nf2 = '700 15px ' + fu;
       var nm = fit(cp.name || '', nf2, Math.max(40, avail - chipW));
@@ -2697,6 +2772,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       var zv = C.zAt(c.tr, r.cp.d), flag = '';
       var ls = lightState(c.sun, i === 0 ? r.dep : r.arr);
       if (ls === 2 || ls === 1 || ls === 3) flag += '（' + lightLabel(ls) + '）';
+      else if (shadeAt(c, r.cp.d, i === 0 ? r.dep : r.arr)) flag += '（地形遮蔽無日照）';
       if (i > 0 && dl !== null && r.arr > dl) flag += '（超過最晚抵達）';
       var tt = i === 0 ? '出發 ' + hm(r.dep) : '抵達 ' + hm(r.arr) + (r.stop > 0 && i < c.rows.length - 1 ? '，停 ' + Math.round(r.stop) + ' 分' : '');
       L.push('・' + i + ' ' + r.cp.name + '　' + km(R(r.cp.d)) + ' km　' + nf(zv) + ' m　' + tt + flag);
