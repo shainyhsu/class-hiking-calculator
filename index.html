@@ -2731,7 +2731,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       if (PMODE === 'del') return;   // v33: taps delete, no drag
       var el = e.target.closest ? e.target.closest('.bd') : null; if (!el) return;
       var k = +el.getAttribute('data-bd'), bd = BDS[k], pg = pgeom(); if (!bd || !pg) return;
-      DRAG = { k: k, bd: bd, el: el, x0: e.clientX, moved: false, d: bd.d, id: e.pointerId };
+      DRAG = { k: k, bd: bd, el: el, x0: e.clientX, y0: e.clientY, touch: e.pointerType !== 'mouse', moved: false, d: bd.d, id: e.pointerId };
       try { el.setPointerCapture(e.pointerId); } catch (err) { /* old browsers */ }
       try { el.focus({ preventScroll: true }); } catch (err) { el.focus(); }
       e.preventDefault();
@@ -2740,7 +2740,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       var pg;
       if (DRAG) {
         if (e.pointerId !== DRAG.id) return;
-        if (!DRAG.moved && Math.abs(e.clientX - DRAG.x0) < 4) return;
+        if (!DRAG.moved && Math.abs(e.clientX - DRAG.x0) < (DRAG.touch ? 8 : 4)) return;
         pg = pgeom(); if (!pg) return;
         if (!DRAG.moved) { DRAG.moved = true; DRAG.el.classList.add('dragging'); }
         var ex = evX(pg, e.clientX), sc = snapCp(pg, ex);
@@ -2766,11 +2766,26 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       cg.setAttribute('x1', gx.toFixed(1)); cg.setAttribute('x2', gx.toFixed(1)); cg.setAttribute('visibility', 'visible');
       showTip(pg, gx, '切在' + (sc ? '「' + sc.name + '」' : ' GPX ' + ((xTrack(pg, x) + rng0()) / 1000).toFixed(2) + ' km'));
     });
+    function tapBd(dg) {   // v44: a tap (no drag) on a boundary handle; on phones no click follows it
+      var pg = pgeom(); if (!pg || (PMODE !== 'cp' && PMODE !== 'split')) return;
+      if (evY(pg, dg.y0) >= pg.g.ty - 10) return;   // the knob: a tap only selects it
+      SUPPRESS = true; setTimeout(function () { SUPPRESS = false; }, 400);   // the click a mouse sends next is this same tap
+      var x = evX(pg, dg.x0), onBd = Math.abs(x - trackX(pg, dg.bd.d - rng0())) <= 6;
+      if (PMODE === 'split') {
+        if (onBd) { say('profMsg', '這裡已經是路段分界。'); return; }
+        var sc = snapCp(pg, x); splitAt((sc ? sc.d : xTrack(pg, x)) + rng0(), 'profMsg', sc ? sc.name : ''); return;
+      }
+      var d = onBd ? dg.bd.d - rng0() : Math.round(xTrack(pg, x) / C.STEP) * C.STEP;
+      d = Math.max(0, Math.min(d, T.track.total));
+      addCp({ d: d, name: km(R(d)) + ' km', kind: 'user', stop: 0, trans: false });
+      render();
+      say('profMsg', onBd ? '已在路段分界加檢查點（GPX ' + ((d + rng0()) / 1000).toFixed(2) + ' km）。' : '');
+    }
     function endDrag(e) {
       if (!DRAG || (e && e.pointerId !== DRAG.id)) return;
       var dg = DRAG; DRAG = null;
       hideTip();
-      if (!dg.moved) return;
+      if (!dg.moved) { tapBd(dg); return; }
       SUPPRESS = true; setTimeout(function () { SUPPRESS = false; }, 400);
       if (Math.abs(dg.d - dg.bd.d) >= 0.5) {
         moveBd(dg.bd, dg.d); refreshSecs(); render();
