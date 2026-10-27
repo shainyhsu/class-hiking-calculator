@@ -468,7 +468,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
 
   <section class="card" aria-labelledby="hSec">
     <h2 id="hSec">路段與地形</h2>
-    <p class="lead">地形後面的數字是該段的平均水平速度（km/h）：坡度、海拔、隊伍速度、疲勞（接續前面的路段）都已算進去，只算移動、不含停留；點一下就換地形。各段時間加起來等於時間表的移動時間。<br><br>勾「重裝」＝揹 13 kg 大背包，不勾＝輕裝。<br><br>勾「雨天」＝下雨或起霧、路濕，不勾＝晴天。<br><br>勾「跑」＝這段用跑的（輕裝），用跑步的速度與「跑步速度」倍數。<br><br>分界直接在上面的高度剖面拖拉；要多切一段，在剖面選「切路段」再點要切的位置。</p>
+    <p class="lead">地形後面的數字是該段的平均水平速度（km/h）：坡度、海拔、隊伍速度（跑的路段用跑步速度）、疲勞（接續前面的路段）都已算進去，只算移動、不含停留；點一下就換地形。各段時間加起來等於時間表的移動時間。<br><br>勾「重裝」＝揹 13 kg 大背包，不勾＝輕裝。<br><br>勾「雨天」＝下雨或起霧、路濕，不勾＝晴天。<br><br>勾「跑」＝這段用跑的，速度改用跑步算：平地跑速預設每小時 8 km（在「公式參數」改），約 −9% 的下坡最快，更陡或上坡都會變慢；地形、雨天、海拔跟走路一樣打折，最後乘「設定」裡的「跑步速度」倍數（有路段勾「跑」才會出現）。跑速不看隊伍速度和背包重量，勾了會自動取消「重裝」。<br><br>分界直接在上面的高度剖面拖拉；要多切一段，在剖面選「切路段」再點要切的位置。</p>
     <div class="seclist" id="secBody"></div>
     <button class="btn add" id="btnAddSec" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10"/></svg>新增路段</button>
     <p class="profmsg" id="secMsg" aria-live="polite"></p>
