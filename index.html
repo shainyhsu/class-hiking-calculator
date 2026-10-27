@@ -12,7 +12,7 @@
   --accent:#0c6a5d; --accent-ink:#ffffff; --accent-soft:#dcefe9;
   --accent-hover:#09584d; --accent-line:#a3cdc3; --ctl-line:#c2cbc4; --shadow:rgba(22,32,26,.08);
   --warn:#9a5a00; --warn-bg:#fff0d4; --crit:#a32632; --crit-bg:#fbe2e4;
-  --night:rgba(22,32,26,.16); --dusk:rgba(22,32,26,.07);
+  --night:rgba(22,32,26,.16); --dusk:rgba(22,32,26,.07); --sun:rgba(255,205,60,.28);
   --b0:#08519d; --b1:#3186e9; --b2:#87bafc; --b3:#d8d7d4; --b4:#fd978f; --b5:#e24947; --b6:#9b0d1a;
   --profile-line:#2f3833; --strip:#5b6a61; --t-root:#7a4b22; --t-mud:#8a8a3a; --t-trail:#c9cfc9; --t-road:#c2a878; --rain:#6b4fbb; --time:#f0a51c; --time-ink:#2a1c00;
   --font-ui:"PingFang TC","Noto Sans TC","Microsoft JhengHei","Heiti TC",system-ui,sans-serif;
@@ -24,7 +24,7 @@
   --accent:#5cc4b2; --accent-ink:#0b1512; --accent-soft:#18332d;
   --accent-hover:#7fd6c7; --accent-line:#2f6a5f; --ctl-line:#3b4a41; --shadow:rgba(0,0,0,.45);
   --warn:#f1b24f; --warn-bg:#3a2b0e; --crit:#ff8a93; --crit-bg:#3d161b;
-  --night:rgba(0,0,0,.38); --dusk:rgba(0,0,0,.18);
+  --night:rgba(0,0,0,.38); --dusk:rgba(0,0,0,.18); --sun:rgba(255,205,60,.16);
   --b0:#3a78c8; --b1:#4f98ee; --b2:#94c3f8; --b3:#545b56; --b4:#f39c93; --b5:#ea5e5f; --b6:#c93545;
   --profile-line:#dfe7e2; --strip:#9fb0a6; --t-root:#c58a52; --t-mud:#b9b65a; --t-trail:#3a443d; --t-road:#a48c5e; --rain:#a58cf0; --time:#fbbf24; --time-ink:#2a1c00; color-scheme:dark;
 }}
@@ -33,7 +33,7 @@
   --accent:#5cc4b2; --accent-ink:#0b1512; --accent-soft:#18332d;
   --accent-hover:#7fd6c7; --accent-line:#2f6a5f; --ctl-line:#3b4a41; --shadow:rgba(0,0,0,.45);
   --warn:#f1b24f; --warn-bg:#3a2b0e; --crit:#ff8a93; --crit-bg:#3d161b;
-  --night:rgba(0,0,0,.38); --dusk:rgba(0,0,0,.18);
+  --night:rgba(0,0,0,.38); --dusk:rgba(0,0,0,.18); --sun:rgba(255,205,60,.16);
   --b0:#3a78c8; --b1:#4f98ee; --b2:#94c3f8; --b3:#545b56; --b4:#f39c93; --b5:#ea5e5f; --b6:#c93545;
   --profile-line:#dfe7e2; --strip:#9fb0a6; --t-root:#c58a52; --t-mud:#b9b65a; --t-trail:#3a443d; --t-road:#a48c5e; --rain:#a58cf0; --time:#fbbf24; --time-ink:#2a1c00; color-scheme:dark;
 }
@@ -308,6 +308,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
 .calbanner .row{gap:6px}
 .sw.dash{background:repeating-linear-gradient(90deg,var(--ink2) 0 4px,transparent 4px 7px)}
 .sw.bdl{width:4px;background:var(--accent)}
+.sw.lit{box-shadow:inset 0 0 0 1px var(--line)}
 .calkg input{width:4.6rem}
 </style>
 
@@ -458,12 +459,13 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
       <span class="pt-k">自動加點</span>
       <label class="hv" for="kmTog"><input type="checkbox" id="kmTog">每公里</label>
       <label class="hv" for="hrTog"><input type="checkbox" id="hrTog">每整點</label>
+      <label class="hv" for="cutTog"><input type="checkbox" id="cutTog">路段分界</label>
       <button class="btn ghost sm" id="btnClear" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6.25 13.25h7"/><path d="M3.2 9.3 8.7 3.8a1.5 1.5 0 0 1 2.1 0l1.4 1.4a1.5 1.5 0 0 1 0 2.1L7.1 12.4a1.8 1.8 0 0 1-1.3.55H4.6a1 1 0 0 1-.7-.3l-.7-.7a1.4 1.4 0 0 1 0-1.95z"/></svg>清除自訂點</button>
     </div>
     <div class="svgbox" id="profile"></div>
     <p class="profmsg" id="profMsg" aria-live="polite"></p>
     <div class="legend" id="legend"></div>
-    <p class="hint">點一下剖面：選「加檢查點」就在那裡加一個檢查點，檢查點從起點 0 開始編號；選「切路段」就在那裡把路段切成兩段，新的一段沿用原本的設定；選「刪除」再點檢查點或分界線就刪掉，起點、終點除外，刪錯了按「復原」。<br><br>勾「每公里」就每公里加一個點；勾「每整點」就在預計每個整點走到的位置加點，改了出發時間、速度或停留，這些點會跟著移動。<br><br>整點剛好落在某個點的停留時間裡（例如午餐），就不另外加點，看那一點的抵達、出發時間。<br><br>整點的點在時間表改了名稱或停留，就固定在那個位置。<br><br>琥珀色的圓是整點的點，和上緣「時刻」同色；空心灰圓是每公里的點，和下緣 km 同色；「清除自訂點」會清掉自己加的點、公里點和整點的點。<br><br>綠色虛線是路段分界，左右拖拉下方的把手就能移動。<br><br>點一下把手後，也能用方向鍵微調：每次 20 m，按住 Shift 每次 100 m；按 Delete 刪掉這個分界。<br><br>剖面底部的小方框是路段編號；點剖面下方的地形細條，會跳到那一段的設定。<br><br>上緣琥珀色「時刻」那一排是預計經過的整點，例如 10 代表 10:00 會走到那條琥珀色虛線的位置；下緣灰色是里程（km）。<br><br>光線底色依當下時刻：日間無底；灰底是暮光（日落～民用暮光結束）或曙光（民用曙光開始～日出）；深灰是夜間（暮光結束～曙光開始）。整夜（暮光結束後到曙光前）都標「夜間」。<br><br>剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，斷斷續續的是跑的路段，下方紫線是雨天路段。</p>
+    <p class="hint">點一下剖面：選「加檢查點」就在那裡加一個檢查點，檢查點從起點 0 開始編號；選「切路段」就在那裡把路段切成兩段，新的一段沿用原本的設定；選「刪除」再點檢查點或分界線就刪掉，起點、終點除外，刪錯了按「復原」。<br><br>勾「每公里」就每公里加一個點；勾「每整點」就在預計每個整點走到的位置加點，改了出發時間、速度或停留，這些點會跟著移動；勾「路段分界」就在每個路段分界加一個點，分界移到哪裡，點就跟到哪裡。<br><br>整點剛好落在某個點的停留時間裡（例如午餐），就不另外加點，看那一點的抵達、出發時間。<br><br>整點或分界的點在時間表改了名稱或停留，就固定在那個位置。<br><br>琥珀色的圓是整點的點，和上緣「時刻」同色；空心灰圓是每公里的點，和下緣 km 同色；綠色的圓是路段分界的點，和分界虛線同色；「清除自訂點」會清掉自己加的點、公里點和整點的點。<br><br>綠色虛線是路段分界，左右拖拉下方的把手就能移動。<br><br>點一下把手後，也能用方向鍵微調：每次 20 m，按住 Shift 每次 100 m；按 Delete 刪掉這個分界。<br><br>剖面底部的小方框是路段編號；點剖面下方的地形細條，會跳到那一段的設定。<br><br>上緣琥珀色「時刻」那一排是預計經過的整點，例如 10 代表 10:00 會走到那條琥珀色虛線的位置；下緣灰色是里程（km）。<br><br>光線底色：淡黃是無遮蔽日照，依每個位置和預計經過的時間，太陽高過山稜、照得到；白底是日間但太陽被山擋住；灰底是暮光（日落～暮光結束）或曙光（曙光開始～日出）；深灰是夜間（暮光結束～曙光開始）。地形資料沒下載到時不標淡黃。整夜（暮光結束後到曙光前）都標「夜間」。<br><br>剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，斷斷續續的是跑的路段，下方紫線是雨天路段。</p>
   </section>
 
   <section class="card" aria-labelledby="hSec">
@@ -499,10 +501,11 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
     <h2 id="hCopy">分享</h2>
     <div class="tools">
       <button class="btn primary" id="btnPic" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.25" y="3" width="11.5" height="10" rx="1.5"/><path d="M2.75 11.25 6 8l2.5 2.5 1.75-1.75 3 3"/><circle cx="10.5" cy="5.9" r="1"/></svg><span id="btnPicTxt">下載圖片</span></button>
+      <button class="btn" id="btnGpx" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 12.5c1.6-.4 2.2-2.6 4.3-3.2 2.4-.7 2.8-3.4 4.7-5.3"/><circle cx="3.25" cy="12.6" r="1.25"/><circle cx="12.75" cy="3.6" r="1.25"/></svg><span id="btnGpxTxt">下載 GPX</span></button>
       <button class="btn" id="btnCopy" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.25" y="5.25" width="8.25" height="8.25" rx="1.5"/><path d="M10.75 5.25V3.75a1.25 1.25 0 0 0-1.25-1.25h-6A1.25 1.25 0 0 0 2.25 3.75v6A1.25 1.25 0 0 0 3.5 11h1.75"/></svg>複製全文</button>
       <p class="hint" id="copyMsg" aria-live="polite"></p>
     </div>
-    <p class="hint">圖片只有高度剖面和時間表，可以直接用 LINE 傳。</p>
+    <p class="hint">圖片只有高度剖面和時間表，可以直接用 LINE 傳。<br>GPX 是這條航跡，加上時間表的每個點當航點（名稱前面是點的編號，說明寫預計時間），可以匯入登山 App。</p>
     <textarea class="copybox" id="copyText" readonly aria-label="純文字時間表"></textarea>
   </section>
 
@@ -521,7 +524,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
       <li>隊伍速度：每 20 m 的走路時間 ÷ 倍數；比 −5% 陡的下坡用「下坡」倍數，其餘用「上坡與平路」。<br><br>樹根陡坡、泥濘草徑的爬升與下降上限也一起乘上倍數。<br><br>基準 1＝10/6、10/20–21 的八年級學生實測。<br><br>校準時把紀錄每 5 秒取一點，前後各 60 秒的淨位移換算不到每小時 0.6 km 就算停下來，其餘算走路。<br><br>走路的時間依當時的位置分到每 20 m，再和倍數 1 的模型比：倍數＝模型時間 ÷ 實際走路時間。<br><br>10 分鐘以內的停留換算成「途中停留」每小時幾分；更長的（午餐、儀式）只列出來，不算進去。<br><br>跑的路段改用「跑步速度」倍數；校準時跑和走分開算，跑的部分有 5 分鐘以上才算倍數。</li>
       <li>勾「跑」的路段：配速隨坡度的變化用 Kay（2012）分析 91 場上坡、15 場下坡賽事紀錄擬合的曲線（四次式；比 −26% 或 +32% 更陡時用文中的二次式延伸），只取形狀，快慢由「平地跑速」與「跑步速度」倍數決定。<br><br>平地每小時 8 km 時：−10% 下坡約 9.3 km、−20% 約 7.5 km、−30% 約 5.2 km（每小時下降約 1,550 m）；+10% 上坡約 5.3 km、+20% 約 3.4 km（每小時爬升約 680 m）。<br><br>高度、雨天、地形係數同走路；樹根陡坡、泥濘草徑的爬升與下降上限放寬 2.5 倍，是推估、沒有實測。<br><br>陡下坡煞車上限：樹根陡坡、泥濘草徑坡度 −20% 以下，跑速最快每小時 3.8／4.0 km，也不超過同一個人在一般步道同坡度跑速的 0.55／0.60 倍。數值取自勞侖茲健行預測 App 的 vMaxDown、brakePenalty，沒有實測，只當上限，不用它的 4.2 km/h 基底與負重折減；在「跑步速度」倍數之後才套用，一般步道、林道不受限。<br><br>跑的路段不看重裝，負重當輕裝。<br><br>Kay 的資料裡比賽每多 1 小時，配速慢約 16%，這裡沒有算；跑很久的路段，平地跑速填慢一點，或用自己長跑的紀錄校準。</li>
       <li>範例是 10/20 第 1 天實走：09:04 從四季公墓停車處起步（乘車段不列），紅柵欄（舊柵門）停 63 分取裝、入山儀式，途中午餐 25 分，加納富溪停 30 分，終點是巨木登山口後 239 m 的營地，當天 14:45 抵達。<br><br>紅柵欄以前行李上菜車、學生不揹大背包，這段設成林道、不勾重裝；紅柵欄到營地是林道、揹重裝；當天晴天，都不勾雨天。<br><br>範例估 15:10 抵達（隊伍速度 ×1、疲勞啟用），比實際晚 25 分。紅柵欄以前晚 13 分（估 10:20，實際 10:07）：林道輕裝那 63 分鐘實際只停 6 分，模型每小時停 13 分，多算 10 分；疲勞再多 3 分。紅柵欄以後晚 12 分，其中疲勞佔 14 分，不算疲勞這段反而早 2 分。不勾「疲勞啟用」時估 14:53，晚 8 分。<br><br>距離與高度用 GPX 原值（和當天 Garmin 實測高度相比，差距中位數約 3 m，九成在 8 m 內）；巨木登山口到營地取自隨隊家長的 Garmin 軌跡。<br><br>其餘沒有算進去：拍照、天候突變與隊伍狀況。</li>
-      <li>高度用檔案內的數值，每 20 m 取一點；錄製的軌跡（有時間記錄）先做 3 點平滑。<br><br>填了實測海拔的段落，高度在兩個已知點之間按距離線性修正。<br><br>日出、日落、民用曙光與暮光以起點座標、海平面、台灣時間（UTC+8）計算；天黑（暮光結束）至曙光之間標「夜間」。</li>
+      <li>高度用檔案內的數值，每 20 m 取一點；錄製的軌跡（有時間記錄）先做 3 點平滑。<br><br>填了實測海拔的段落，高度在兩個已知點之間按距離線性修正。<br><br>曙光、暮光：太陽在地平線下 6° 的時刻（民用曙暮光）。日出、日落：太陽上緣在平地地平線上的時刻（海平面，含大氣折射）。曙光、日出用起點，日落、暮光用終點的座標，台灣時間（UTC+8）。時間表與剖面的光線標示用這四個時間：曙光開始～日出標「曙光」，日落～暮光結束標「暮光」，暮光結束到曙光之間標「夜間」。<br><br>地形遮蔽日出、地形遮蔽日落：地形遮蔽日出看起點、地形遮蔽日落看終點。下載內政部 20 公尺網格數值地形模型（涵蓋台灣本島與龜山島、綠島、蘭嶼、小琉球；澎湖、金門、馬祖沒有），往太陽方向算 40 km 內山稜的仰角，含地球曲率、大氣折射與所在高度；太陽上緣高過山稜才算日出，落到山稜後就算日落；樹木高度不計（地形模型是地面高度）；整個上午（下午）都被山擋住時標「—」。站得高、遠處又沒有更高的山時，會比平地的日出早、日落晚。<br><br>無遮蔽日照（剖面淡黃底）：沿路每一點用預計經過的時間，往太陽方向算山稜仰角，太陽上緣高過山稜就標淡黃；路線很長時每隔幾點算一次。下載時只送出地圖圖塊的編號，GPX 不會上傳；下載不到（例如離線）時標「無資料」，日出、日落、曙光、暮光照常顯示。<br><br>地形資料：內政部 20 公尺網格數值地形模型資料；圖磚由 OsmHackTW terrain-rgb 於 2023 年轉製。此開放資料依政府資料開放授權條款（Open Government Data License）進行公眾釋出，使用者於遵守本條款各項規定之前提下，得利用之。政府資料開放授權條款：<a href="https://data.gov.tw/license" target="_blank" rel="noopener">https://data.gov.tw/license</a></li>
     </ul>
   </details>
   <footer class="rights">© 2026 shainyhsu｜步程試算<br>歡迎使用試算；未經作者書面同意，不得重製、改作或散布本網站的程式碼與內容，也不得放進任何商業產品、服務或網站。</footer>
@@ -1417,13 +1420,13 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   var SAMPLE_REV = 2;   // v39: camp leg 239 m (GPX) instead of 450 m
   var LS_KEY = 'ctp.v45', LS_OLD = ['ctp.v44', 'ctp.v43', 'ctp.v42', 'ctp.v41', 'ctp.v40', 'ctp.v39', 'ctp.v38', 'ctp.v37', 'ctp.v36', 'ctp.v35', 'ctp.v34', 'ctp.v33', 'ctp.v32', 'ctp.v31', 'ctp.v3'];
   var WD = ['日', '一', '二', '三', '四', '五', '六'];
-  var KIND_PRI = { start: 0, end: 0, wpt: 1, peak: 2, turn: 2, user: 3, km: 4, hour: 5 };
+  var KIND_PRI = { start: 0, end: 0, wpt: 1, peak: 2, turn: 2, user: 3, km: 4, cut: 4.5, hour: 5 };
   var BAND_LABEL = ['≤−20%', '−20～−12%', '−12～−5%', '−5～+5%', '+5～+12%', '+12～+20%', '≥+20%'];
   var TERR_COLOR = { trail: '--t-trail', root: '--t-root', mud: '--t-mud', road: '--t-road' };
   var WX_LABEL = { sun: '晴天', rain: '雨天或起霧' };
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
-  var S = { date: todayStr(), start: '07:30', deadline: '', stopH: 13, teamUp: 1, teamDn: 1, runUp: 1, runDn: 1, calKg: '', hourPts: false, hourSkip: [] };
+  var S = { date: todayStr(), start: '07:30', deadline: '', stopH: 13, teamUp: 1, teamDn: 1, runUp: 1, runDn: 1, calKg: '', hourPts: false, hourSkip: [], cutPts: true, cutSkip: [] };
   var TZ = 8;   // 台灣時間 UTC+8 (v21: no time-zone input)
   var PP = clone(C.DEFAULTS);
   var T = { parsed: null, name: '', fileName: '', reversed: false, range: null, full: null, track: null, stats: null,
@@ -1478,14 +1481,14 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   // v31: the planned route is put aside while an own record is loaded for calibration
   function snapRoute() {
     return { track: packTrack(T.parsed), name: T.name, fileName: T.fileName, reversed: T.reversed, range: T.range, isSample: T.isSample, warn: T.warn,
-             suggest: T.suggest, recorded: T.recorded, secsFull: clone(T.secsFull), cps: clone(T.cps), seq: T.seq, zStart: T.zStart, hourSkip: (S.hourSkip || []).slice() };
+             suggest: T.suggest, recorded: T.recorded, secsFull: clone(T.secsFull), cps: clone(T.cps), seq: T.seq, zStart: T.zStart, hourSkip: (S.hourSkip || []).slice(), cutSkip: (S.cutSkip || []).slice() };
   }
   function restoreRoute(o) {
     T.parsed = unpackTrack(o.track);
     T.name = o.name || o.track.name || ''; T.fileName = o.fileName || ''; T.reversed = !!o.reversed; T.range = o.range || null;
     T.isSample = !!o.isSample; T.warn = o.warn || ''; T.suggest = o.suggest || null; T.recorded = !!o.recorded;
     T.secsFull = o.secsFull || []; T.zStart = isNum(o.zStart) ? +o.zStart : null;
-    S.hourSkip = o.hourSkip || [];
+    S.hourSkip = o.hourSkip || []; S.cutSkip = o.cutSkip || [];
     rebuild(true);
     if (o.cps && o.cps.length >= 2) {
       T.cps = o.cps.filter(function (c) { return c.d <= T.track.total + 1; });
@@ -1730,6 +1733,20 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     }
     T.cps = base.concat(add).sort(function (p, q) { return p.d - q.d; });
   }
+  // v50: a point at every section boundary; rebuilt each time so it follows the boundary; an edited one turns into the user's own
+  function syncCuts() {
+    var base = T.cps.filter(function (c) { return c.kind !== 'cut'; });
+    if (S.cutPts === false) { T.cps = base; return; }
+    var r0 = T.range ? T.range[0] : 0, tl = T.track.total, add = [], skip = S.cutSkip || [];
+    bounds().forEach(function (bd) {
+      var d = bd.d - r0;
+      if (d <= 1 || d >= tl - 1) return;
+      if (skip.some(function (v) { return Math.abs(v - bd.d) < 40; })) return;   // deleted here
+      if (base.some(function (c) { return c.kind !== 'hour' && Math.abs(c.d - d) < 40; })) return;   // a point is already there
+      add.push({ d: d, name: bd.r >= 0 ? '第 ' + (bd.r + 1) + ' 段起點' : '第 ' + (bd.l + 1) + ' 段終點', kind: 'cut', stop: 0, trans: false, id: 200000 + Math.round(bd.d) });
+    });
+    T.cps = base.concat(add).sort(function (p, q) { return p.d - q.d; });
+  }
 
   // ---------- model ----------
   function buf() {
@@ -1861,7 +1878,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     if (tot > cur + 1) add.push({ a: cur, b: tot, real: null, terr: 'trail', heavy: true, rain: rain, run: false, zEnd: null });
     T.secsFull = s.concat(add).sort(function (p, q) { return p.a - q.a; });
   }
-  function lightState(sun, min) {
+  function lightState(sun, min) {   // by the sky: the flat 日出／日落 and 曙光／暮光 (behind a ridge it is still light)
     if (!sun || sun.rise === null || sun.set === null) return 0;
     var t = ((min % 1440) + 1440) % 1440;
     var dawn = sun.dawn === null ? sun.rise * 60 : sun.dawn * 60, dusk = sun.dusk === null ? sun.set * 60 : sun.dusk * 60;
@@ -1899,15 +1916,17 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     var m = C.applyBuffer(C.runModelV3(tr, T.secs, null, PM), b);
     var mSun = C.applyBuffer(C.runModelV3(tr, T.secs, 'sun', PM), b), mRain = C.applyBuffer(C.runModelV3(tr, T.secs, 'rain', PM), b);
     var startMin = parseHM(S.start); if (startMin === null) startMin = 450;
+    syncCuts();                  // v50
     syncHours(m, b, startMin);   // v33
     var rows = C.scheduleV3(T.cps, m, b, startMin);
     var arrSun = C.scheduleV3(T.cps, mSun, b, startMin).pop().arr, arrRain = C.scheduleV3(T.cps, mRain, b, startMin).pop().arr;
     var sun = null;
     try { sun = C.sunDay(S.date || todayStr(), tr.raw[0].lat, tr.raw[0].lon, TZ); } catch (e) { sun = null; }
+    sun = terrainSun(sun, tr);   // v46
     var ctx = { tr: tr, st: st, m: m, mSun: mSun, mRain: mRain, buf: b, rows: rows, sun: sun, startMin: startMin, arrSun: arrSun, arrRain: arrRain };
     LAST = ctx;
     renderStatus(); renderSections(); renderSummary(ctx); renderTeam(); renderStrip(ctx); renderProfile(ctx); renderTable(ctx); renderCopy(ctx);
-    $('kmTog').checked = hasKm(); $('hrTog').checked = !!S.hourPts;   // v33
+    $('kmTog').checked = hasKm(); $('hrTog').checked = !!S.hourPts; $('cutTog').checked = S.cutPts !== false;   // v33, v50
     save();
   }
 
@@ -2038,9 +2057,10 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     else { lb.className = 'chip ok'; lb.textContent = lightLabel(0, true); }
     var t = [trow('出發', hm(c.startMin)), trow('全晴／全雨抵達', hm(c.arrSun) + '／' + hm(c.arrRain))];
     if (c.sun) {
-      t.push(trow('日出／日落', hhmmFromHours(c.sun.rise) + '／' + hhmmFromHours(c.sun.set)));
-      t.push(trow('曙光／天黑', hhmmFromHours(c.sun.dawn) + '／' + hhmmFromHours(c.sun.dusk)));
-      t.push(trow('夜間', '天黑 ' + hhmmFromHours(c.sun.dusk) + ' ～ 曙光 ' + hhmmFromHours(c.sun.dawn)));
+      t.push(trow('曙光／日出', hhmmFromHours(c.sun.dawn) + '／' + hhmmFromHours(c.sun.rise)));
+      t.push(trow('地形遮蔽日出／日落', c.sun.terr === 'ok' ? terrTxt(c.sun.tRise, c.sun.blockedAM) + '／' + terrTxt(c.sun.tSet, c.sun.blockedPM) : terrPend(c.sun)));   // v48
+      t.push(trow('日落／暮光', hhmmFromHours(c.sun.set) + '／' + hhmmFromHours(c.sun.dusk)));
+      t.push(trow('夜間', hhmmFromHours(c.sun.dusk) + '～' + hhmmFromHours(c.sun.dawn)));
       var ls = lightState(c.sun, last.arr);
       if (ls === 2) t.push(trow('終點時的光線', '<span class="chip crit">' + lightLabel(ls, true) + '</span>'));
       else if (ls === 1 || ls === 3) t.push(trow('終點時的光線', '<span class="chip warn">' + lightLabel(ls, true) + '</span>'));
@@ -2053,7 +2073,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     $('tline').innerHTML = t.join('');
     $('scenLine').innerHTML = '天氣：<b>' + wxText() + '</b>（依各路段勾選）。<br><br>只算移動：全晴 ' + durZh(c.mSun.total * 60) + '，全雨 ' + durZh(c.mRain.total * 60) +
       '。<br><br>途中停留：每小時走 ' + nf1(c.buf.walkH) + ' 分、停 ' + nf1(c.buf.stopH) + ' 分。<br><br>隊伍速度：' + teamTxt() + (teamIsOne() ? '（基準）' : '') + '。' +
-      (hasRun() ? '<br><br>跑步速度：平地每小時 ' + nf1(runFlat()) + ' km，' + runTxt() + '。' : '');
+      (hasRun() ? '<br><br>跑步速度：平地每小時 ' + nf1(runFlat()) + ' km，' + runTxt() + '。' : '') +
+      (c.sun ? '<br><br>地形遮蔽日出、日落：' + sunNote(c.sun) + '。' : '');
   }
   function kpi(label, value, main, sub) { return '<div class="kpi' + (main ? ' main' : '') + '"><span class="k">' + label + '</span><span class="v">' + value + '</span>' + (sub ? '<span class="s">' + sub + '</span>' : '') + '</div>'; }
   function trow(label, value) { return '<div class="trow"><span>' + label + '</span><b>' + value + '</b></div>'; }
@@ -2088,13 +2109,14 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     var o = [];
     var clocks = tr.x.map(function (d) { return C.clockAtV3(c.rows, c.m, c.buf, d); });
     if (c.sun) {
+      var lit = sunBand(c, clocks);   // v49: pale yellow where the sun clears the terrain
       var runStart = null, runState = 0;
       for (var i = 0; i <= tr.x.length; i++) {
-        var s = i < tr.x.length ? lightState(c.sun, clocks[i]) : -1;
+        var s = i < tr.x.length ? (lit && lit[i] === 1 ? 4 : lightState(c.sun, clocks[i])) : -1;
         if (s !== runState) {
           if (runState > 0 && runStart !== null) {
             var xa = sx(xr[runStart]), xb = sx(xr[Math.min(i, tr.x.length - 1)]);
-            o.push('<rect x="' + xa.toFixed(1) + '" y="' + Tp + '" width="' + Math.max(1, xb - xa).toFixed(1) + '" height="' + ph + '" style="fill:var(' + (runState === 2 ? '--night' : '--dusk') + ')"></rect>');
+            o.push('<rect x="' + xa.toFixed(1) + '" y="' + Tp + '" width="' + Math.max(1, xb - xa).toFixed(1) + '" height="' + ph + '" style="fill:var(' + (runState === 4 ? '--sun' : runState === 2 ? '--night' : '--dusk') + ')"></rect>');
           }
           runState = s; runStart = i;
         }
@@ -2146,10 +2168,10 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     }
     var cpx = [];
     c.rows.forEach(function (r, idx) {
-      var cx = sx(R(r.cp.d)), cy = sy(C.zAt(tr, r.cp.d)), kd = r.cp.kind, auto = kd === 'km' || kd === 'hour', dl = kd !== 'start' && kd !== 'end';
+      var cx = sx(R(r.cp.d)), cy = sy(C.zAt(tr, r.cp.d)), kd = r.cp.kind, auto = kd === 'km' || kd === 'hour' || kd === 'cut', dl = kd !== 'start' && kd !== 'end';
       cpx.push({ id: r.cp.id, x: cx, y: cy });
-      o.push('<circle class="cpc' + (dl ? ' dl' : '') + (kd === 'km' ? ' km' : '') + '" data-cp="' + r.cp.id + '" cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + (auto ? 7.5 : 8.5) + '" style="fill:var(' + (kd === 'hour' ? '--time' : (kd === 'km' ? '--surface' : '--ink')) + ')"></circle>');
-      o.push('<text x="' + cx.toFixed(1) + '" y="' + (cy + (auto ? 3.4 : 3.8)).toFixed(1) + '" text-anchor="middle" font-size="' + (auto ? 9.5 : 10.5) + '" style="fill:var(' + (kd === 'hour' ? '--time-ink' : (kd === 'km' ? '--ink2' : '--surface')) + ');font-weight:700;pointer-events:none">' + idx + '</text>');
+      o.push('<circle class="cpc' + (dl ? ' dl' : '') + (kd === 'km' ? ' km' : '') + '" data-cp="' + r.cp.id + '" cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + (auto ? 7.5 : 8.5) + '" style="fill:var(' + (kd === 'hour' ? '--time' : (kd === 'km' ? '--surface' : (kd === 'cut' ? '--accent' : '--ink'))) + ')"></circle>');
+      o.push('<text x="' + cx.toFixed(1) + '" y="' + (cy + (auto ? 3.4 : 3.8)).toFixed(1) + '" text-anchor="middle" font-size="' + (auto ? 9.5 : 10.5) + '" style="fill:var(' + (kd === 'hour' ? '--time-ink' : (kd === 'km' ? '--ink2' : (kd === 'cut' ? '--accent-ink' : '--surface'))) + ');font-weight:700;pointer-events:none">' + idx + '</text>');
     });
     var r0 = T.range ? T.range[0] : 0, tl = tr.total;   // v31: section numbers, boundary handles
     T.secsFull.forEach(function (q, i) {
@@ -2182,8 +2204,10 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     var lg = [];
     for (var g = 0; g < 7; g++) lg.push('<span><i class="sw" style="background:var(--b' + g + ')"></i>' + BAND_LABEL[g] + '</span>');
     lg.push('<span><i class="sw" style="background:var(--t-root)"></i>樹根陡坡</span>', '<span><i class="sw" style="background:var(--t-mud)"></i>泥濘草徑</span>', '<span><i class="sw" style="background:var(--t-road)"></i>林道</span>', '<span><i class="sw" style="background:var(--rain)"></i>雨天路段</span>');
+    if (c.sun) lg.push('<span><i class="sw lit" style="background:var(--sun)"></i>無遮蔽日照</span>', '<span><i class="sw lit" style="background:var(--dusk)"></i>暮光／曙光</span>', '<span><i class="sw lit" style="background:var(--night)"></i>夜間</span>');   // v49
     if (hasRun()) lg.push('<span><i class="sw dash"></i>跑的路段</span>');
     if (BDS.length) lg.push('<span><i class="sw bdl"></i>路段分界（可拖拉）</span>');
+    if (T.cps.some(function (q) { return q.kind === 'cut'; })) lg.push('<span><i class="sw dot" style="background:var(--accent)"></i>路段分界的點</span>');   // v50
     if (T.cps.some(function (q) { return q.kind === 'hour'; })) lg.push('<span><i class="sw dot" style="background:var(--time)"></i>整點的點（同上緣時刻）</span>');
     if (T.cps.some(function (q) { return q.kind === 'km'; })) lg.push('<span><i class="sw dot ring"></i>每公里的點（同下緣 km）</span>');
     $('legend').innerHTML = lg.join('');
@@ -2234,6 +2258,248 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     msg.textContent = '已存成「' + name + '」（' + Math.max(1, Math.round(blob.size / 1024)) + ' KB）。';
   }
 
+  // ---------- v46: sunrise and sunset behind the terrain (DEM); dawn and dusk at the place ----------
+  var DEM_URL = 'https://osmhacktw.github.io/terrain-rgb/tiles/{z}/{x}/{y}.png';   // MOI 20 m DTM as Mapbox Terrain-RGB (OsmHackTW); metres = -10000 + (R*65536 + G*256 + B) * 0.1
+  var DEM_BOX = { 11: [1706, 1718, 874, 896], 12: [3413, 3436, 1749, 1792], 13: [6826, 6872, 3499, 3585] };   // x0, x1, y0, y1: the only tiles there are (2023-10 build); outside is sea or no data
+  var DEM_TILES = {}, DEM_READY = {}, TSUN = { key: null, state: 'idle', res: null, promise: null, at: 0 };
+  var RAY_START = 100, RAY_Z13 = 3000, RAY_Z12 = 10000, RAY_FAR = 40000, HMAX = 4000;   // z13 (about 17 m a pixel) to 3 km, z12 (35 m) to 10 km, z11 (70 m) beyond; no ridge in Taiwan is higher than HMAX (玉山 3,952 m)
+  var SEA = { sea: true };
+  function torad(d) { return d * Math.PI / 180; }
+  function todeg(r) { return r * 180 / Math.PI; }
+  function sunPos(ms, lat, lon) {   // NOAA solar position: geometric altitude and azimuth (from north, clockwise), degrees
+    var jdn = ms / 86400000 + 2440587.5, Tc = (jdn - 2451545) / 36525;
+    var L0 = ((280.46646 + Tc * (36000.76983 + 0.0003032 * Tc)) % 360 + 360) % 360, M = 357.52911 + Tc * (35999.05029 - 0.0001537 * Tc);
+    var e = 0.016708634 - Tc * (0.000042037 + 0.0000001267 * Tc);
+    var Cc = Math.sin(torad(M)) * (1.914602 - Tc * (0.004817 + 0.000014 * Tc)) + Math.sin(torad(2 * M)) * (0.019993 - 0.000101 * Tc) + Math.sin(torad(3 * M)) * 0.000289;
+    var om = 125.04 - 1934.136 * Tc, lam = L0 + Cc - 0.00569 - 0.00478 * Math.sin(torad(om));
+    var eps = 23 + (26 + (21.448 - Tc * (46.815 + Tc * (0.00059 - Tc * 0.001813))) / 60) / 60 + 0.00256 * Math.cos(torad(om));
+    var dec = todeg(Math.asin(Math.sin(torad(eps)) * Math.sin(torad(lam)))), y = Math.tan(torad(eps / 2)); y *= y;
+    var eqt = 4 * todeg(y * Math.sin(2 * torad(L0)) - 2 * e * Math.sin(torad(M)) + 4 * e * y * Math.sin(torad(M)) * Math.cos(2 * torad(L0)) - 0.5 * y * y * Math.sin(4 * torad(L0)) - 1.25 * e * e * Math.sin(2 * torad(M)));
+    var tst = (((ms / 60000) % 1440 + eqt + 4 * lon) % 1440 + 1440) % 1440, ha = tst / 4 - 180;
+    var cz = Math.sin(torad(lat)) * Math.sin(torad(dec)) + Math.cos(torad(lat)) * Math.cos(torad(dec)) * Math.cos(torad(ha));
+    var az = todeg(Math.atan2(Math.sin(torad(ha)), Math.cos(torad(ha)) * Math.sin(torad(lat)) - Math.tan(torad(dec)) * Math.cos(torad(lat)))) + 180;
+    return { alt: 90 - todeg(Math.acos(Math.max(-1, Math.min(1, cz)))), az: (az % 360 + 360) % 360 };
+  }
+  function inflate(bytes) { return new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate'))).arrayBuffer().then(function (b) { return new Uint8Array(b); }); }
+  function decodePng(buf) {   // 8-bit RGB or RGBA, not interlaced; read from the bytes so no colour management can touch the values
+    var u = new Uint8Array(buf), dv = new DataView(buf), p = 8, w = 0, h = 0, ct = 0, bd = 0, il = 0, parts = [], n = 0;
+    if (u.length < 8 || u[1] !== 0x50 || u[2] !== 0x4E || u[3] !== 0x47) return Promise.reject(new Error('not png'));
+    while (p + 8 <= u.length) {
+      var len = dv.getUint32(p), ty = String.fromCharCode(u[p + 4], u[p + 5], u[p + 6], u[p + 7]);
+      if (ty === 'IHDR') { w = dv.getUint32(p + 8); h = dv.getUint32(p + 12); bd = u[p + 16]; ct = u[p + 17]; il = u[p + 20]; }
+      else if (ty === 'IDAT') { parts.push(u.subarray(p + 8, p + 8 + len)); n += len; }
+      else if (ty === 'IEND') break;
+      p += 12 + len;
+    }
+    if (bd !== 8 || (ct !== 2 && ct !== 6) || il) return Promise.reject(new Error('png type'));
+    var all = new Uint8Array(n), o = 0;
+    parts.forEach(function (a) { all.set(a, o); o += a.length; });
+    var ch = ct === 6 ? 4 : 3;
+    return inflate(all).then(function (raw) {
+      var st = w * ch, out = new Uint8Array(w * h * ch), prev = new Uint8Array(st);
+      for (var yy = 0; yy < h; yy++) {
+        var f = raw[yy * (st + 1)], base = yy * (st + 1) + 1, cur = out.subarray(yy * st, (yy + 1) * st);
+        for (var i = 0; i < st; i++) {
+          var a = i >= ch ? cur[i - ch] : 0, b = prev[i], c = i >= ch ? prev[i - ch] : 0, x = raw[base + i], v;
+          if (f === 0) v = x; else if (f === 1) v = x + a; else if (f === 2) v = x + b; else if (f === 3) v = x + ((a + b) >> 1);
+          else { var pp = a + b - c, pa = Math.abs(pp - a), pb = Math.abs(pp - b), pc = Math.abs(pp - c); v = x + (pa <= pb && pa <= pc ? a : (pb <= pc ? b : c)); }
+          cur[i] = v & 255;
+        }
+        prev = cur;
+      }
+      return { w: w, h: h, ch: ch, px: out };
+    });
+  }
+  function inBox(z, x, y) { var b = DEM_BOX[z]; return !!b && x >= b[0] && x <= b[1] && y >= b[2] && y <= b[3]; }
+  function demTile(z, x, y) {
+    var k = z + '/' + x + '/' + y;
+    if (!inBox(z, x, y)) return Promise.resolve(SEA);
+    if (!DEM_TILES[k]) {
+      DEM_TILES[k] = fetch(DEM_URL.replace('{z}', z).replace('{x}', x).replace('{y}', y), { mode: 'cors' })
+        .then(function (r) { if (r.status === 404) return null; if (!r.ok) throw new Error('http ' + r.status); return r.arrayBuffer(); })
+        .then(function (buf) { return buf ? decodePng(buf) : null; })
+        .then(function (im) {
+          if (!im) return SEA;
+          var el = new Float32Array(im.w * im.h);
+          for (var i = 0, j = 0; i < el.length; i++, j += im.ch) el[i] = im.ch === 4 && im.px[j + 3] === 0 ? 0 : -10000 + (im.px[j] * 65536 + im.px[j + 1] * 256 + im.px[j + 2]) * 0.1;
+          return { w: im.w, e: el };
+        })
+        .catch(function () { delete DEM_TILES[k]; return null; });   // a later try may work
+    }
+    return DEM_TILES[k];
+  }
+  function tileXY(lat, lon, z) { var n = Math.pow(2, z), sl = Math.sin(torad(lat)); return [(lon + 180) / 360 * n, (0.5 - Math.log((1 + sl) / (1 - sl)) / (4 * Math.PI)) * n]; }
+  function demAt(lat, lon, z) {   // bilinear, metres; null when a tile is missing
+    var t = tileXY(lat, lon, z), px = t[0] * 256 - 0.5, py = t[1] * 256 - 0.5, x0 = Math.floor(px), y0 = Math.floor(py), fx = px - x0, fy = py - y0;
+    function g(X, Y) { var tx = Math.floor(X / 256), ty = Math.floor(Y / 256); if (!inBox(z, tx, ty)) return 0; var tl = DEM_READY[z + '/' + tx + '/' + ty]; return !tl ? null : tl.sea ? 0 : tl.e[(Y - ty * 256) * tl.w + (X - tx * 256)]; }
+    var a = g(x0, y0), b = g(x0 + 1, y0), c = g(x0, y0 + 1), d = g(x0 + 1, y0 + 1);
+    if (a === null || b === null || c === null || d === null) return null;
+    return a * (1 - fx) * (1 - fy) + b * fx * (1 - fy) + c * (1 - fx) * fy + d * fx * fy;
+  }
+  function zFor(d) { return d < RAY_Z13 ? 13 : d < RAY_Z12 ? 12 : 11; }
+  function azBin(az) { return ((Math.round(az * 4) % 1440) + 1440) % 1440; }   // 0.25° steps
+  function rayPts(lat0, lon0, az, dmax, fn) {   // samples along an azimuth from 100 m (closer is mostly DEM noise): every 10 m to 3 km, 20 m to 10 km, then 40 m
+    var d = RAY_START, ca = Math.cos(torad(az)), sa = Math.sin(torad(az)), cl = Math.cos(torad(lat0));
+    while (d <= dmax) { fn(lat0 + d * ca / 111320, lon0 + d * sa / (111320 * cl), d); d += d < RAY_Z13 ? 10 : d < RAY_Z12 ? 20 : 40; }
+  }
+  function addTile(need, la, lo, z) {
+    var t = tileXY(la, lo, z), x0 = Math.floor(t[0] * 256 - 0.5), y0 = Math.floor(t[1] * 256 - 0.5);
+    [[x0, y0], [x0 + 1, y0], [x0, y0 + 1], [x0 + 1, y0 + 1]].forEach(function (q) { var tx = Math.floor(q[0] / 256), ty = Math.floor(q[1] / 256); need[z + '/' + tx + '/' + ty] = [z, tx, ty]; });
+  }
+  function loadTiles(need) {
+    var keys = Object.keys(need), i = 0, failed = 0;
+    function next() {
+      if (i >= keys.length) return Promise.resolve();
+      var k = keys[i++], q = need[k];
+      if (DEM_READY[k]) return next();
+      return demTile(q[0], q[1], q[2]).then(function (t) { if (t) DEM_READY[k] = t; else failed++; return next(); });
+    }
+    var ws = [];
+    for (var w = 0; w < 6; w++) ws.push(next());
+    return Promise.all(ws).then(function () { if (failed) throw new Error(failed + ' tiles missing'); return keys.length; });
+  }
+  function horizonFn(lat0, lon0, z0) {   // terrain elevation angle (degrees) toward an azimuth; earth curvature with refraction k = 0.13
+    var cache = {}, dip = -0.0293 * Math.sqrt(Math.max(0, z0));   // no terrain in 40 km: the far horizon, dip seen from z0
+    function hz(az) {
+      var k = azBin(az);
+      if (!(k in cache)) {
+        var best = dip;
+        rayPts(lat0, lon0, k / 4, RAY_FAR, function (la, lo, d) { var zz = demAt(la, lo, zFor(d)); if (zz === null) return; var ang = todeg(Math.atan2(zz - d * d / 12742000 * 0.87 - z0, d)); if (ang > best) best = ang; });
+        cache[k] = best;
+      }
+      return cache[k];
+    }
+    hz.low = dip;
+    return hz;
+  }
+  function sunSeen(ms, lat, lon, z0, hz) {   // the sun's upper limb, with refraction (thinner air up high), above the terrain
+    var q = sunPos(ms, lat, lon), pr = Math.exp(-z0 / 8434), hh = Math.max(q.alt, -1.9);   // Saemundsson; it turns back below -1.9°
+    var top = q.alt + pr * 1.02 / Math.tan(torad(hh + 10.3 / (hh + 5.11))) / 60 + 0.267;
+    return top > hz.low && top > hz(q.az);
+  }
+  function edgeTime(t0, t1, step, seen) {   // first time from t0 toward t1 the sun is seen, to about 5 s; null if never
+    for (var t = t0; step > 0 ? t <= t1 : t >= t1; t += step) {
+      if (!seen(t)) continue;
+      if (t === t0) return t;
+      var lo = t - step, hi = t;
+      for (var i = 0; i < 4; i++) { var m = (lo + hi) / 2; if (seen(m)) hi = m; else lo = m; }
+      return hi;
+    }
+    return null;
+  }
+  function terrainSunCompute(ds, a, b) {   // a: start, b: end {lat, lon, z}; resolves hours after local midnight
+    var p = ds.split('-').map(Number), day = Date.UTC(p[0], p[1] - 1, p[2]) - TZ * 3600e3;
+    var fa = C.sunDay(ds, a.lat, a.lon, TZ), fb = C.sunDay(ds, b.lat, b.lon, TZ);
+    if (!fa || !fb || fa.rise === null || fb.set === null) return Promise.reject(new Error('no sunrise'));
+    function covered(pt) { var t = tileXY(pt.lat, pt.lon, 13); return inBox(13, Math.floor(t[0]), Math.floor(t[1])); }
+    if (!covered(a) || !covered(b)) { var out = new Error('outside the DTM'); out.out = true; return Promise.reject(out); }
+    var noonA = (fa.rise + fa.set) / 2, noonB = (fb.rise + fb.set) / 2, need = {};
+    function fan(pt, h0, h1) {   // tiles under the rays toward the sun, each only as far as a ridge up to HMAX could still hide it
+      var bins = {}, prev = null;
+      for (var h = h0; h <= h1 + 1e-9; h += 1 / 30) {   // every 2 minutes, with the azimuths in between
+        var q = sunPos(day + h * 3600e3, pt.lat, pt.lon);
+        if (q.alt < -3) { prev = null; continue; }   // below any sea horizon seen from 4,000 m
+        var dm0 = q.alt < 1 ? RAY_FAR : Math.min(RAY_FAR, Math.max(500, HMAX - pt.z) / Math.tan(torad(q.alt - 0.5))), dm = dm0, a0 = q.az, a1 = q.az;
+        if (prev) { var dd = ((prev.az - q.az + 540) % 360) - 180; if (dd < 0) a0 += dd; else a1 += dd; dm = Math.max(dm, prev.dm); }
+        for (var k = Math.floor((a0 - 1) * 4); k <= Math.ceil((a1 + 1) * 4); k++) { var kk = ((k % 1440) + 1440) % 1440; bins[kk] = Math.max(bins[kk] || 0, dm); }
+        prev = { az: q.az, dm: dm0 };
+      }
+      Object.keys(bins).forEach(function (k) { rayPts(pt.lat, pt.lon, +k / 4, bins[k], function (la, lo2, d) { addTile(need, la, lo2, zFor(d)); }); });
+      addTile(need, pt.lat, pt.lon, 13);
+    }
+    fan(a, fa.rise - 0.75, noonA); fan(b, noonB, fb.set + 0.75);
+    return loadTiles(need).then(function () {
+      function z0(pt) { var d = demAt(pt.lat, pt.lon, 13); return Math.max(d === null ? -1e4 : d, pt.z) + 2; }   // eyes 2 m above the ground (DTM or GPX, the higher)
+      var za = z0(a), zb = z0(b), ha = horizonFn(a.lat, a.lon, za), hb = horizonFn(b.lat, b.lon, zb);
+      var rise = edgeTime(day + (fa.rise - 0.75) * 3600e3, day + noonA * 3600e3, 60e3, function (t) { return sunSeen(t, a.lat, a.lon, za, ha); });
+      var set = edgeTime(day + (fb.set + 0.75) * 3600e3, day + noonB * 3600e3, -60e3, function (t) { return sunSeen(t, b.lat, b.lon, zb, hb); });
+      return { rise: rise === null ? null : (rise - day) / 3600e3, set: set === null ? null : (set - day) / 3600e3, dawn: fa.dawn, dusk: fb.dusk };
+    });
+  }
+  function withTimeout(pr, ms) { return new Promise(function (ok, no) { var t = setTimeout(function () { no(new Error('timeout')); }, ms); pr.then(function (v) { clearTimeout(t); ok(v); }, function (e) { clearTimeout(t); no(e); }); }); }
+  function terrainSun(sun, tr) {   // dawn at the start, dusk at the end; sunrise / sunset behind the terrain when the DEM is in
+    if (!sun || !tr || !tr.raw || tr.raw.length < 2) return sun;
+    var a0 = tr.raw[0], b0 = tr.raw[tr.raw.length - 1], ds = S.date || todayStr();
+    var pa = { lat: a0.lat, lon: a0.lon, z: C.zAt(tr, 0) }, pb = { lat: b0.lat, lon: b0.lon, z: C.zAt(tr, tr.total) };
+    var fb = null;
+    try { fb = C.sunDay(ds, pb.lat, pb.lon, TZ); } catch (e) { fb = null; }
+    var out = { rise: sun.rise, set: fb && fb.set !== null ? fb.set : sun.set, dawn: sun.dawn, dusk: fb && fb.dusk !== null ? fb.dusk : sun.dusk, terr: 'busy', tRise: null, tSet: null };   // rise / set: flat horizon; tRise / tSet: behind the terrain
+    var key = ds + '|' + [pa.lat, pa.lon, pb.lat, pb.lon].map(function (v) { return v.toFixed(4); }).join(',') + '|' + Math.round(pa.z) + ',' + Math.round(pb.z);
+    if (TSUN.key !== key || (TSUN.state === 'fail' && Date.now() - TSUN.at > 60000)) {   // a failed download is tried again a minute later, or when back online
+      var my = { key: key, state: 'busy', res: null, promise: null, at: 0 };
+      TSUN = my;
+      var ok = typeof DecompressionStream !== 'undefined' && typeof fetch === 'function' && typeof Response === 'function';
+      my.promise = (ok ? withTimeout(terrainSunCompute(ds, pa, pb), 30000) : Promise.reject(new Error('unsupported')))
+        .then(function (r) { my.state = 'ok'; my.res = r; }, function (e) { my.state = e && e.out ? 'out' : 'fail'; my.at = Date.now(); })
+        .then(function () { if (TSUN === my) render(); });
+    }
+    out.terr = TSUN.state;
+    if (TSUN.state === 'ok' && TSUN.res) {
+      var r = TSUN.res;
+      out.blockedAM = r.rise === null; out.blockedPM = r.set === null;
+      out.tRise = r.rise; out.tSet = r.set;
+    }
+    return out;
+  }
+  function terrTxt(h, blocked) { return blocked ? '—' : hhmmFromHours(h); }
+  function terrPend(sun, final) { return sun.terr === 'busy' && !final ? '計算中' : '無資料'; }
+  function sunLines(sun, final) {   // [morning, evening]: 曙光｜日出｜地形遮蔽日出, 地形遮蔽日落｜日落｜暮光; final: a picture, so no 計算中
+    var am = '曙光 ' + hhmmFromHours(sun.dawn) + '｜日出 ' + hhmmFromHours(sun.rise), pm = '日落 ' + hhmmFromHours(sun.set) + '｜暮光 ' + hhmmFromHours(sun.dusk);
+    if (sun.terr !== 'ok') return [am + '｜' + pm, '地形遮蔽日出、日落：' + terrPend(sun, final)];
+    return [am + '｜地形遮蔽日出 ' + terrTxt(sun.tRise, sun.blockedAM), '地形遮蔽日落 ' + terrTxt(sun.tSet, sun.blockedPM) + '｜' + pm];
+  }
+  function sunNote(sun) {
+    if (sun.terr === 'ok') return '日出看起點、日落看終點，用內政部 20 公尺地形算';
+    if (sun.terr === 'busy') return '正在下載地形資料';
+    if (sun.terr === 'out') return '無資料，起點或終點不在地形資料範圍（台灣本島與龜山島、綠島、蘭嶼、小琉球）';
+    return '無資料，抓不到地形資料；連上網路後會自動重算';
+  }
+  window.addEventListener('online', function () { BAND_FAIL = {}; if (TSUN.state === 'fail') TSUN.at = 0; render(); });
+  // ---------- v49: 無遮蔽日照 along the route: at each point, at the time we pass it, does the sun clear the terrain? ----------
+  var SUNLIT = {}, SUNLIT_N = 0, BAND_WAIT = false, BAND_FAIL = {};
+  function sunlitAt(lat, lon, zt, ms, miss) {   // 1 sun, 0 behind the terrain or below the horizon, null: a tile is not in yet
+    var zd = demAt(lat, lon, 13);
+    if (zd === null) { addTile(miss, lat, lon, 13); return null; }
+    var z0 = Math.max(zd, zt) + 2, q = sunPos(ms, lat, lon), pr = Math.exp(-z0 / 8434), hh = Math.max(q.alt, -1.9);
+    var top = q.alt + pr * 1.02 / Math.tan(torad(hh + 10.3 / (hh + 5.11))) / 60 + 0.267;   // the upper limb, refracted
+    if (top <= -0.0293 * Math.sqrt(Math.max(0, z0))) return 0;
+    var dmax = top < 1 ? RAY_FAR : Math.min(RAY_FAR, Math.max(500, HMAX - z0) / Math.tan(torad(top - 0.5)));
+    var d = RAY_START, ca = Math.cos(torad(q.az)), sa = Math.sin(torad(q.az)), cl = Math.cos(torad(lat)), tt = Math.tan(torad(top));
+    while (d <= dmax) {
+      var la = lat + d * ca / 111320, lo = lon + d * sa / (111320 * cl), zf = zFor(d), zz = demAt(la, lo, zf);
+      if (zz === null) { addTile(miss, la, lo, zf); return null; }
+      if ((zz - d * d / 12742000 * 0.87 - z0) / d >= tt) return 0;   // the ridge stands above the sun's upper limb
+      d += d < RAY_Z13 ? 10 : d < RAY_Z12 ? 20 : 40;
+    }
+    return 1;
+  }
+  function sunBand(c, clocks) {   // per profile sample: 1 / 0 / null; null for all when the terrain is not in
+    if (!c.sun || c.sun.terr !== 'ok') return null;
+    var tr = c.tr, n = tr.x.length, k = Math.max(1, Math.ceil(n / 240)), out = new Array(n), miss = {}, ds = S.date || todayStr();
+    var p = ds.split('-').map(Number), day = Date.UTC(p[0], p[1] - 1, p[2]) - TZ * 3600e3, raw = tr.raw, cum = tr.cum, ci = 0, last = null;
+    for (var i = 0; i < n; i++) {
+      if (i % k && i !== n - 1) { out[i] = last; continue; }   // long routes: every k-th sample (at most 240 a profile)
+      var dd = tr.x[i];
+      while (ci < cum.length - 2 && cum[ci + 1] < dd) ci++;
+      var f = Math.max(0, Math.min(1, (dd - cum[ci]) / ((cum[ci + 1] - cum[ci]) || 1)));
+      var la = raw[ci].lat + (raw[ci + 1].lat - raw[ci].lat) * f, lo = raw[ci].lon + (raw[ci + 1].lon - raw[ci].lon) * f, mi = Math.round(clocks[i]);
+      var key = ds + '|' + la.toFixed(5) + ',' + lo.toFixed(5) + '|' + mi, v = SUNLIT[key];
+      if (v === undefined) {
+        v = sunlitAt(la, lo, tr.z[i], day + mi * 60e3, miss);
+        if (v !== null) { if (++SUNLIT_N > 30000) { SUNLIT = {}; SUNLIT_N = 0; } SUNLIT[key] = v; }
+      }
+      out[i] = last = v;
+    }
+    var keys = Object.keys(miss).filter(function (q) { return !DEM_READY[q] && !BAND_FAIL[q]; });
+    if (keys.length && !BAND_WAIT) {   // fetch what the rays reached, then draw again
+      BAND_WAIT = true;
+      Promise.all(keys.map(function (q) { var a = miss[q]; return demTile(a[0], a[1], a[2]).then(function (t) { if (t) DEM_READY[q] = t; else BAND_FAIL[q] = 1; }); }))
+        .then(function () { BAND_WAIT = false; render(); });
+    }
+    return out;
+  }
+  function waitTerrain(ms) { return TSUN.state === 'busy' && TSUN.promise ? withTimeout(TSUN.promise, ms).catch(function () { return null; }) : Promise.resolve(null); }
+
   // ---------- v42: one picture to share: route line, charts, timetable ----------
   var PIC_W = 480;   // laid out like a phone screen, drawn 4.5x (2160 px wide) so text and lines stay sharp
   var SVG_PROPS = ['fill', 'fill-opacity', 'stroke', 'stroke-width', 'stroke-opacity', 'stroke-dasharray', 'stroke-linecap', 'stroke-linejoin', 'opacity', 'font-size', 'font-family', 'font-weight', 'text-anchor', 'dominant-baseline'];
@@ -2259,7 +2525,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     try {
       renderStrip(LAST); renderProfile(LAST);
       var cs = getComputedStyle(root), col = {};
-      ['--surface', '--ink', '--ink2', '--line', '--time', '--time-ink', '--night', '--dusk', '--warn', '--warn-bg', '--crit', '--crit-bg', '--rain',
+      ['--surface', '--ink', '--ink2', '--line', '--time', '--time-ink', '--accent', '--accent-ink', '--night', '--dusk', '--sun', '--warn', '--warn-bg', '--crit', '--crit-bg', '--rain',
        '--t-root', '--t-mud', '--t-road', '--t-trail', '--font-ui', '--font-num', '--b0', '--b1', '--b2', '--b3', '--b4', '--b5', '--b6'].forEach(function (v) { col[v] = cs.getPropertyValue(v).trim(); });
       out = { strip: svgImage($('strip').querySelector('svg'), k), prof: svgImage($('profile').querySelector('svg'), k), col: col };
     } finally {
@@ -2289,22 +2555,23 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     wrap(T.name || T.fileName || '路線', '700 20px ' + fu, CW).forEach(function (ln) { y += 22; text(ln, X, y, '700 20px ' + fu, col['--ink']); });
     var heads = [[(S.date || todayStr()) + '（' + WD[dd.getDay()] + '）' + hm(c.startMin) + ' 出發，' + hm(last.arr) + ' 抵達', '600 15px ' + fu, col['--ink'], 22],
                  [km(R(c.tr.total)) + ' km｜爬升 ' + nf(c.st.up) + ' m｜下降 ' + nf(c.st.dn) + ' m｜移動 ' + durZh(c.m.total * 60), '400 13px ' + fu, col['--ink2'], 19]];
-    if (c.sun) heads.push(['日落 ' + hhmmFromHours(c.sun.set) + '｜天黑 ' + hhmmFromHours(c.sun.dusk), '400 13px ' + fu, col['--ink2'], 19]);
+    if (c.sun) sunLines(c.sun, true).forEach(function (ln) { heads.push([ln, '400 13px ' + fu, col['--ink2'], 19]); });
     heads.forEach(function (h) { wrap(h[0], h[1], CW).forEach(function (ln) { y += h[3]; text(ln, X, y, h[1], h[2]); }); });
     // charts
     y += 12;
     var ys = y; ops.push(function (g) { g.drawImage(imS, X, ys, cap.strip.w, cap.strip.h); }); y += cap.strip.h + 6;
     var yp = y; ops.push(function (g) { g.drawImage(imP, X, yp, cap.prof.w, cap.prof.h); }); y += cap.prof.h + 4;
     // legend: only what this route shows
-    var lg = [], seen = {}, terr = {}, rain = false, light = {};
+    var lg = [], seen = {}, terr = {}, rain = false;
     c.m.binCls.forEach(function (k) { seen[k] = 1; });
     for (var g0 = 0; g0 < 7; g0++) if (seen[g0]) lg.push([col['--b' + g0], BAND_LABEL[g0]]);
     T.secs.forEach(function (q) { terr[q.terr] = 1; if (q.rain) rain = true; });
     if (Object.keys(terr).length > 1 || !terr.trail) ['trail', 'root', 'mud', 'road'].forEach(function (k) { if (terr[k]) lg.push([col[TERR_COLOR[k]], PP.terr[k].name]); });
     if (rain) lg.push([col['--rain'], '雨天']);
-    if (c.sun) for (var tm = c.startMin; tm <= last.arr; tm += 5) light[lightState(c.sun, tm)] = 1;
-    if (light[1] || light[3]) lg.push([col['--dusk'], '暮光／曙光']);
-    if (light[2]) lg.push([col['--night'], '夜間']);
+    if (c.sun) {   // v49: the light bands always listed
+      if (c.sun.terr === 'ok') lg.push([col['--sun'], '無遮蔽日照']);
+      lg.push([col['--dusk'], '暮光／曙光'], [col['--night'], '夜間']);
+    }
     var lx = X, lf = '400 11px ' + fu;
     y += 16;
     lg.forEach(function (it) {
@@ -2323,9 +2590,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       var cx = X + 11, cy = top + 11;
       ops.push(function (g) {
         g.beginPath(); g.arc(cx, cy, 10.5, 0, Math.PI * 2);
-        g.fillStyle = kd === 'hour' ? col['--time'] : (kd === 'km' ? col['--surface'] : col['--ink']); g.fill();
+        g.fillStyle = kd === 'hour' ? col['--time'] : (kd === 'km' ? col['--surface'] : (kd === 'cut' ? col['--accent'] : col['--ink'])); g.fill();
         if (kd === 'km') { g.strokeStyle = col['--ink2']; g.lineWidth = 1.2; g.stroke(); }
-        g.font = '700 12px ' + fnum; g.fillStyle = kd === 'hour' ? col['--time-ink'] : (kd === 'km' ? col['--ink2'] : col['--surface']);
+        g.font = '700 12px ' + fnum; g.fillStyle = kd === 'hour' ? col['--time-ink'] : (kd === 'km' ? col['--ink2'] : (kd === 'cut' ? col['--accent-ink'] : col['--surface']));
         g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(i), cx, cy + 0.5); g.textBaseline = 'alphabetic';
       });
       var tLab = first ? '出發' : '抵達', tVal = hm(first ? r.dep : r.arr), tf = '700 19px ' + fnum, lf2 = '400 12px ' + fu;
@@ -2360,11 +2627,52 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     var cap = picCharts(4.5), fonts = document.fonts && document.fonts.ready ? document.fonts.ready.catch(function () { return null; }) : null;
     return Promise.all([loadImg(cap.strip.src), loadImg(cap.prof.src), fonts]).then(function (r) { return drawPicture(cap, r[0], r[1]); });
   }
+  // ---------- v50: the planned track and every timetable point as GPX ----------
+  function xmlEsc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function gpxName() { return snapName().replace(/\.html$/, '.gpx'); }
+  function buildGpx() {
+    var c = LAST, tr = c.tr, rows = c.rows, last = rows[rows.length - 1], name = (T.name || T.fileName || '路線') + (T.reversed ? '（反向）' : '');
+    var ds = S.date || todayStr(), dp = ds.split('-').map(Number), dd = new Date(dp[0], dp[1] - 1, dp[2]);
+    function ll(p) { return 'lat="' + (+p.lat).toFixed(6) + '" lon="' + (+p.lon).toFixed(6) + '"'; }
+    var L = ['<?xml version="1.0" encoding="UTF-8"?>',
+      '<gpx version="1.1" creator="步程試算 © 2026 shainyhsu" xmlns="http://www.topografix.com/GPX/1/1">',
+      '<metadata><name>' + xmlEsc(name) + '</name><desc>' + xmlEsc(ds + '（' + WD[dd.getDay()] + '）' + hm(c.startMin) + ' 出發，' + hm(last.arr) + ' 抵達｜移動 ' + durZh(c.m.total * 60) + '｜' + wxText()) + '</desc><time>' + new Date().toISOString() + '</time></metadata>'];
+    var mine = [];   // [lat, lon, name]
+    rows.forEach(function (r, i) {   // every point of the timetable, numbered as on the profile and in the picture
+      var p = ptAt(tr, r.cp.d), z = C.zAt(tr, r.cp.d), first = i === 0, isLast = i === rows.length - 1;
+      var t = first ? '出發 ' + hm(r.dep) : '抵達 ' + hm(r.arr) + (r.stop > 0 && !isLast ? '，停 ' + Math.round(r.stop) + ' 分，' + hm(r.dep) + ' 出發' : '');
+      var desc = '第 ' + i + ' 點｜' + t + '｜' + km(R(r.cp.d)) + ' km｜' + nf(z) + ' m';
+      mine.push({ lat: p.lat, lon: p.lon, name: r.cp.name });
+      L.push('<wpt ' + ll(p) + '><ele>' + z.toFixed(1) + '</ele><name>' + xmlEsc(i + ' ' + r.cp.name) + '</name><cmt>' + xmlEsc(desc) + '</cmt><desc>' + xmlEsc(desc) + '</desc></wpt>');
+    });
+    (T.parsed && T.parsed.wpts || []).forEach(function (w) {   // the file's own waypoints along this track, unless one of ours with the same name is within 30 m
+      if (!isNum(w.lat) || !isNum(w.lon)) return;
+      var near = tr.raw.some(function (q) { return C.hav(+w.lat, +w.lon, q.lat, q.lon) < 100; });
+      if (!near || mine.some(function (p) { return p.name === String(w.name || '').trim() && C.hav(+w.lat, +w.lon, p.lat, p.lon) < 30; })) return;
+      L.push('<wpt ' + ll(w) + '>' + (isNum(w.ele) ? '<ele>' + (+w.ele).toFixed(1) + '</ele>' : '') + '<name>' + xmlEsc(w.name || '航點') + '</name></wpt>');
+    });
+    L.push('<trk><name>' + xmlEsc(name) + '</name><trkseg>');
+    tr.raw.forEach(function (q) { L.push('<trkpt ' + ll(q) + '>' + (isNum(q.ele) ? '<ele>' + (+q.ele).toFixed(1) + '</ele>' : '') + '</trkpt>'); });
+    L.push('</trkseg></trk>', '</gpx>', '');
+    return L.join('\n');
+  }
+  function shareGpx() {
+    var name = gpxName(), msg = $('copyMsg');
+    if (!LAST) return;
+    var blob = new Blob([buildGpx()], { type: 'application/gpx+xml' }), file = null;
+    try { file = new File([blob], name, { type: 'application/gpx+xml' }); } catch (e) { file = null; }
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: '步程試算｜' + (T.name || '路線') }).then(function () { msg.textContent = '已分享 GPX。'; },
+        function (err) { if (err && err.name === 'AbortError') msg.textContent = ''; else saveBlob(blob, name); });
+      return;
+    }
+    saveBlob(blob, name);
+  }
   function sharePicture() {
     var name = picName(), msg = $('copyMsg');
     if (!LAST) return;
     msg.textContent = '製作圖片中…';
-    makePicture().then(function (blob) {
+    waitTerrain(3000).then(makePicture).then(function (blob) {
       var file = null;
       try { file = new File([blob], name, { type: 'image/png' }); } catch (e) { file = null; }
       if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -2393,7 +2701,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       var tt = i === 0 ? '出發 ' + hm(r.dep) : '抵達 ' + hm(r.arr) + (r.stop > 0 && i < c.rows.length - 1 ? '，停 ' + Math.round(r.stop) + ' 分' : '');
       L.push('・' + i + ' ' + r.cp.name + '　' + km(R(r.cp.d)) + ' km　' + nf(zv) + ' m　' + tt + flag);
     });
-    if (c.sun) L.push('・日出 ' + hhmmFromHours(c.sun.rise) + '｜日落 ' + hhmmFromHours(c.sun.set) + '｜天黑 ' + hhmmFromHours(c.sun.dusk) + '｜曙光 ' + hhmmFromHours(c.sun.dawn) + '（夜間＝天黑～曙光）');
+    if (c.sun) { var sl = sunLines(c.sun, false); L.push('・' + (c.sun.terr === 'ok' ? sl.join('｜') : sl[0] + '（' + sl[1] + '）')); }
     L.push('・各點停留只算表內填的分鐘；起登前集合、拍照、天候與隊伍狀況另計。');
     $('copyText').value = L.join('\n');
   }
@@ -2445,7 +2753,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       if (cal) S.calKg = '';
       var vi = vehicleInfo(parsed);
       T.parsed = parsed; T.name = parsed.name; T.fileName = name; T.reversed = false; T.range = null; T.isSample = false;
-      T.secsFull = []; T.zStart = null; T.warn = ''; T.suggest = null; S.hourSkip = [];
+      T.secsFull = []; T.zStart = null; T.warn = ''; T.suggest = null; S.hourSkip = []; S.cutSkip = [];
       T.recorded = timed;
       if (vi.fast > 500) {
         T.warn = '軌跡中約 ' + km(vi.fast) + ' km 的速度超過每小時 15 公里，可能含搭車段。';
@@ -2460,7 +2768,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   }
   function loadSample() {
     T.parsed = { name: SAMPLE.name, pts: SAMPLE.pts.map(function (a) { return { lat: a[0], lon: a[1], ele: a[2], t: null }; }), wpts: clone(SAMPLE.wpts || []) };
-    T.name = SAMPLE.name; T.fileName = ''; T.reversed = false; T.range = null; T.isSample = true; T.warn = ''; T.suggest = null; T.recorded = false; S.hourSkip = [];
+    T.name = SAMPLE.name; T.fileName = ''; T.reversed = false; T.range = null; T.isSample = true; T.warn = ''; T.suggest = null; T.recorded = false; S.hourSkip = []; S.cutSkip = [];
     T.secsFull = clone(SAMPLE.sections || []);
     T.zStart = isNum(SAMPLE.zStart) ? +SAMPLE.zStart : null;
     if (SAMPLE.date) S.date = SAMPLE.date;
@@ -2587,19 +2895,23 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       refreshSecs(); render();
     });
     var UNDO = null, ICON_UNDO = '<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.9 8a5.1 5.1 0 1 0 1.5-3.6"/><path d="M2.75 2.5v3.1h3.1"/></svg>';
-    function snapUndo() { UNDO = { cps: clone(T.cps), secs: clone(T.secsFull), skip: (S.hourSkip || []).slice(), hp: !!S.hourPts }; }
+    function snapUndo() { UNDO = { cps: clone(T.cps), secs: clone(T.secsFull), skip: (S.hourSkip || []).slice(), hp: !!S.hourPts, cskip: (S.cutSkip || []).slice(), cp: S.cutPts !== false }; }
     function undoMsg(txt) {   // v33: every removal on the profile can be undone once
       var el = $('profMsg');
       el.innerHTML = esc(txt) + '<button class="btn ghost sm" type="button" id="btnUndo">' + ICON_UNDO + '復原</button>';
       $('btnUndo').onclick = function () {
         if (!UNDO) return;
-        T.cps = UNDO.cps; T.secsFull = UNDO.secs; S.hourSkip = UNDO.skip; S.hourPts = UNDO.hp; UNDO = null;
+        T.cps = UNDO.cps; T.secsFull = UNDO.secs; S.hourSkip = UNDO.skip; S.hourPts = UNDO.hp; S.cutSkip = UNDO.cskip; S.cutPts = UNDO.cp; UNDO = null;
         refreshSecs(); render(); say('profMsg', '已復原。');
       };
     }
     $('kmTog').addEventListener('change', function () {
       if ($('kmTog').checked) { addKm(); render(); say('profMsg', '已每公里加一個點。'); }
       else { snapUndo(); T.cps = T.cps.filter(function (c) { return c.kind !== 'km'; }); render(); undoMsg('已移除公里點。'); }
+    });
+    $('cutTog').addEventListener('change', function () {   // v50
+      S.cutPts = $('cutTog').checked; S.cutSkip = [];
+      render(); say('profMsg', S.cutPts ? '已在每個路段分界加點；分界移動時，點跟著移動。' : '已移除路段分界的點。');
     });
     $('hrTog').addEventListener('change', function () {
       S.hourPts = $('hrTog').checked; S.hourSkip = [];
@@ -2619,6 +2931,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       var cp = T.cps.filter(function (c) { return c.id === +m[2]; })[0];
       if (!cp) return;
       if (cp.kind === 'hour') { S.hourSkip = (S.hourSkip || []).concat([cp.id - 100000]); cp.kind = 'user'; }   // v33: an edited hour point stays where it is
+      if (cp.kind === 'cut') cp.kind = 'user';   // v50: so does an edited boundary point
       if (m[1] === 'nm') cp.name = e.target.value.trim() || cp.name;
       else if (m[1] === 'st') cp.stop = Math.max(0, Math.round(numOr(e.target.value, 0)));
       else cp.trans = !!e.target.checked;
@@ -2629,6 +2942,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       if (!b) return;
       var id = +b.getAttribute('data-del'), cp0 = T.cps.filter(function (c) { return c.id === id; })[0];
       if (cp0 && cp0.kind === 'hour') S.hourSkip = (S.hourSkip || []).concat([id - 100000]);
+      if (cp0 && cp0.kind === 'cut') S.cutSkip = (S.cutSkip || []).concat([Math.round(cp0.d + (T.range ? T.range[0] : 0))]);
       T.cps = T.cps.filter(function (c) { return c.id !== id; });
       render();
     });
@@ -2697,6 +3011,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       if (cp.kind === 'start' || cp.kind === 'end') { say('profMsg', '起點、終點不能刪。'); return; }
       snapUndo();
       if (cp.kind === 'hour') S.hourSkip = (S.hourSkip || []).concat([cp.id - 100000]);
+      if (cp.kind === 'cut') S.cutSkip = (S.cutSkip || []).concat([Math.round(cp.d + (T.range ? T.range[0] : 0))]);
       T.cps = T.cps.filter(function (q) { return q.id !== cp.id; });
       render(); undoMsg('已刪除檢查點「' + cp.name + '」。');
     }
@@ -2983,6 +3298,8 @@ if ($('mainFatigue')) {
 
 
     $('btnPic').addEventListener('click', sharePicture);    // v42: one picture with the charts and the timetable
+    $('btnGpx').addEventListener('click', shareGpx);        // v50: the track and its points as GPX
+    try { if (navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.gpx', { type: 'application/gpx+xml' })] })) $('btnGpxTxt').textContent = '分享 GPX'; } catch (err) { /* save only */ }
     try { if (navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.png', { type: 'image/png' })] })) $('btnPicTxt').textContent = '分享圖片'; } catch (err) { /* save only */ }
     $('btnCopy').addEventListener('click', function () {
       var ta = $('copyText'), msg = $('copyMsg');
