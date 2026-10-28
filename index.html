@@ -503,6 +503,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
     <div class="tools">
       <button class="btn primary" id="btnPic" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.25" y="3" width="11.5" height="10" rx="1.5"/><path d="M2.75 11.25 6 8l2.5 2.5 1.75-1.75 3 3"/><circle cx="10.5" cy="5.9" r="1"/></svg><span id="btnPicTxt">下載圖片</span></button>
       <button class="btn" id="btnGpx" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 12.5c1.6-.4 2.2-2.6 4.3-3.2 2.4-.7 2.8-3.4 4.7-5.3"/><circle cx="3.25" cy="12.6" r="1.25"/><circle cx="12.75" cy="3.6" r="1.25"/></svg><span id="btnGpxTxt">下載 GPX</span></button>
+      <button class="btn" id="btnEx" type="button" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7.25M5 7l3 3 3-3"/><path d="M2.75 11.25v1.5c0 .7.55 1.25 1.25 1.25h8c.7 0 1.25-.55 1.25-1.25v-1.5"/></svg>下載範例檔</button>
       <button class="btn" id="btnCopy" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.25" y="5.25" width="8.25" height="8.25" rx="1.5"/><path d="M10.75 5.25V3.75a1.25 1.25 0 0 0-1.25-1.25h-6A1.25 1.25 0 0 0 2.25 3.75v6A1.25 1.25 0 0 0 3.5 11h1.75"/></svg>複製全文</button>
       <p class="hint" id="copyMsg" aria-live="polite"></p>
     </div>
@@ -2702,6 +2703,44 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     var cap = picCharts(4.5), fonts = document.fonts && document.fonts.ready ? document.fonts.ready.catch(function () { return null; }) : null;
     return Promise.all([loadImg(cap.strip.src), loadImg(cap.prof.src), fonts]).then(function (r) { return drawPicture(cap, r[0], r[1]); });
   }
+  // ---------- v52: example files: the data, and a loader for the site's current index.html ----------
+  var EX_LOADER = "(function () {\n" +
+    "  var st = document.getElementById('ctpSnap').textContent, msg = document.getElementById('ld');\n" +
+    "  fetch('index.html', { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (h) {\n" +
+    "    h = h.replace(/<head>/i, function () { return '<head><script type=\"application/json\" id=\"ctpSnap\">' + st + '<\\/script>'; });\n" +
+    "    h = h.replace(/<script src=\"([^\"]*jszip[^\"]*)\"><\\/script>/i, function (m, u) { return '<script src=\"' + u + '\" async><\\/script>'; });\n" +
+    "    document.open(); document.write(h); document.close();\n" +
+    "  }).catch(function () { msg.textContent = '開不了：範例要連上網路，而且要和步程試算的 index.html 放在同一個網站資料夾。'; });\n" +
+    "})();";
+  function exampleState() {
+    return { v: 1, created: new Date().toISOString(), S: clone(S), PP: clone(PP), isSample: T.isSample, recorded: T.recorded, fileName: T.fileName,
+             reversed: T.reversed, range: T.range, warn: T.warn, suggest: T.suggest, secsFull: clone(T.secsFull), cps: clone(T.cps), seq: T.seq,
+             zStart: T.zStart, track: T.parsed ? packTrack(T.parsed) : null, sampleRev: T.isSample ? SAMPLE_REV : null,
+             lorentz: C.getLorentzParams ? C.getLorentzParams() : null };
+  }
+  function exampleHtml() {
+    var nm = T.name || T.fileName || '路線', js = JSON.stringify(exampleState()).replace(/</g, '\\u003c');
+    return '<!doctype html>\n<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n' +
+      '<title>步程試算｜' + esc(nm) + '</title>\n' +
+      '<!-- 步程試算 © 2026 shainyhsu. 範例資料：和步程試算的 index.html 放在同一個網站資料夾才能開，打開時用網站上最新版的步程試算。 -->\n' +
+      '<script type="application/json" id="ctpSnap">' + js + '<\/script>\n</head><body>\n' +
+      '<p id="ld" style="font:16px/1.6 system-ui,sans-serif;padding:24px;color:#4a574f">載入步程試算…</p>\n' +
+      '<script>\n' + EX_LOADER + '\n<\/script>\n</body></html>\n';
+  }
+  function exampleName() {   // opened from an example: the same name, so the upload replaces it
+    var f = '';
+    try { f = decodeURIComponent(location.pathname.split('/').pop() || ''); } catch (e) { f = ''; }
+    return /\.html?$/i.test(f) && !/^index\.html?$/i.test(f) ? f : snapName();
+  }
+  function saveExample() {
+    if (!LAST) return;
+    var name = exampleName();
+    saveBlob(new Blob([exampleHtml()], { type: 'text/html;charset=utf-8' }), name);
+    setTimeout(function () {   // v53: the upload replaces the old example only under the same name
+      var m = $('copyMsg'); if (m && m.textContent.indexOf('已存成') === 0) m.textContent += '上傳 GitHub 前確認檔名是「' + name + '」；手機若存成「…(1).html」，要改回這個名字才會取代舊檔。';
+    }, 0);
+  }
+
   // ---------- v50: the planned track and every timetable point as GPX ----------
   function xmlEsc(t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function gpxName() { return snapName().replace(/\.html$/, '.gpx'); }
@@ -3375,6 +3414,10 @@ if ($('mainFatigue')) {
 
     $('btnPic').addEventListener('click', sharePicture);    // v42: one picture with the charts and the timetable
     $('btnGpx').addEventListener('click', shareGpx);        // v50: the track and its points as GPX
+    $('btnEx').addEventListener('click', saveExample);      // v52: only with ?owner in the address
+    var owner = /[?&]owner(=1)?(&|$)/.test(location.search), stop = /[?&]owner=0(&|$)/.test(location.search);   // v53: remembered in this browser
+    try { if (stop) localStorage.removeItem('ctpOwner'); else if (owner) localStorage.setItem('ctpOwner', '1'); owner = !stop && (owner || localStorage.getItem('ctpOwner') === '1'); } catch (err) { owner = owner && !stop; }
+    if (owner) $('btnEx').hidden = false;
     try { if (navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.gpx', { type: 'application/gpx+xml' })] })) $('btnGpxTxt').textContent = '分享 GPX'; } catch (err) { /* save only */ }
     try { if (navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.png', { type: 'image/png' })] })) $('btnPicTxt').textContent = '分享圖片'; } catch (err) { /* save only */ }
     $('btnCopy').addEventListener('click', function () {
@@ -3449,6 +3492,13 @@ if ($('mainFatigue')) {
       } catch (e) { ok = false; }
     }
     if (!ok) loadSample();
+    if (SNAP && ok) {   // v52: opened as an example
+      var ban = document.createElement('div'), nm0 = T.name || T.fileName || '路線';
+      ban.className = 'snapbar'; ban.id = 'snapBanner'; ban.setAttribute('role', 'note');
+      ban.innerHTML = '範例：<b>' + esc(nm0) + '</b>，' + esc(S.date || '') + ' ' + esc(S.start || '') + ' 出發。<br>可以直接看；改設定或路段會重新計算，只在這個視窗，重新整理就回到範例的內容。要算自己的路線，請開<a href="./">步程試算</a>。';
+      var mn = document.querySelector('main'); if (mn) mn.insertBefore(ban, mn.firstChild);
+      document.title = '步程試算｜' + nm0;
+    }
     T.stash = saved && saved.stash && saved.stash.track && saved.stash.track.pts && saved.stash.track.pts.length > 1 ? saved.stash : null;   // v31
     setRangeInputs();
     bind();
