@@ -408,7 +408,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
         <label for="pDinH">DIN 水平 km/h<input type="number" id="pDinH" step="0.1" inputmode="decimal"></label>
         <label for="pDinUp">DIN 上升 m/h<input type="number" id="pDinUp" step="10" inputmode="numeric"></label>
         <label for="pDinDown">DIN 下降 m/h<input type="number" id="pDinDown" step="10" inputmode="numeric"></label>
-        <h3>樹根陡坡（係數／重裝爬升上限／下降上限）</h3>
+        <h3>樹根岩塊（係數／重裝爬升上限／下降上限）</h3>
         <label for="rootSun0">晴 係數<input type="number" id="rootSun0" step="0.05" inputmode="decimal"></label>
         <label for="rootSun1">晴 爬升<input type="number" id="rootSun1" step="10" inputmode="numeric"></label>
         <label for="rootSun2">晴 下降<input type="number" id="rootSun2" step="10" inputmode="numeric"></label>
@@ -473,7 +473,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
     <div class="svgbox" id="profile"></div>
     <p class="profmsg" id="profMsg" aria-live="polite"></p>
     <div class="legend" id="legend"></div>
-    <p class="hint">點一下剖面：選「加檢查點」就在那裡加一個檢查點，檢查點從起點 0 開始編號；選「切路段」就在那裡把路段切成兩段，新的一段沿用原本的設定；選「刪除」再點檢查點或分界線就刪掉，起點、終點除外，刪錯了按「復原」。<br><br>勾「每公里」就每公里加一個點；勾「每整點」就在預計每個整點走到的位置加點，改了出發時間、速度或停留，這些點會跟著移動；勾「路段分界」就在每個路段分界加一個點，分界移到哪裡，點就跟到哪裡。<br><br>整點剛好落在某個點的停留時間裡（例如午餐），就不另外加點，看那一點的抵達、出發時間。<br><br>整點或分界的點在時間表改了名稱或停留，就固定在那個位置。<br><br>琥珀色的圓是整點的點，和上緣「時刻」同色；空心灰圓是每公里的點，和下緣 km 同色；綠色的圓是路段分界的點，和分界虛線同色；「清除自訂點」會清掉自己加的點、公里點和整點的點。<br><br>綠色虛線是路段分界，左右拖拉下方的把手就能移動。<br><br>點一下把手後，也能用方向鍵微調：每次 20 m，按住 Shift 每次 100 m；按 Delete 刪掉這個分界。<br><br>剖面底部的小方框是路段編號；點剖面下方的地形細條，會跳到那一段的設定。<br><br>上緣琥珀色「時刻」那一排是預計經過的整點，例如 10 代表 10:00 會走到那條琥珀色虛線的位置；下緣灰色是里程（km）。<br><br>光線底色：淡黃是無地形遮蔽日照，依每個位置和預計經過的時間，太陽高過山稜、照得到；白底是日間但太陽被山擋住，時間表在這樣的點標藍色「地形遮蔽無日照」；灰底是暮光（日落～暮光結束）或曙光（曙光開始～日出）；深灰是夜間（暮光結束～曙光開始）。地形資料沒下載到時不標淡黃。整夜（暮光結束後到曙光前）都標「夜間」。<br><br>剖面下方細條是地形：咖啡色樹根陡坡、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，斷斷續續的是跑的路段，下方紫線是雨天路段。</p>
+    <p class="hint">點一下剖面：選「加檢查點」就在那裡加一個檢查點，檢查點從起點 0 開始編號；選「切路段」就在那裡把路段切成兩段，新的一段沿用原本的設定；選「刪除」再點檢查點或分界線就刪掉，起點、終點除外，刪錯了按「復原」。<br><br>勾「每公里」就每公里加一個點；勾「每整點」就在預計每個整點走到的位置加點，改了出發時間、速度或停留，這些點會跟著移動；勾「路段分界」就在每個路段分界加一個點，分界移到哪裡，點就跟到哪裡。<br><br>整點剛好落在某個點的停留時間裡（例如午餐），就不另外加點，看那一點的抵達、出發時間。<br><br>整點或分界的點在時間表改了名稱或停留，就固定在那個位置。<br><br>琥珀色的圓是整點的點，和上緣「時刻」同色；空心灰圓是每公里的點，和下緣 km 同色；綠色的圓是路段分界的點，和分界虛線同色；「清除自訂點」會清掉自己加的點、公里點和整點的點。<br><br>綠色虛線是路段分界，左右拖拉下方的把手就能移動。<br><br>點一下把手後，也能用方向鍵微調：每次 20 m，按住 Shift 每次 100 m；按 Delete 刪掉這個分界。<br><br>剖面底部的小方框是路段編號；點剖面下方的地形細條，會跳到那一段的設定。<br><br>上緣琥珀色「時刻」那一排是預計經過的整點，例如 10 代表 10:00 會走到那條琥珀色虛線的位置；下緣灰色是里程（km）。<br><br>光線底色：淡黃是無地形遮蔽日照，依每個位置和預計經過的時間，太陽高過山稜、照得到；白底是日間但太陽被山擋住，時間表在這樣的點標藍色「地形遮蔽無日照」；灰底是暮光（日落～暮光結束）或曙光（曙光開始～日出）；深灰是夜間（暮光結束～曙光開始）。地形資料沒下載到時不標淡黃。整夜（暮光結束後到曙光前）都標「夜間」。<br><br>剖面下方細條是地形：咖啡色樹根岩塊、橄欖色泥濘草徑、沙色林道、淺灰一般步道。<br><br>細條只有一半粗的是輕裝路段，斷斷續續的是跑的路段，下方紫線是雨天路段。</p>
   </section>
 
   <section class="card" aria-labelledby="hSec">
@@ -484,7 +484,7 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
     <p class="profmsg" id="secMsg" aria-live="polite"></p>
     <details class="spdref disc" id="spdBox"><summary>各坡度的水平速度（參考）<span class="dsub">平路、±15%、±30%</span></summary><div id="spdRef"></div></details>
     <div class="inline" style="margin-top:8px"><label for="zStart">起點實測海拔（選填）</label><input type="number" id="zStart" step="1" inputmode="numeric" style="width:5.2rem"> m</div>
-    <p class="hint">「新增路段」把最後一段從中間切成兩段；「刪除」把這段併入前一段（第 1 段併入第 2 段）。<br><br>GPX 常把小彎拉直，距離偏短；有實際里程就填，時間會照實際長度算。<br><br>地圖規劃的路線也可能走錯稜線、高度不準。<br><br>知道某段終點的實測海拔（GPS 紀錄、登山口標示）就填，中間的高度會按比例修正；空白就用 GPX 的值（灰字）。<br><br>坡度由 GPX 計算，每種地形都會照坡度放慢；選地形看路面，不看陡不陡。<br><br>「樹根陡坡」用在樹根、碎石多、要小心落腳的路面，例如戒茂斯到新武呂溪。<br><br>「泥濘草徑」用在泥濘的草坡路。<br><br>這兩種會限制每小時能爬升與下降的高度，雨天再降。<br><br>「林道」用在林道路面，例如四季林道。<br><br>不勾「重裝」用在行李另外運送的路段，例如行李上菜車；速度會換算得比揹 13 kg 快，林道再快一些。<br><br>勾「雨天」代表整段持續下雨或起霧、路濕，每種地形都會變慢：一般步道時間約多 11%、林道約多 5%、樹根陡坡與泥濘草徑多 17–30%，都是推估。<br><br>沒設定的部分當一般步道、重裝、晴天。</p>
+    <p class="hint">「新增路段」把最後一段從中間切成兩段；「刪除」把這段併入前一段（第 1 段併入第 2 段）。<br><br>GPX 常把小彎拉直，距離偏短；有實際里程就填，時間會照實際長度算。<br><br>地圖規劃的路線也可能走錯稜線、高度不準。<br><br>知道某段終點的實測海拔（GPS 紀錄、登山口標示）就填，中間的高度會按比例修正；空白就用 GPX 的值（灰字）。<br><br>坡度由 GPX 計算，每種地形都會照坡度放慢；選地形看路面，不看陡不陡。路面平順的陡坡選一般步道：10/29 桃山停機坪以下坡度多在 20% 以上，用一般步道算和實走只差 1%，用樹根岩塊算多估 47%。<br><br>「樹根岩塊」用在樹根、岩塊、碎石多，要看腳下或手扶的路面，例如桃山停機坪以上、新武呂溪溪床。<br><br>「泥濘草徑」用在泥濘的草坡路。<br><br>這兩種會限制每小時能爬升與下降的高度，雨天再降。<br><br>拉繩、過溪的時間多花在排隊：在那一點的「停留」填分鐘，地形照路面選。<br><br>「林道」用在林道路面，例如四季林道。<br><br>不勾「重裝」用在行李另外運送的路段，例如行李上菜車；速度會換算得比揹 13 kg 快，林道再快一些。<br><br>勾「雨天」代表整段持續下雨或起霧、路濕，每種地形都會變慢：一般步道時間約多 11%、林道約多 5%、樹根岩塊與泥濘草徑多 17–30%，都是推估。<br><br>沒設定的部分當一般步道、重裝、晴天。</p>
   </section>
 
   <section class="card" aria-labelledby="hTbl">
@@ -523,15 +523,15 @@ details.disc.flash>summary{border-color:var(--accent);box-shadow:0 0 0 3px var(-
     <ul>
       <li>預設：每 20 m 算 Tobler 與 DIN 33466 兩種時間再各取一半。<br><br>Tobler：距離 ÷（0.734 × 6 × e^(−3.5 × |S + 0.05|)）km/h，S 是坡度。<br><br>DIN 33466：水平每小時 3.62 km、上升 468 m、下降 791 m，水平與垂直時間取較大者，再加上較小者的一半。<br><br>距離用實際長度換算。<br><br><strong>勞侖茲函數</strong>：當歷史 GPX 樣本足夠並成功解出勞侖茲函數參數 [a, b, c] 後，基底速度改為 a / ((b·S + c)² + 1) km/h，再套用各路段的地形係數、雨天倍數、垂直上限、Pandolf 輕裝、高度衰減與隊伍倍數。資料不足或尚未最佳化時，自動降級回 Tobler + DIN 混合。<br><br>樣本：歷史 GPX 每 5 秒取一點，停留判斷和校準相同（水平移動與高度變化），每走 1 分鐘取一個樣本，距離與高度看那 1 分鐘的頭尾。</li>
       <li>係數取自 10/6 班級揹 13 kg 的實測（陣雨、路濕），只用移動中的片段。<br><br>四段步道每段誤差在 3% 以內；每次拿掉一段、用其他段校正再預測它，平均誤差 2.3%。</li>
-      <li>晴天與雨天：晴天速度以 10/20–21 四季林道晴天實測為準（揹 13 kg、只算移動時間，上坡實際÷模型 0.95、下坡 0.99）。<br><br>10/6 草嶺古道、桃源谷是陣雨，結果也在同一水準（0.96、1.00），但兩天的路面也不同，分不出晴雨和路面各自的影響。<br><br>勾「雨天」代表整段持續下雨或起霧、路濕，依推估放慢：一般步道速度 ×0.90、林道 ×0.95，樹根陡坡與泥濘草徑見下一條；比 10/6 的陣雨保守 10–14%。<br><br>途中停留不分晴雨：只算 10 分鐘以內的停留，10/6 雨天每小時約停 15 分，10/20 晴天上坡約 16 分，10/21 晴天下坡只有約 6 分；下坡停得少，所以「途中停留」分上坡與平路、下坡兩格。<br><br>雨天係數可在「公式參數」修改。</li>
-      <li>一般步道與林道不設垂直速度上限。<br><br>樹根陡坡（樹根、碎石多、要小心落腳的路面，例如戒茂斯到新武呂溪）揹重裝：晴天速度 ×0.70、每小時最多爬 260 m、降 300 m；雨天 ×0.60、爬 220 m、降 230 m，時間約多 17–30%。<br><br>泥濘草徑：晴天 ×0.75，其餘同樹根。<br><br>上限再依海拔下修，上坡與下坡各自套用。<br><br>樹根、泥濘都沒有班級實測，是推估，可在「公式參數」修改。<br><br>10/29 桃山（成人二人、晴天、輕裝）停機坪以上的樹根路段實走：上山 ×0.89–1.18、下山 ×1.11–1.29（模型時間 ÷ 實際走路時間），在一筆紀錄的誤差內，未調整。</li>
+      <li>晴天與雨天：晴天速度以 10/20–21 四季林道晴天實測為準（揹 13 kg、只算移動時間，上坡實際÷模型 0.95、下坡 0.99）。<br><br>10/6 草嶺古道、桃源谷是陣雨，結果也在同一水準（0.96、1.00），但兩天的路面也不同，分不出晴雨和路面各自的影響。<br><br>勾「雨天」代表整段持續下雨或起霧、路濕，依推估放慢：一般步道速度 ×0.90、林道 ×0.95，樹根岩塊與泥濘草徑見下一條；比 10/6 的陣雨保守 10–14%。<br><br>途中停留不分晴雨：只算 10 分鐘以內的停留，10/6 雨天每小時約停 15 分，10/20 晴天上坡約 16 分，10/21 晴天下坡只有約 6 分；下坡停得少，所以「途中停留」分上坡與平路、下坡兩格。<br><br>雨天係數可在「公式參數」修改。</li>
+      <li>一般步道與林道不設垂直速度上限。<br><br>樹根岩塊（樹根、岩塊、碎石多，要看腳下或手扶的路面，例如桃山停機坪以上、新武呂溪溪床）揹重裝：晴天速度 ×0.70、每小時最多爬 260 m、降 300 m；雨天 ×0.60、爬 220 m、降 230 m，時間約多 17–30%。<br><br>泥濘草徑：晴天 ×0.75，其餘同樹根。<br><br>上限再依海拔下修，上坡與下坡各自套用。<br><br>樹根、泥濘都沒有班級實測，是推估，可在「公式參數」修改。<br><br>10/29 桃山（成人二人、晴天、輕裝）停機坪以上的樹根路段實走：上山 ×0.89–1.18、下山 ×1.11–1.29（模型時間 ÷ 實際走路時間），在一筆紀錄的誤差內，未調整。<br><br>同一天停機坪以下坡度多在 20% 以上、路面接近一般步道：用一般步道算，模型和實走只差 1%；用樹根岩塊算多估 47%。地形只看路面，坡度另外算。</li>
       <li>水平速度隨坡度變化很大：揹重裝在一般步道，平路每小時約 3.5 km，30% 的上坡只剩約 1.2 km。<br><br>所以「路段與地形」的選項標每一段按實際坡度算出的平均速度；勾不勾重裝、雨天或改參數都會跟著更新。</li>
       <li>高度：比 300 m 每高 1,000 m，上坡慢 6.3%、平路慢 3.2%、下坡慢 2.1%（依最大攝氧量隨高度下降的研究推估）。</li>
-      <li>沒勾「重裝」的路段（行李另外運送）：假設出力和揹 13 kg 時相同，用 Pandolf 能量公式換算成只揹 2 kg 的速度（體重以 50 kg 計）。<br><br>加速比例用一般步道的速度算，每種地形套同一比例：平路約快 15%，15% 上坡約快 22%，30% 上坡約快 24%；下坡用平路的算法，約快 15–25%。<br><br>下坡最多快 25%：陡下坡的快慢取決於落腳與煞車，不是體力；能量公式在慢速時會把減掉的負重全換成速度，比 −40% 陡的下坡會算到快 40–60%，所以設上限（「公式參數」可改）。<br><br>樹根陡坡、泥濘草徑的爬升與下降上限也按同一比例放寬。<br><br>林道輕裝依 10/20–21 實測、只算移動時間再乘：上坡 ×0.92（停車處→紅柵欄 2.4 km、爬升 388 m：實際 57 分，模型 57 分），下坡 ×0.75（原路下山：實際 34 分，模型 35 分）。<br><br>輕裝走一般步道、樹根、泥濘都沒有班級實測。<br><br>都可在「公式參數」修改。</li>
+      <li>沒勾「重裝」的路段（行李另外運送）：假設出力和揹 13 kg 時相同，用 Pandolf 能量公式換算成只揹 2 kg 的速度（體重以 50 kg 計）。<br><br>加速比例用一般步道的速度算，每種地形套同一比例：平路約快 15%，15% 上坡約快 22%，30% 上坡約快 24%；下坡用平路的算法，約快 15–25%。<br><br>下坡最多快 25%：陡下坡的快慢取決於落腳與煞車，不是體力；能量公式在慢速時會把減掉的負重全換成速度，比 −40% 陡的下坡會算到快 40–60%，所以設上限（「公式參數」可改）。<br><br>樹根岩塊、泥濘草徑的爬升與下降上限也按同一比例放寬。<br><br>林道輕裝依 10/20–21 實測、只算移動時間再乘：上坡 ×0.92（停車處→紅柵欄 2.4 km、爬升 388 m：實際 57 分，模型 57 分），下坡 ×0.75（原路下山：實際 34 分，模型 35 分）。<br><br>輕裝走一般步道、樹根、泥濘都沒有班級實測。<br><br>都可在「公式參數」修改。</li>
       <li>林道揹重裝：速度和一般步道相同（「林道重裝×」1.00）。<br><br>依據 10/20、10/21 四季林道揹 13 kg 實走，只算移動時間：上坡紅柵欄→廢棄護管所（3.3 km、爬升 468 m）實際 95 分、模型 100 分；下坡同段反向（下降 470 m）實際 72 分、模型 73 分。</li>
       <li>總時間＝走路時間 × 60 ÷（60 − 每小時停留）＋各點停留；每 20 m 分開算，比 −5% 陡的下坡用「下坡」的停留，其餘用「上坡與平路」。<br><br>上坡與平路預設每小時停 13 分，等於每小時走 47 分：走 47 分鐘的路要花 1 小時。13 分取自 10/6 步道段：休息 4 次、平均 8.3 分；短停 8 次、平均 4.2 分，合計約佔總時間的 22%。<br><br>下坡預設每小時停 6 分：10/21 四季林道下坡約 6 分，10/29 桃山下山 4–6 分。<br><br>集合、整隊、等人都算在這裡，不另外加。</li>
-      <li>隊伍速度：每 20 m 的走路時間 ÷ 倍數；比 −5% 陡的下坡用「下坡」倍數，其餘用「上坡與平路」。<br><br>樹根陡坡、泥濘草徑的爬升與下降上限也一起乘上倍數。<br><br>基準 1＝10/6、10/20–21 的八年級學生實測。<br><br>校準時把紀錄每 5 秒取一點，前後各 60 秒的淨位移換算不到每小時 0.6 km、而且高度變化不到每小時 90 m，才算停下來，其餘算走路。陡坡上慢慢爬，水平移動常不到 0.6 km，要靠高度變化認出來：10/29 桃山手錶紀錄，只看水平時上山多算了 107 分停留。<br><br>只用 GPS 定高度的手機，停著時高度也會跳：紀錄裡 10 分鐘以上的停留，高度變化中位數超過每小時 40 m，或沒有 10 分鐘以上的停留可以檢查，就只看水平移動。<br><br>走路的時間依當時的位置分到每 20 m，再和倍數 1 的模型比：倍數＝模型時間 ÷ 實際走路時間。<br><br>10 分鐘以內的停留換算成「途中停留」每小時幾分，依停留處前後 100 m 的坡度分上坡與平路、下坡；更長的（午餐、儀式）只列出來，不算進去。<br><br>跑的路段改用「跑步速度」倍數；校準時跑和走分開算，跑的部分有 5 分鐘以上才算倍數。</li>
-      <li>勾「跑」的路段：配速隨坡度的變化用 Kay（2012）分析 91 場上坡、15 場下坡賽事紀錄擬合的曲線（四次式；比 −26% 或 +32% 更陡時用文中的二次式延伸），只取形狀，快慢由「平地跑速」與「跑步速度」倍數決定。<br><br>平地每小時 8 km 時：−10% 下坡約 9.3 km、−20% 約 7.5 km、−30% 約 5.2 km（每小時下降約 1,550 m）；+10% 上坡約 5.3 km、+20% 約 3.4 km（每小時爬升約 680 m）。<br><br>高度、雨天、地形係數同走路；樹根陡坡、泥濘草徑的爬升與下降上限放寬 2.5 倍，是推估、沒有實測。<br><br>陡下坡煞車上限：樹根陡坡、泥濘草徑坡度 −20% 以下，跑速最快每小時 3.8／4.0 km，也不超過同一個人在一般步道同坡度跑速的 0.55／0.60 倍。數值取自勞侖茲健行預測 App 的 vMaxDown、brakePenalty，沒有實測，只當上限，不用它的 4.2 km/h 基底與負重折減；在「跑步速度」倍數之後才套用，一般步道、林道不受限。<br><br>跑的路段不看重裝，負重當輕裝。<br><br>Kay 的資料裡比賽每多 1 小時，配速慢約 16%，這裡沒有算；跑很久的路段，平地跑速填慢一點，或用自己長跑的紀錄校準。</li>
+      <li>隊伍速度：每 20 m 的走路時間 ÷ 倍數；比 −5% 陡的下坡用「下坡」倍數，其餘用「上坡與平路」。<br><br>樹根岩塊、泥濘草徑的爬升與下降上限也一起乘上倍數。<br><br>基準 1＝10/6、10/20–21 的八年級學生實測。<br><br>校準時把紀錄每 5 秒取一點，前後各 60 秒的淨位移換算不到每小時 0.6 km、而且高度變化不到每小時 90 m，才算停下來，其餘算走路。陡坡上慢慢爬，水平移動常不到 0.6 km，要靠高度變化認出來：10/29 桃山手錶紀錄，只看水平時上山多算了 107 分停留。<br><br>只用 GPS 定高度的手機，停著時高度也會跳：紀錄裡 10 分鐘以上的停留，高度變化中位數超過每小時 40 m，或沒有 10 分鐘以上的停留可以檢查，就只看水平移動。<br><br>走路的時間依當時的位置分到每 20 m，再和倍數 1 的模型比：倍數＝模型時間 ÷ 實際走路時間。<br><br>10 分鐘以內的停留換算成「途中停留」每小時幾分，依停留處前後 100 m 的坡度分上坡與平路、下坡；更長的（午餐、儀式）只列出來，不算進去。<br><br>跑的路段改用「跑步速度」倍數；校準時跑和走分開算，跑的部分有 5 分鐘以上才算倍數。</li>
+      <li>勾「跑」的路段：配速隨坡度的變化用 Kay（2012）分析 91 場上坡、15 場下坡賽事紀錄擬合的曲線（四次式；比 −26% 或 +32% 更陡時用文中的二次式延伸），只取形狀，快慢由「平地跑速」與「跑步速度」倍數決定。<br><br>平地每小時 8 km 時：−10% 下坡約 9.3 km、−20% 約 7.5 km、−30% 約 5.2 km（每小時下降約 1,550 m）；+10% 上坡約 5.3 km、+20% 約 3.4 km（每小時爬升約 680 m）。<br><br>高度、雨天、地形係數同走路；樹根岩塊、泥濘草徑的爬升與下降上限放寬 2.5 倍，是推估、沒有實測。<br><br>陡下坡煞車上限：樹根岩塊、泥濘草徑坡度 −20% 以下，跑速最快每小時 3.8／4.0 km，也不超過同一個人在一般步道同坡度跑速的 0.55／0.60 倍。數值取自勞侖茲健行預測 App 的 vMaxDown、brakePenalty，沒有實測，只當上限，不用它的 4.2 km/h 基底與負重折減；在「跑步速度」倍數之後才套用，一般步道、林道不受限。<br><br>跑的路段不看重裝，負重當輕裝。<br><br>Kay 的資料裡比賽每多 1 小時，配速慢約 16%，這裡沒有算；跑很久的路段，平地跑速填慢一點，或用自己長跑的紀錄校準。</li>
       <li>範例是 10/20 第 1 天實走：09:04 從四季公墓停車處起步（乘車段不列），紅柵欄（舊柵門）停 63 分取裝、入山儀式，途中午餐 25 分，加納富溪停 30 分，終點是巨木登山口後 239 m 的營地，當天 14:45 抵達。<br><br>紅柵欄以前行李上菜車、學生不揹大背包，這段設成林道、不勾重裝；紅柵欄到營地是林道、揹重裝；當天晴天，都不勾雨天。<br><br>範例估 15:08 抵達（隊伍速度 ×1、疲勞啟用；途中停留上坡與平路 13 分、下坡 6 分），比實際晚 23 分。紅柵欄以前晚 13 分（估 10:20，實際 10:07）：林道輕裝那 63 分鐘實際只停 6 分，模型每小時停 13 分，多算 10 分；疲勞再多 3 分。紅柵欄以後晚 10 分，其中疲勞佔 14 分，不算疲勞這段反而早 4 分。不勾「疲勞啟用」時估 14:51，晚 6 分。<br><br>距離與高度用 GPX 原值（和當天 Garmin 實測高度相比，差距中位數約 3 m，九成在 8 m 內）；巨木登山口到營地取自隨隊家長的 Garmin 軌跡。<br><br>其餘沒有算進去：拍照、天候突變與隊伍狀況。</li>
       <li>高度用檔案內的數值，每 20 m 取一點；錄製的軌跡（有時間記錄）先做 3 點平滑。<br><br>填了實測海拔的段落，高度在兩個已知點之間按距離線性修正。<br><br>曙光、暮光：太陽在地平線下 6° 的時刻（民用曙暮光）。日出、日落：太陽上緣在平地地平線上的時刻（海平面，含大氣折射）。曙光、日出用起點，日落、暮光用終點的座標，台灣時間（UTC+8）。時間表與剖面的光線標示用這四個時間：曙光開始～日出標「曙光」，日落～暮光結束標「暮光」，暮光結束到曙光之間標「夜間」。<br><br>地形遮蔽日出、地形遮蔽日落：依行程算一整天，出發前在起點，途中照預計時間，抵達後在終點；第一次照到太陽是地形遮蔽日出，最後一次是地形遮蔽日落，括號是當時的位置，和剖面的淡黃底一致。下載內政部 20 公尺網格數值地形模型（涵蓋台灣本島與龜山島、綠島、蘭嶼、小琉球；澎湖、金門、馬祖沒有），往太陽方向算 40 km 內山稜的仰角，含地球曲率、大氣折射與所在高度；太陽上緣高過山稜才算日出，落到山稜後就算日落；樹木高度不計（地形模型是地面高度）；整天都照不到太陽時標「—」。站得高、遠處又沒有更高的山時，會比平地的日出早、日落晚。<br><br>無地形遮蔽日照（剖面淡黃底）：沿路每一點用預計經過的時間，往太陽方向算山稜仰角，太陽上緣高過山稜就標淡黃；路線很長時每隔幾點算一次。下載時只送出地圖圖塊的編號，GPX 不會上傳；下載不到（例如離線）時標「無資料」，日出、日落、曙光、暮光照常顯示。<br><br>地形資料：內政部 20 公尺網格數值地形模型資料；圖磚由 OsmHackTW terrain-rgb 於 2023 年轉製。此開放資料依政府資料開放授權條款（Open Government Data License）進行公眾釋出，使用者於遵守本條款各項規定之前提下，得利用之。政府資料開放授權條款：<a href="https://data.gov.tw/license" target="_blank" rel="noopener">https://data.gov.tw/license</a></li>
     </ul>
@@ -911,13 +911,13 @@ var CORE = (function () {
     f: 1.00,                                   // overall time factor (v27: kept at 1; the team speed teamUp / teamDn is a setting)
     bodyKg: 50, lightKg: 2, calKg: 13, fatiguePct: 8, fatigueOn: true, vo2max: 0, fatB0: 1.05, fatAlpha: 0.15, fatBeta: 0.22, fatGammaS: 2.5, fatGammaL: 1.2,  // 0 = use default altPct; else scale altitude penalty vs ref 45         // light sections: same effort (Pandolf 1977) with lightKg instead of the 13 kg calibration load
     lightDnMax: 1.25,                          // v31: on descents the lighter pack makes you at most x1.25 faster (footing and braking limit steep descents, not effort)
-    runFlat: 8, runCapX: 2.5,                  // v31 跑: flat running speed km/h; vertical caps of 樹根陡坡／泥濘草徑 x2.5 when running (assumed, no data)
-    brkRootV: 3.8, brkRootP: 0.55, brkMudV: 4.0, brkMudP: 0.60,   // v36 跑, grade <= -20 % on 樹根陡坡／泥濘草徑: at most km/h, and at most x the same runner on 一般步道 (Lorentz app vMaxDown / brakePenalty; assumed, no data)
+    runFlat: 8, runCapX: 2.5,                  // v31 跑: flat running speed km/h; vertical caps of 樹根岩塊／泥濘草徑 x2.5 when running (assumed, no data)
+    brkRootV: 3.8, brkRootP: 0.55, brkMudV: 4.0, brkMudP: 0.60,   // v36 跑, grade <= -20 % on 樹根岩塊／泥濘草徑: at most km/h, and at most x the same runner on 一般步道 (Lorentz app vMaxDown / brakePenalty; assumed, no data)
     roadHeavyF: 1.00,                          // 林道 with 13 kg: time x1.00 (四季林道 moving time, 10/20 up 95 vs model 100 min, 10/21 down 72 vs 73 min)
     roadLightUp: 0.92, roadLightDown: 0.75,    // 林道 without the big pack: light time x0.92 uphill, x0.75 downhill (moving time 10/20 up 57 vs 62 min, 10/21 down 34 vs 46 min)
     terr: {
       trail: { name: '一般步道', sun: [1.00, 0, 0], rain: [0.90, 0, 0] },           // 0 = no vertical cap; rain x0.90 assumed (continuous rain or fog, wet steps)
-      root:  { name: '樹根陡坡', sun: [0.70, 260, 300], rain: [0.60, 220, 230] },   // roots and rocks, steep up and down (e.g. 戒茂斯→新武呂溪); caps in m/h with 13 kg
+      root:  { name: '樹根岩塊', sun: [0.70, 260, 300], rain: [0.60, 220, 230] },   // roots, rocks, scree: watch every step or use hands (e.g. 桃山 above the helipad, 新武呂溪 creek bed); a steep but smooth trail stays 一般步道 (v55); caps in m/h with 13 kg
       mud:   { name: '泥濘草徑', sun: [0.75, 260, 300], rain: [0.60, 220, 230] },
       road:  { name: '林道',     sun: [1.00, 0, 0], rain: [0.95, 0, 0] }             // forest road: roadHeavyF with 13 kg, roadLightUp / roadLightDown without; rain x0.95 assumed
     }
@@ -1114,12 +1114,12 @@ var CORE = (function () {
     var aK = (P.altPct || 0) / 100, a = Math.max(0, (zm - P.altRef) / 1000 * aK), fu = 1 - a, ff = 1 - a / 2, fd = 1 - a / 3;
     var fAlt = S >= 0.05 ? fu : (S <= -0.05 ? fd : ff);
     var h = dx / 1000 / (P.runFlat > 0 ? P.runFlat : 8) * kayPace(S) / 0.1707 / (fAlt * t[0]);   // terrain and rain factor as walking
-    var cx = P.runCapX > 0 ? P.runCapX : 2.5;                            // 樹根陡坡／泥濘草徑: walking caps (13 kg) x runCapX
+    var cx = P.runCapX > 0 ? P.runCapX : 2.5;                            // 樹根岩塊／泥濘草徑: walking caps (13 kg) x runCapX
     if (dz > 0 && t[1] > 0) h = Math.max(h, dz / (t[1] * cx * fu));
     else if (dz < 0 && t[2] > 0) h = Math.max(h, -dz / (t[2] * cx * fd));
     var v = S <= -0.05 ? P.runDn : P.runUp;                            // running factor, kept apart from the walking team speed
     h = h * (P.f > 0 ? P.f : 1) / (v > 0 ? v : 1);
-    // v36 steep-downhill brake limiter: only 樹根陡坡／泥濘草徑 at S <= -0.20, applied to the final speed (after the personal 跑步速度).
+    // v36 steep-downhill brake limiter: only 樹根岩塊／泥濘草徑 at S <= -0.20, applied to the final speed (after the personal 跑步速度).
     // Upper limits only: the Lorentz app's 4.2 km/h base and load factor are not used, so the running calibration is untouched.
     var bk = S <= BRAKE_S && dx > 0 ? (terr === 'root' ? [P.brkRootV, P.brkRootP] : (terr === 'mud' ? [P.brkMudV, P.brkMudP] : null)) : null;
     if (bk) {
@@ -2055,7 +2055,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     } else { w.hidden = true; w.innerHTML = ''; }
   }
 
-  var TERR_SHORT = { trail: '一般步道', root: '樹根陡坡', mud: '泥濘草徑', road: '林道' };
+  var TERR_SHORT = { trail: '一般步道', root: '樹根岩塊', mud: '泥濘草徑', road: '林道' };
   function refAlt() {   // mean altitude of the current track, to the nearest 100 m
     var z = T.track && T.track.z;
     if (!z || !z.length) return 1000;
@@ -2302,7 +2302,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     box._geom = { L: L, pw: pw, D: D, Tp: Tp, ph: ph, ty: ty, cps: cpx, bdx: bdx };
     var lg = [];
     for (var g = 0; g < 7; g++) lg.push('<span><i class="sw" style="background:var(--b' + g + ')"></i>' + BAND_LABEL[g] + '</span>');
-    lg.push('<span><i class="sw" style="background:var(--t-root)"></i>樹根陡坡</span>', '<span><i class="sw" style="background:var(--t-mud)"></i>泥濘草徑</span>', '<span><i class="sw" style="background:var(--t-road)"></i>林道</span>', '<span><i class="sw" style="background:var(--rain)"></i>雨天路段</span>');
+    lg.push('<span><i class="sw" style="background:var(--t-root)"></i>樹根岩塊</span>', '<span><i class="sw" style="background:var(--t-mud)"></i>泥濘草徑</span>', '<span><i class="sw" style="background:var(--t-road)"></i>林道</span>', '<span><i class="sw" style="background:var(--rain)"></i>雨天路段</span>');
     if (c.sun) lg.push('<span><i class="sw lit" style="background:var(--sun)"></i>無地形遮蔽日照</span>', '<span><i class="sw lit" style="background:var(--dusk)"></i>暮光／曙光</span>', '<span><i class="sw lit" style="background:var(--night)"></i>夜間</span>');   // v49
     if (hasRun()) lg.push('<span><i class="sw dash"></i>跑的路段</span>');
     if (BDS.length) lg.push('<span><i class="sw bdl"></i>路段分界（可拖拉）</span>');
@@ -3555,7 +3555,7 @@ if ($('mainFatigue')) {
     if (saved && saved.PP && saved.PP.terr && saved.PP.dinH !== undefined) {
       PP = saved.PP;
       Object.keys(C.DEFAULTS).forEach(function (k) { if (PP[k] === undefined) PP[k] = clone(C.DEFAULTS[k]); });
-      C.TERRAIN_KEYS.forEach(function (k) { if (!PP.terr[k]) PP.terr[k] = clone(C.DEFAULTS.terr[k]); PP.terr[k].name = C.DEFAULTS.terr[k].name; });   // names follow the code (v16: 樹根陡坡、林道)
+      C.TERRAIN_KEYS.forEach(function (k) { if (!PP.terr[k]) PP.terr[k] = clone(C.DEFAULTS.terr[k]); PP.terr[k].name = C.DEFAULTS.terr[k].name; });   // names follow the code (v16: 樹根陡坡、林道; v55: 樹根陡坡 → 樹根岩塊)
       delete PP.terr.light;   // v16: 輕裝 is the per-section 重裝 checkbox
       delete PP.roadF;        // v18: 林道輕裝 uses roadLightUp / roadLightDown
       if (isNum(PP.f) && Math.abs(+PP.f - 1) > 1e-6) {   // v27: 整體時間係數 (time x) → 隊伍速度 (speed x)
