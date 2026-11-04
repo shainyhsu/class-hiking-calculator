@@ -2,6 +2,7 @@
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
 
+- V54 | 2026-11-05 06:47 | Profile pinned under the top bar while editing sections or the timetable, both folded by default; points can be dragged along the profile; boundaries no longer snap to nearby points; share text laid out
 - V53 | 2026-11-04 20:04 | Added “Share” to the pinned top bar
 - V52 | 2026-11-04 19:35 | Made the 10% buffer the “Margin” option, ticked by default; redesigned the summary
 - V51 | 2026-11-04 17:46 | Removed the fatigue calculation; fixed 10% buffer on (moving + stops on the way)
