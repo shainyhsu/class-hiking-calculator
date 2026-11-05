@@ -2,7 +2,8 @@
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
 
-- V56 | 2026-11-05 08:08 | The downloaded GPX keeps the sections, points and start time, and loading it again restores them; numbers shown for narrow sections
+- V57 | 2026-11-05 10:07 | Crowded points on the profile are lifted apart, each with a thin line to its place; the share picture can be portrait or landscape
+- V56 | 2026-11-05 09:25 | The downloaded GPX keeps the sections, points and start time, and loading it again restores them; numbers shown for narrow sections
 - V55 | 2026-11-05 07:50 | Point numbers removed from the copied text and from the GPX waypoint names
 - V54 | 2026-11-05 07:03 | Profile pinned under the top bar while editing sections or the timetable, both folded by default; points can be dragged along the profile; boundaries no longer snap to nearby points; share text laid out
 - V53 | 2026-11-04 20:04 | Added “Share” to the pinned top bar
