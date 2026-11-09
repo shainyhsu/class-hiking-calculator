@@ -2,6 +2,8 @@
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
 
+- V63 | 2026-11-10 00:18 | Example pages are hidden from search engines (noindex), including the three already on the site
+- V62 | 2026-11-10 00:18 | Added a link-preview image (1200×630) so shared links show a picture in LINE, Facebook and other apps
 - V61 | 2026-11-09 11:24 | On wide screens the summary and share cards move to the left column (route file, summary, settings, share)
 - V60 | 2026-11-09 10:16 | Two-column layout on laptops and desktops (route file and settings on the left, profile, sections, timetable and summary on the right); phones unchanged; licence changed to an English “All rights reserved” notice
 - V59 | 2026-11-09 09:23 | Added a light/dark switch at the top right, dark by default and shared with the other tools
