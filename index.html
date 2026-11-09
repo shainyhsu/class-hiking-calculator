@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-Hant"><head><meta name="google-site-verification" content="EuIdbRlGY2Q9T_6FGNII7Cd8TPY33RUsOWCTVUMIB4U" /><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><title>步程試算｜GPX 登山行程時間估算（Tobler、DIN 33466、團體步速擬合）</title>
+<!doctype html><html lang="zh-Hant"><head><script>(function(){var t="dark";try{t=localStorage.getItem("theme")||"dark"}catch(e){}document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark")})()</script><meta name="google-site-verification" content="EuIdbRlGY2Q9T_6FGNII7Cd8TPY33RUsOWCTVUMIB4U" /><meta charset="utf-8"><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><title>步程試算｜GPX 登山行程時間估算（Tobler、DIN 33466、團體步速擬合）</title>
 <meta name="description" content="上傳 GPX 估算登山步程時間：依坡度、地形、雨天、重裝與海拔修正，以八年級班級實測校準，可用歷史軌跡擬合團體專屬步速，輸出時間表、高度剖面與日照遮蔽。">
 <link rel="canonical" href="https://shainyhsu.github.io/class-hiking-calculator/">
 <meta property="og:type" content="website">
@@ -500,6 +500,7 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
     <h1 id="appTitle">步程試算</h1>
     <div class="tbctl">
       <label class="hbtn tzbtn" id="tzBtn"><span id="tzTxt">TPE</span><select id="tzSel" aria-label="時區"></select></label>
+      <button type="button" class="hbtn langbtn" id="themeToggle"></button>
       <button type="button" class="hbtn langbtn" id="langBtn" aria-label="Switch to English" title="English"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7.25"/><path d="M2.9 10h14.2"/><path d="M10 2.75c2 2 3 4.4 3 7.25s-1 5.25-3 7.25c-2-2-3-4.4-3-7.25s1-5.25 3-7.25z"/></svg></button>
     </div>
   </header>
@@ -4248,4 +4249,5 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
 
 </script>
 <script defer src="https://cloud.umami.is/script.js" data-website-id="63c8bf83-5826-4ce5-bda6-06b1946cbe8b"></script>
+<script>(function(){var r=document.documentElement,b=document.getElementById("themeToggle");if(!b)return;var SUN='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>',MOON='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>';function sync(){var d=r.getAttribute("data-theme")!=="light";b.innerHTML=d?SUN:MOON;var l=d?"切換為淺色模式 / Light mode":"切換為深色模式 / Dark mode";b.title=l;b.setAttribute("aria-label",l)}b.addEventListener("click",function(){var n=r.getAttribute("data-theme")==="light"?"dark":"light";r.setAttribute("data-theme",n);try{localStorage.setItem("theme",n)}catch(e){}sync();try{window.dispatchEvent(new CustomEvent("themechange",{detail:n}))}catch(e){}});sync()})()</script>
 </body></html>
