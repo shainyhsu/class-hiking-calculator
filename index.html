@@ -493,6 +493,15 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
 /* V57: the picture's orientation choice sits with its button */
 .picgrp{display:inline-flex;align-items:center;flex-wrap:wrap;gap:8px}
 #profile .cplead{pointer-events:none}
+
+/* 寬螢幕兩欄：左欄檔案＋設定，右欄剖面／路段／時間表／摘要；手機維持單欄原順序 */
+.col-in,.col-out{display:contents}
+@media (min-width:1200px){
+  .wrap{max-width:1480px;grid-template-columns:minmax(400px,460px) minmax(0,1fr);column-gap:24px;align-items:start;padding-inline:24px}
+  .wrap>.topbar,.wrap>.intro,.wrap>.about,.wrap>.rights{grid-column:1/-1}
+  .col-in,.col-out{display:grid;gap:16px;min-width:0;align-content:start}
+  .col-in{grid-column:1}.col-out{grid-column:2}
+}
 </style>
 
 <main class="wrap">
@@ -506,7 +515,8 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
   </header>
   <details class="help intro"><summary>說明</summary><p class="sub">預設使用 Tobler 與 DIN 33466 各半的混合公式。上傳足夠的歷史實走 GPX 後，可用高斯-牛頓法解出團體專屬<strong>勞侖茲函數參數</strong>，之後改以勞侖茲函數為基底速度，再套用各路段的地形／雨天／重裝／高度修正。<br><br>可在「<a href="#setCard" data-jump="setCard">設定</a>」調整途中停留與輕裝負重；用<a href="#calBox" data-jump="calBox">歷史 GPX 做勞侖茲函數最佳化</a>後，團體步速由擬合參數決定，不再使用手動上下坡倍數。<br><br>「設定」的「餘裕」預設打勾：算出的時間多留 10%。</p></details>
 
-  <section class="card" id="fileCard" aria-labelledby="hFile">
+  <div class="col-in">
+<section class="card" id="fileCard" aria-labelledby="hFile">
     <h2 id="hFile">路線檔案</h2>
     <div class="row">
       <label class="btn primary" for="file"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M9 1.75H4.5A1.75 1.75 0 0 0 2.75 3.5v9a1.75 1.75 0 0 0 1.75 1.75h7a1.75 1.75 0 0 0 1.75-1.75V6z"/><path d="M9 1.75V6h4.25"/><path d="M8 12V8.25M6.4 9.85 8 8.25l1.6 1.6"/></svg>選擇 GPX／KML 檔</label>
@@ -638,7 +648,9 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
     </details>
   </section>
 
-  <div class="editzone" id="editZone">
+  </div>
+<div class="col-out">
+<div class="editzone" id="editZone">
   <section class="card prof-a" aria-labelledby="hProf">
     <h2 id="hProf">高度剖面</h2>
     <div>
@@ -717,7 +729,8 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
     <textarea class="copybox" id="copyText" readonly aria-label="純文字時間表"></textarea>
   </section>
 
-  <details class="card about">
+  </div>
+<details class="card about">
     <summary>模型怎麼算<span class="hint" style="margin-left:auto;font-weight:400">公式、資料來源、限制</span></summary>
     <ul>
       <li>餘裕：「設定」的「餘裕」打勾時（預設），時間表、移動時間、各路段的時間與速度都是模型再多留 10%；不勾就是模型本身的時間。<br><br>這一節的「模型」與「實際÷模型」，都是還沒多留 10% 的時間。</li>
