@@ -3287,7 +3287,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   }
   function exampleHtml() {
     var nm = T.name || T.fileName || _t('路線'), js = JSON.stringify(exampleState()).replace(/</g, '\\u003c');
-    return '<!doctype html>\n<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n' +
+    return '<!doctype html>\n<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n<meta name="robots" content="noindex">\n' +
       _t('<title>步程試算｜') + esc(nm) + '</title>\n' +
       _t('<!-- 步程試算 © 2026 shainyhsu. 範例資料：和步程試算的 index.html 放在同一個網站資料夾才能開，打開時用網站上最新版的步程試算。 -->\n') +
       '<script type="application/json" id="ctpSnap">' + js + '<\/script>\n</head><body>\n' +
