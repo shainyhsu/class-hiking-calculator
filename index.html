@@ -502,6 +502,13 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
   .col-in,.col-out{display:grid;gap:16px;min-width:0;align-content:start}
   .col-in{grid-column:1}.col-out{grid-column:2}
 }
+
+/* 手機維持原順序：檔案→設定→剖面→摘要→分享 */
+.wrap>.topbar{order:0}.wrap>.intro{order:1}#fileCard{order:2}#setCard{order:3}#editZone{order:4}.sumcard{order:5}.sharecard{order:6}.wrap>.about{order:7}.wrap>.rights{order:8}
+@media (min-width:1200px){
+  /* 左欄：檔案→摘要→設定→分享 */
+  .col-in>#fileCard{order:1}.col-in>.sumcard{order:2}.col-in>#setCard{order:3}.col-in>.sharecard{order:4}
+}
 </style>
 
 <main class="wrap">
@@ -648,6 +655,26 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
     </details>
   </section>
 
+  <section class="card sumcard" aria-labelledby="hSum">
+    <h2 id="hSum">摘要</h2>
+    <div class="kpis" id="kpis"></div>
+    <div class="timeline" id="tline"></div>
+    <details class="help" id="sumHelp"><summary>說明</summary><p class="hint" id="scenLine"></p></details>
+  </section>
+
+  <section class="card sharecard" aria-labelledby="hCopy">
+    <h2 id="hCopy" tabindex="-1">分享</h2>
+    <div class="tools">
+      <span class="picgrp"><span class="seg" role="radiogroup" aria-label="圖片方向"><input type="radio" name="pori" id="poP" value="p" checked><label for="poP">直式</label><input type="radio" name="pori" id="poL" value="l"><label for="poL">橫式</label></span><button class="btn primary" id="btnPic" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.25" y="3" width="11.5" height="10" rx="1.5"/><path d="M2.75 11.25 6 8l2.5 2.5 1.75-1.75 3 3"/><circle cx="10.5" cy="5.9" r="1"/></svg><span id="btnPicTxt">下載圖片</span></button></span>
+      <button class="btn" id="btnGpx" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 12.5c1.6-.4 2.2-2.6 4.3-3.2 2.4-.7 2.8-3.4 4.7-5.3"/><circle cx="3.25" cy="12.6" r="1.25"/><circle cx="12.75" cy="3.6" r="1.25"/></svg><span id="btnGpxTxt">下載 GPX</span></button>
+      <button class="btn" id="btnEx" type="button" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7.25M5 7l3 3 3-3"/><path d="M2.75 11.25v1.5c0 .7.55 1.25 1.25 1.25h8c.7 0 1.25-.55 1.25-1.25v-1.5"/></svg>下載範例檔</button>
+      <button class="btn" id="btnCopy" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.25" y="5.25" width="8.25" height="8.25" rx="1.5"/><path d="M10.75 5.25V3.75a1.25 1.25 0 0 0-1.25-1.25h-6A1.25 1.25 0 0 0 2.25 3.75v6A1.25 1.25 0 0 0 3.5 11h1.75"/></svg>複製全文</button>
+      <p class="hint" id="copyMsg" aria-live="polite"></p>
+    </div>
+    <details class="help"><summary>說明</summary><p class="hint">圖片只有高度剖面和時間表，可以直接用 LINE 傳。<br>圖片可選直式或橫式：直式適合手機看；橫式的剖面比較寬，點比較好分辨。<br>「複製全文」是給 LINE 用的純文字，各段之間空一行。<br>GPX 是這條航跡，加上時間表的每個點當航點（說明寫預計時間），可以匯入登山 App。<br>GPX 也存著路段、檢查點、停留和出發日期時間（不含最晚抵達）；用步程試算載入這個 GPX，就恢復成下載時的樣子。</p></details>
+    <textarea class="copybox" id="copyText" readonly aria-label="純文字時間表"></textarea>
+  </section>
+
   </div>
 <div class="col-out">
 <div class="editzone" id="editZone">
@@ -708,26 +735,6 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
     </div>
   </details>
   </div>
-
-  <section class="card sumcard" aria-labelledby="hSum">
-    <h2 id="hSum">摘要</h2>
-    <div class="kpis" id="kpis"></div>
-    <div class="timeline" id="tline"></div>
-    <details class="help" id="sumHelp"><summary>說明</summary><p class="hint" id="scenLine"></p></details>
-  </section>
-
-  <section class="card" aria-labelledby="hCopy">
-    <h2 id="hCopy" tabindex="-1">分享</h2>
-    <div class="tools">
-      <span class="picgrp"><span class="seg" role="radiogroup" aria-label="圖片方向"><input type="radio" name="pori" id="poP" value="p" checked><label for="poP">直式</label><input type="radio" name="pori" id="poL" value="l"><label for="poL">橫式</label></span><button class="btn primary" id="btnPic" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.25" y="3" width="11.5" height="10" rx="1.5"/><path d="M2.75 11.25 6 8l2.5 2.5 1.75-1.75 3 3"/><circle cx="10.5" cy="5.9" r="1"/></svg><span id="btnPicTxt">下載圖片</span></button></span>
-      <button class="btn" id="btnGpx" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 12.5c1.6-.4 2.2-2.6 4.3-3.2 2.4-.7 2.8-3.4 4.7-5.3"/><circle cx="3.25" cy="12.6" r="1.25"/><circle cx="12.75" cy="3.6" r="1.25"/></svg><span id="btnGpxTxt">下載 GPX</span></button>
-      <button class="btn" id="btnEx" type="button" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2.5v7.25M5 7l3 3 3-3"/><path d="M2.75 11.25v1.5c0 .7.55 1.25 1.25 1.25h8c.7 0 1.25-.55 1.25-1.25v-1.5"/></svg>下載範例檔</button>
-      <button class="btn" id="btnCopy" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.25" y="5.25" width="8.25" height="8.25" rx="1.5"/><path d="M10.75 5.25V3.75a1.25 1.25 0 0 0-1.25-1.25h-6A1.25 1.25 0 0 0 2.25 3.75v6A1.25 1.25 0 0 0 3.5 11h1.75"/></svg>複製全文</button>
-      <p class="hint" id="copyMsg" aria-live="polite"></p>
-    </div>
-    <details class="help"><summary>說明</summary><p class="hint">圖片只有高度剖面和時間表，可以直接用 LINE 傳。<br>圖片可選直式或橫式：直式適合手機看；橫式的剖面比較寬，點比較好分辨。<br>「複製全文」是給 LINE 用的純文字，各段之間空一行。<br>GPX 是這條航跡，加上時間表的每個點當航點（說明寫預計時間），可以匯入登山 App。<br>GPX 也存著路段、檢查點、停留和出發日期時間（不含最晚抵達）；用步程試算載入這個 GPX，就恢復成下載時的樣子。</p></details>
-    <textarea class="copybox" id="copyText" readonly aria-label="純文字時間表"></textarea>
-  </section>
 
   </div>
 <details class="card about">
