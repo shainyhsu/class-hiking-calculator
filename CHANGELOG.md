@@ -2,6 +2,9 @@
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
 
+- V60 | 2026-11-09 10:16 | Two-column layout on laptops and desktops (route file and settings on the left, profile, sections, timetable and summary on the right); phones unchanged; licence changed to an English “All rights reserved” notice
+- V59 | 2026-11-09 09:23 | Added a light/dark switch at the top right, dark by default and shared with the other tools
+- V58 | 2026-11-08 20:28 | Clearer page title, search description and link-preview text for search engines and AI search; language and character-set fixes
 - V57 | 2026-11-05 10:07 | Crowded points on the profile are lifted apart, each with a thin line to its place; the share picture can be portrait or landscape
 - V56 | 2026-11-05 09:25 | The downloaded GPX keeps the sections, points and start time, and loading it again restores them; numbers shown for narrow sections
 - V55 | 2026-11-05 07:50 | Point numbers removed from the copied text and from the GPX waypoint names
