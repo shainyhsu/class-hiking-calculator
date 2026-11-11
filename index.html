@@ -3411,8 +3411,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     var box = $('picPages'), info = $('picInfo');
     if (!box || !LAST) return;
     if (DRAG || PDRAG) { schedulePreview(); return; }
-    var wcss = Math.max(240, box.clientWidth || 0);
-    if (!box.clientWidth) return;   // card not on screen
+    var host = box.parentNode, cs = getComputedStyle(host), wIn = host.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0);
+    if (!(wIn > 0)) return;   // card not on screen (the empty preview box itself is hidden, so measure the card)
+    var wcss = Math.max(240, Math.floor(wIn));
     var land = S.picOri === 'l', my = ++PREV_N, dpr = Math.min(2, window.devicePixelRatio || 1);
     var PW = A4P[land ? 'l' : 'p'][0], kpx = wcss * dpr / PW;
     makePicDoc(land, Math.max(1, kpx * 1.4)).then(function (doc) {
