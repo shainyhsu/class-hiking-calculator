@@ -4421,6 +4421,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       clear();
     });
   }
+  window.addEventListener('hashchange', function () { if (/[#&][sk]=/.test(location.hash)) location.reload(); });   // a save link pasted into a tab already on this page
   // ---------- the button and its panel ----------
   var css = document.createElement('style');
   css.textContent = '.skpop{position:relative;grid-column:1/-1;width:100%;margin:2px 0 4px;padding:12px 14px;border:1px solid var(--ctl-line);border-radius:12px;background:var(--surface);color:var(--ink);box-sizing:border-box}' +
