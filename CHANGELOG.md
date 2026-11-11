@@ -1,4 +1,4 @@
-# Hike Time Estimator — Changelog
+# Hike Time Estimator: changelog
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
 
