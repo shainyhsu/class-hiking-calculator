@@ -1901,6 +1901,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       }));
     } catch (e) { /* storage unavailable: page still works */ }
   }
+  window.SAVEKIT_HOOK = { app: 'ctp', key: LS_KEY,   // V64: save link and file (see the save kit at the end)
+    get: function () { if (SNAP) return exampleState(); save(); try { return JSON.parse(localStorage.getItem(LS_KEY)); } catch (e) { return null; } },
+    name: function () { return snapName().replace(/\.html$/, ''); } };
   function packTrack(pr) {   // v27: keep the record times as seconds after the first point
     var t0 = null;
     pr.pts.forEach(function (p) { if (p.t !== null && p.t !== undefined && isFinite(p.t) && (t0 === null || p.t < t0)) t0 = p.t; });
@@ -4274,6 +4277,125 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   init();
 })();
 
+</script>
+<script>
+/* Save kit: the page already autosaves in this browser; this adds a save link (#s=) and a .json file, and opens them again. */
+(function () {
+  var H = window.SAVEKIT_HOOK; if (!H) return;
+  function en() { return /^en/.test(document.documentElement.lang || ''); }
+  function T(zh, e) { return en() ? e : zh; }
+  function b64u(bytes) { var s = ''; for (var i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000)); return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+  function unb64u(s) { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return Uint8Array.from(atob(s), function (c) { return c.charCodeAt(0); }); }
+  var SC = [1e6, 1e6, 10, 1];   // lat, lon, elevation (0.1 m), seconds
+  function packPts(a) {   // [[lat,lon,ele,(t)],...] -> column deltas of integers (much shorter in a link)
+    var cols = [], prev = [0, 0, 0, 0];
+    for (var c = 0; c < 4; c++) cols.push([]);
+    a.forEach(function (p) {
+      for (var c = 0; c < 4; c++) {
+        var v = p[c];
+        if (v === undefined) { cols[c].push(null); continue; }
+        if (v === null) { cols[c].push('n'); continue; }
+        var q = Math.round(v * SC[c]); cols[c].push(q - prev[c]); prev[c] = q;
+      }
+    });
+    return { _pk: cols };
+  }
+  function unpackPts(o) {
+    var cols = o._pk, n = cols[0].length, out = [], prev = [0, 0, 0, 0];
+    for (var i = 0; i < n; i++) {
+      var p = [];
+      for (var c = 0; c < 4; c++) {
+        var d = cols[c][i];
+        if (d === null || d === undefined) continue;
+        if (d === 'n') { p[c] = null; continue; }
+        prev[c] += d; p[c] = prev[c] / SC[c];
+      }
+      out.push(p);
+    }
+    return out;
+  }
+  function isPts(v) { return Array.isArray(v) && v.length > 3 && v.every(function (p) { return Array.isArray(p) && p.length >= 2 && p.length <= 4 && typeof p[0] === 'number' && typeof p[1] === 'number'; }); }
+  function walk(v, f) { if (Array.isArray(v)) return v.map(function (x) { return walk(x, f); }); if (v && typeof v === 'object') { var r = f(v); if (r !== v) return r; var o = {}; Object.keys(v).forEach(function (k) { o[k] = walk(v[k], f); }); return o; } return v; }
+  function shrink(st) { return walk(st, function (o) { if (!o._pk && o.pts && isPts(o.pts)) { var c = {}; Object.keys(o).forEach(function (k) { c[k] = k === 'pts' ? packPts(o.pts) : walk(o[k], function (x) { return x; }); }); return c; } return o; }); }
+  function grow(st) { return walk(st, function (o) { if (o._pk) return unpackPts(o); return o; }); }
+  function pack(obj) {
+    var raw = new TextEncoder().encode(JSON.stringify(obj));
+    if (typeof CompressionStream === 'undefined') return Promise.resolve('j' + b64u(raw));
+    return new Response(new Blob([raw]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer().then(function (b) { return 'z' + b64u(new Uint8Array(b)); });
+  }
+  function unpack(code) {
+    var k = code[0], bytes = unb64u(code.slice(1));
+    var p = k === 'z' ? new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer().then(function (b) { return new TextDecoder().decode(b); })
+          : k === 'j' ? Promise.resolve(new TextDecoder().decode(bytes)) : Promise.reject(new Error('bad'));
+    return p.then(function (t) { return JSON.parse(t); });
+  }
+  function wrap(state) { return { app: H.app, v: 1, saved: new Date().toISOString(), data: state }; }
+  window.__savekit = { pack: pack, unpack: unpack, shrink: shrink, grow: grow, wrap: wrap };
+  function home() { return location.origin + location.pathname.replace(/[^\/]*$/, ''); }
+  function put(w, okMsg) {   // w = wrapper read from a link or a file
+    if (!w || w.app !== H.app || !w.data || typeof w.data !== 'object') { alert(T('這不是這個工具存的資料，沒有載入。', 'This was not saved by this tool, so nothing was loaded.')); return false; }
+    var had = false; try { had = !!localStorage.getItem(H.key); } catch (e) { had = false; }
+    if (had && !confirm(T('載入會取代這台裝置上目前的資料，確定嗎？', 'Loading replaces the current data on this device. Continue?'))) return false;
+    try { localStorage.setItem(H.key, JSON.stringify(grow(w.data))); } catch (e) { alert(T('這個瀏覽器存不下，無法載入。', 'This browser has no room to store it, so it could not be loaded.')); return false; }
+    history.replaceState(null, '', home()); location.reload();
+    return true;
+  }
+  // a save link opened: store it, then reload the page without the link part
+  var m = /[#&]s=([A-Za-z0-9_\-]+)/.exec(location.hash);
+  if (m) {
+    unpack(m[1]).then(function (w) { if (!put(w)) history.replaceState(null, '', location.pathname + location.search); },
+      function () { alert(T('這個儲存連結不完整，無法載入。', 'This save link is incomplete and could not be loaded.')); history.replaceState(null, '', location.pathname + location.search); });
+  }
+  // ---------- the button and its panel ----------
+  var css = document.createElement('style');
+  css.textContent = '.skpop{position:relative;grid-column:1/-1;width:100%;margin:2px 0 4px;padding:12px 14px;border:1px solid var(--ctl-line);border-radius:12px;background:var(--surface);color:var(--ink);box-sizing:border-box}' +
+    '.skpop[hidden]{display:none}.skpop .skt{margin:0 0 4px;font-weight:700}.skpop .skn{margin:0 0 10px;color:var(--ink2);font-size:.88rem;line-height:1.5}' +
+    '.skpop .skr{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px}.skpop .skb{font:inherit;font-size:.9rem;min-height:38px;padding:.35rem .9rem;border:1px solid var(--ctl-line);border-radius:9px;background:var(--surface);color:var(--ink);cursor:pointer}' +
+    '.skpop .skb.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}.skpop .skm{margin:0;font-size:.86rem;color:var(--ink2);min-height:1.2em;white-space:pre-line}';
+  document.head.appendChild(css);
+  var bar = document.querySelector('.topbar .tbctl'); if (!bar) return;
+  var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'hbtn langbtn'; btn.id = 'saveBtn'; btn.setAttribute('aria-expanded', 'false');
+  btn.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round"><path d="M4.5 3h9l3 3v10a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M6.5 3v4h6V3M6.5 17v-5h7v5"/></svg>';
+  bar.insertBefore(btn, bar.firstChild);
+  var pop = document.createElement('div'); pop.className = 'skpop'; pop.hidden = true; pop.setAttribute('role', 'region');
+  var top = bar.closest('.topbar'); top.parentNode.insertBefore(pop, top.nextSibling);
+  var fileIn = document.createElement('input'); fileIn.type = 'file'; fileIn.accept = '.json,application/json'; fileIn.hidden = true; document.body.appendChild(fileIn);
+  function texts() {
+    btn.title = T('儲存', 'Save'); btn.setAttribute('aria-label', btn.title);
+    pop.innerHTML = '<p class="skt">' + T('儲存', 'Save') + '</p>' +
+      '<p class="skn">' + T('已自動存在這台裝置的瀏覽器。要換裝置或留備份，可以存成一條連結（傳給自己），或下載一個檔案；打開連結或開啟檔案就還原。', 'It already autosaves in this browser. To move to another device or keep a copy, save it as a link (send it to yourself) or as a file; opening the link or the file brings it back.') + '</p>' +
+      '<div class="skr"><button type="button" class="skb pri" data-sk="share">' + T('分享儲存連結', 'Share save link') + '</button><button type="button" class="skb" data-sk="copy">' + T('複製儲存連結', 'Copy save link') + '</button></div>' +
+      '<div class="skr"><button type="button" class="skb" data-sk="file">' + T('下載檔案（.json）', 'Download file (.json)') + '</button><button type="button" class="skb" data-sk="open">' + T('開啟檔案', 'Open file') + '</button></div>' +
+      '<p class="skm" role="status"></p>';
+  }
+  texts();
+  new MutationObserver(function () { var open = !pop.hidden; texts(); pop.hidden = !open; }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+  function say(t) { var e = pop.querySelector('.skm'); if (e) e.textContent = t; }
+  btn.addEventListener('click', function () { pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', String(!pop.hidden)); say(''); });
+  function link() { var st = H.get(); if (!st) return Promise.reject(new Error('empty')); return pack(wrap(shrink(st))).then(function (c) { return home() + '#s=' + c; }); }
+  function longNote(u) { return u.length > 4800 ? '\n' + T('連結有 ' + u.length.toLocaleString() + ' 個字，LINE 可能會截斷；傳給自己用 Email，或改用檔案。', 'The link is ' + u.length.toLocaleString() + ' characters long and LINE may cut it; send it by email, or use the file.') : ''; }
+  pop.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-sk]'); if (!b) return;
+    var a = b.getAttribute('data-sk');
+    if (a === 'share' || a === 'copy') {
+      link().then(function (u) {
+        if (a === 'share' && navigator.share) navigator.share({ title: document.title, url: u }).then(function () { say(T('已分享。打開這條連結就會載入這份資料。', 'Shared. Opening the link loads this data.') + longNote(u)); }, function () { say(''); });
+        else if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(function () { say(T('已複製儲存連結。', 'Save link copied.') + longNote(u)); }, function () { prompt(T('複製這條連結：', 'Copy this link:'), u); });
+        else prompt(T('複製這條連結：', 'Copy this link:'), u);
+      }, function () { say(T('目前沒有可以儲存的資料。', 'There is nothing to save yet.')); });
+    } else if (a === 'file') {
+      var st = H.get(); if (!st) { say(T('目前沒有可以儲存的資料。', 'There is nothing to save yet.')); return; }
+      var name = (H.name() || 'save').replace(/[\\\/:*?"<>|\s]+/g, '_') + '.json', blob = new Blob([JSON.stringify(wrap(st))], { type: 'application/json' });
+      var url = URL.createObjectURL(blob), el = document.createElement('a'); el.href = url; el.download = name; el.style.display = 'none'; document.body.appendChild(el); el.click();
+      setTimeout(function () { URL.revokeObjectURL(url); el.remove(); }, 1500);
+      say(T('已下載「' + name + '」（' + Math.max(1, Math.round(blob.size / 1024)) + ' KB）。', 'Downloaded “' + name + '” (' + Math.max(1, Math.round(blob.size / 1024)) + ' KB).'));
+    } else if (a === 'open') { fileIn.value = ''; fileIn.click(); }
+  });
+  fileIn.addEventListener('change', function () {
+    var f = fileIn.files && fileIn.files[0]; if (!f) return;
+    f.text().then(function (t) { var w = null; try { w = JSON.parse(t); } catch (e) { w = null; } put(w); });
+  });
+})();
 </script>
 <script defer src="https://cloud.umami.is/script.js" data-website-id="63c8bf83-5826-4ce5-bda6-06b1946cbe8b"></script>
 <script>(function(){var r=document.documentElement,b=document.getElementById("themeToggle");if(!b)return;var SUN='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>',MOON='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg>';function sync(){var d=r.getAttribute("data-theme")!=="light";b.innerHTML=d?SUN:MOON;var l=d?"切換為淺色模式 / Light mode":"切換為深色模式 / Dark mode";b.title=l;b.setAttribute("aria-label",l)}b.addEventListener("click",function(){var n=r.getAttribute("data-theme")==="light"?"dark":"light";r.setAttribute("data-theme",n);try{localStorage.setItem("theme",n)}catch(e){}sync();try{window.dispatchEvent(new CustomEvent("themechange",{detail:n}))}catch(e){}});sync()})()</script>

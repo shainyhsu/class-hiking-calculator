@@ -37,6 +37,7 @@ Formula sources and limitations are documented in the in-app “how the model wo
 
 Newest first. Times are Taiwan time (UTC+8). Also kept in [CHANGELOG.md](CHANGELOG.md).
 
+- V64 | 2026-11-11 09:45 | Save button at the top: share or copy a save link, or download and open a .json file, to move the whole plan (route, sections, points, settings, fitted parameters) to another device; it still autosaves in the browser
 - V63 | 2026-11-10 00:18 | Example pages are hidden from search engines (noindex), including the three already on the site
 - V62 | 2026-11-10 00:18 | Added a link-preview image (1200×630) so shared links show a picture in LINE, Facebook and other apps
 - V61 | 2026-11-09 11:24 | On wide screens the summary and share cards move to the left column (route file, summary, settings, share)
