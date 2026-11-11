@@ -4350,7 +4350,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   var css = document.createElement('style');
   css.textContent = '.skpop{position:relative;grid-column:1/-1;width:100%;margin:2px 0 4px;padding:12px 14px;border:1px solid var(--ctl-line);border-radius:12px;background:var(--surface);color:var(--ink);box-sizing:border-box}' +
     '.skpop[hidden]{display:none}.skpop .skt{margin:0 0 4px;font-weight:700}.skpop .skn{margin:0 0 10px;color:var(--ink2);font-size:.88rem;line-height:1.5}' +
-    '.skpop .skr{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px}.skpop .skb{font:inherit;font-size:.9rem;min-height:38px;padding:.35rem .9rem;border:1px solid var(--ctl-line);border-radius:9px;background:var(--surface);color:var(--ink);cursor:pointer}' +
+    '.skpop .skr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 8px}.skpop .skb{font:inherit;font-size:.9rem;line-height:1.25;min-height:40px;padding:.35rem .4rem;border:1px solid var(--ctl-line);border-radius:9px;background:var(--surface);color:var(--ink);cursor:pointer}' +
     '.skpop .skb.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}.skpop .skm{margin:0;font-size:.86rem;color:var(--ink2);min-height:1.2em;white-space:pre-line}';
   document.head.appendChild(css);
   var bar = document.querySelector('.topbar .tbctl'); if (!bar) return;
@@ -4364,8 +4364,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     btn.title = T('儲存', 'Save'); btn.setAttribute('aria-label', btn.title);
     pop.innerHTML = '<p class="skt">' + T('儲存', 'Save') + '</p>' +
       '<p class="skn">' + T('已自動存在這台裝置的瀏覽器。要換裝置或留備份，可以存成一條連結（傳給自己），或下載一個檔案；打開連結或開啟檔案就還原。', 'It already autosaves in this browser. To move to another device or keep a copy, save it as a link (send it to yourself) or as a file; opening the link or the file brings it back.') + '</p>' +
-      '<div class="skr"><button type="button" class="skb pri" data-sk="share">' + T('分享儲存連結', 'Share save link') + '</button><button type="button" class="skb" data-sk="copy">' + T('複製儲存連結', 'Copy save link') + '</button></div>' +
-      '<div class="skr"><button type="button" class="skb" data-sk="file">' + T('下載檔案（.json）', 'Download file (.json)') + '</button><button type="button" class="skb" data-sk="open">' + T('開啟檔案', 'Open file') + '</button></div>' +
+      '<div class="skr"><button type="button" class="skb pri" data-sk="share">' + T('分享連結', 'Share link') + '</button><button type="button" class="skb" data-sk="copy">' + T('複製連結', 'Copy link') + '</button>' +
+      '<button type="button" class="skb" data-sk="file">' + T('下載檔案', 'Download file') + '</button><button type="button" class="skb" data-sk="open">' + T('開啟檔案', 'Open file') + '</button></div>' +
       '<p class="skm" role="status"></p>';
   }
   texts();
