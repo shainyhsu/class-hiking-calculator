@@ -2,7 +2,7 @@
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
 
-- V68 | 2026-11-11 19:50 | The share picture is now A4 JPG (300 dpi, portrait 2,480 × 3,508 px or landscape), split onto more pages when long, with a live A4 preview in the Share card; new "Mirroring" button adds the same way back from the destination (sections and points mirrored) for day hikes up and down one trail, press again to undo
+- V68 | 2026-11-11 19:35 | The share picture is now A4 JPG (300 dpi, portrait 2,480 × 3,508 px or landscape), split onto more pages when long, with a live A4 preview in the Share card; new "Mirroring" button adds the same way back from the destination (sections and points mirrored) for day hikes up and down one trail, press again to undo
 - V67 | 2026-11-11 11:45 | Pasting a save link into a tab that already has the page open now loads it too (before, only a fresh open did)
 - V66 | 2026-11-11 11:25 | Save links are now short (about 90 characters): the save is encrypted in your browser, only the scrambled copy is stored online, and the key stays in the link, so whoever has the link can open it without signing in; the full link is used if the short one can't be made
 - V65 | 2026-11-11 10:07 | New license terms: free to use in a browser for personal, work, school or club use, and the results you make are yours to share; copying, paid services built on it, and AI training need written permission. A License link sits at the bottom of the page
