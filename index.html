@@ -4279,7 +4279,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
 
 </script>
 <script>
-/* Save kit: the page already autosaves in this browser; this adds a save link (#s=) and a .json file, and opens them again. */
+/* Save kit: the page already autosaves in this browser; this adds a short save link (#k=, encrypted here, ciphertext kept in a Google Form), the full link (#s=) as fallback, and a .json file, and opens them again. */
 (function () {
   var H = window.SAVEKIT_HOOK; if (!H) return;
   function en() { return /^en/.test(document.documentElement.lang || ''); }
@@ -4331,6 +4331,68 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   }
   function wrap(state) { return { app: H.app, v: 1, saved: new Date().toISOString(), data: state }; }
   window.__savekit = { pack: pack, unpack: unpack, shrink: shrink, grow: grow, wrap: wrap };
+
+  // ---------- short link: encrypted in this browser, stored as ciphertext in a Google Form; the key stays after # ----------
+  var SK_FORM = 'https://docs.google.com/forms/d/e/1FAIpQLSe6mK5S_y6qt84UZ9xm9PBspIqZ0YdQI6U4ewn5NmxV6KyFLA/formResponse',
+      SK_SHEET = 'https://docs.google.com/spreadsheets/d/1FzgzKveIMY-fuJmFBwfyNeHgHMcdOhCx02N-McPFJZ8/gviz/tq?tqx=out:csv&gid=536355035&tq=',
+      SK_ID = 'entry.1365346943', SK_D = 'entry.1799144279', SK_CHUNK = 28000, SK_MAXCHUNKS = 20;
+  function canShort() { return !!(window.crypto && crypto.subtle && window.fetch); }
+  function rid(n) { var a = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789', r = crypto.getRandomValues(new Uint8Array(n)), s = ''; for (var i = 0; i < n; i++) s += a[r[i] % a.length]; return s; }
+  function aes(raw, use) { return crypto.subtle.importKey('raw', raw, { name: 'AES-GCM' }, false, [use]); }
+  function seal(text) {   // -> {key, blob}: AES-GCM 128, blob = iv + ciphertext
+    var key = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+    return aes(key, 'encrypt').then(function (k) { return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, k, new TextEncoder().encode(text)); })
+      .then(function (ct) { var b = new Uint8Array(12 + ct.byteLength); b.set(iv); b.set(new Uint8Array(ct), 12); return { key: b64u(key), blob: b64u(b) }; });
+  }
+  function unseal(blob, key) {
+    var b = unb64u(blob), kb = unb64u(key); if (kb.length !== 16 || b.length < 29) return Promise.reject(new Error('bad'));
+    return aes(kb, 'decrypt').then(function (k) { return crypto.subtle.decrypt({ name: 'AES-GCM', iv: b.subarray(0, 12) }, k, b.subarray(12)); })
+      .then(function (pt) { return new TextDecoder().decode(pt); });
+  }
+  function csv(t) {   // rows of cells; handles quotes
+    var rows = [], row = [], cell = '', q = false;
+    for (var i = 0; i < t.length; i++) {
+      var c = t[i];
+      if (q) { if (c === '"') { if (t[i + 1] === '"') { cell += '"'; i++; } else q = false; } else cell += c; }
+      else if (c === '"') q = true; else if (c === ',') { row.push(cell); cell = ''; }
+      else if (c === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; } else if (c !== '\r') cell += c;
+    }
+    if (cell || row.length) { row.push(cell); rows.push(row); }
+    return rows;
+  }
+  function fetchParts(id) {   // -> joined blob, or null when not (yet) all there
+    var q = "select B,C where B starts with '" + id + ".' order by B";
+    return fetch(SK_SHEET + encodeURIComponent(q), { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error('net'); return r.text(); }).then(function (t) {
+      var parts = {}, n = 0;
+      csv(t).forEach(function (r) { var m = /^([A-Za-z0-9]+)\.(\d+)\.(\d+)$/.exec(r[0] || ''); if (m && m[1] === id) { parts[+m[2]] = r[1]; n = +m[3]; } });
+      if (!n) return null;
+      var out = ''; for (var i = 0; i < n; i++) { if (parts[i] === undefined) return null; out += parts[i]; }
+      return out;
+    });
+  }
+  function postPart(id, i, n, d) {
+    var f = new URLSearchParams(); f.append(SK_ID, id + '.' + i + '.' + n); f.append(SK_D, d);
+    return fetch(SK_FORM, { method: 'POST', mode: 'no-cors', body: f });
+  }
+  function shortLink(code) {   // code = packed save; resolves to the short link once it can be read back
+    return seal(code).then(function (s) {
+      var id = rid(10), parts = [];
+      for (var i = 0; i < s.blob.length; i += SK_CHUNK) parts.push(s.blob.slice(i, i + SK_CHUNK));
+      if (parts.length > SK_MAXCHUNKS) throw new Error('big');
+      var chain = Promise.resolve();
+      parts.forEach(function (d, i) { chain = chain.then(function () { return postPart(id, i, parts.length, d); }); });
+      var tries = 0;
+      function check() {
+        return new Promise(function (ok) { setTimeout(ok, tries ? 1500 : 700); }).then(function () { return fetchParts(id); }).then(function (got) {
+          if (got === s.blob) return home() + '#k=' + id + '.' + s.key;
+          if (++tries >= 10) throw new Error('verify');
+          return check();
+        });
+      }
+      return chain.then(check);
+    });
+  }
+  window.__savekit.seal = seal; window.__savekit.unseal = unseal; window.__savekit.csv = csv; window.__savekit.shortLink = shortLink; window.__savekit.fetchParts = fetchParts;
   function home() { return location.origin + location.pathname.replace(/[^\/]*$/, ''); }
   function put(w, okMsg) {   // w = wrapper read from a link or a file
     if (!w || w.app !== H.app || !w.data || typeof w.data !== 'object') { alert(T('這不是這個工具存的資料，沒有載入。', 'This was not saved by this tool, so nothing was loaded.')); return false; }
@@ -4345,6 +4407,19 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   if (m) {
     unpack(m[1]).then(function (w) { if (!put(w)) history.replaceState(null, '', location.pathname + location.search); },
       function () { alert(T('這個儲存連結不完整，無法載入。', 'This save link is incomplete and could not be loaded.')); history.replaceState(null, '', location.pathname + location.search); });
+  }
+  var mk = /[#&]k=([A-Za-z0-9]+)\.([A-Za-z0-9_\-]+)/.exec(location.hash);
+  if (mk && !m) {
+    var clear = function () { history.replaceState(null, '', location.pathname + location.search); };
+    if (!canShort()) { alert(T('這個瀏覽器無法開啟短連結，請改用 Chrome、Safari 或 Edge。', 'This browser cannot open short links; try Chrome, Safari or Edge.')); clear(); }
+    else fetchParts(mk[1]).then(function (blob) {
+      if (!blob) throw new Error('gone');
+      return unseal(blob, mk[2]).then(unpack);
+    }).then(function (w) { if (!put(w)) clear(); }, function (e) {
+      alert(e && e.message === 'net' || e instanceof TypeError ? T('連不上儲存處，請確認網路後重新整理。', 'Could not reach the storage. Check the connection and reload.')
+        : T('這條短連結找不到資料或不完整，無法載入。', 'This short link has no data or is incomplete, so it could not be loaded.'));
+      clear();
+    });
   }
   // ---------- the button and its panel ----------
   var css = document.createElement('style');
@@ -4372,14 +4447,25 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   new MutationObserver(function () { var open = !pop.hidden; texts(); pop.hidden = !open; }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   function say(t) { var e = pop.querySelector('.skm'); if (e) e.textContent = t; }
   btn.addEventListener('click', function () { pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', String(!pop.hidden)); say(''); });
-  function link() { var st = H.get(); if (!st) return Promise.reject(new Error('empty')); return pack(wrap(shrink(st))).then(function (c) { return home() + '#s=' + c; }); }
-  function longNote(u) { return u.length > 4800 ? '\n' + T('連結有 ' + u.length.toLocaleString() + ' 個字，LINE 可能會截斷；傳給自己用 Email，或改用檔案。', 'The link is ' + u.length.toLocaleString() + ' characters long and LINE may cut it; send it by email, or use the file.') : ''; }
+  var cache = { j: null, u: null };
+  function link() {   // short link when possible; the long #s= link if the storage can't be used
+    var st = H.get(); if (!st) return Promise.reject(new Error('empty'));
+    var j = JSON.stringify(st); if (cache.j === j) return Promise.resolve(cache.u);
+    return pack(wrap(shrink(st))).then(function (c) {
+      var long = home() + '#s=' + c;
+      if (!canShort()) return long;
+      say(T('正在產生短連結…', 'Making a short link…'));
+      return shortLink(c).then(function (u) { cache = { j: j, u: u }; return u; }, function () { cache = { j: j, u: long }; say(''); longOnly = true; return long; });
+    });
+  }
+  var longOnly = false;
+  function longNote(u) { var f = longOnly && /#s=/.test(u) ? '\n' + T('暫時無法產生短連結，先給完整連結。', 'A short link could not be made right now, so this is the full link.') : ''; longOnly = false; return f + (u.length > 4800 ? '\n' + T('連結有 ' + u.length.toLocaleString() + ' 個字，LINE 可能會截斷；傳給自己用 Email，或改用檔案。', 'The link is ' + u.length.toLocaleString() + ' characters long and LINE may cut it; send it by email, or use the file.') : ''); }
   pop.addEventListener('click', function (e) {
     var b = e.target.closest('[data-sk]'); if (!b) return;
     var a = b.getAttribute('data-sk');
     if (a === 'share' || a === 'copy') {
       link().then(function (u) {
-        if (a === 'share' && navigator.share) navigator.share({ title: document.title, url: u }).then(function () { say(T('已分享。打開這條連結就會載入這份資料。', 'Shared. Opening the link loads this data.') + longNote(u)); }, function () { say(''); });
+        if (a === 'share' && navigator.share) navigator.share({ title: document.title, url: u }).then(function () { say(T('已分享。打開這條連結就會載入這份資料。', 'Shared. Opening the link loads this data.') + longNote(u)); }, function (er) { say(er && er.name === 'NotAllowedError' ? T('短連結好了，請再按一次「分享連結」。', 'The short link is ready; tap Share link again.') : ''); });
         else if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(function () { say(T('已複製儲存連結。', 'Save link copied.') + longNote(u)); }, function () { prompt(T('複製這條連結：', 'Copy this link:'), u); });
         else prompt(T('複製這條連結：', 'Copy this link:'), u);
       }, function () { say(T('目前沒有可以儲存的資料。', 'There is nothing to save yet.')); });
