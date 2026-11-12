@@ -3293,22 +3293,23 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       else if (shadeAt(c, cp.d, first ? r.dep : r.arr)) chips.push([_t('地形遮蔽無日照'), 'shade']);
       if (!first && dl !== null && r.arr > dl) chips.push([_t('超過最晚抵達'), 'crit']);
       var chipW = chips.reduce(function (sum, ch) { return sum + tw(ch[0], '600 11px ' + fu) + 18; }, 0), nf2 = '700 15px ' + fu;
-      var nm = fit(cp.name || '', nf2, Math.max(40, avail - chipW)); if (nm !== (cp.name || '')) CUT++;
+      var nm = fit(cp.name || '', nf2, Math.max(40, avail - chipW)), chipDown = false;
+      if (chips.length && nm !== (cp.name || '')) { chipDown = true; nm = fit(cp.name || '', nf2, Math.max(40, avail)); }   // V71: no room beside the name: tags go on a line of their own
+      if (nm !== (cp.name || '')) CUT++;
       text(nm, nx, top + 16, nf2, col['--ink']);
-      var chx = nx + tw(nm, nf2) + 6;
-      chips.forEach(function (ch) { chx += chip(ch[0], chx, top + 15, ch[1]) + 4; });
+      var chx = chipDown ? nx : nx + tw(nm, nf2) + 6, chy = chipDown ? top + 35 : top + 15;
+      chips.forEach(function (ch) { chx += chip(ch[0], chx, chy, ch[1]) + 4; });
       var mt = [km(R(cp.d)) + _t(' km｜') + nf(C.zAt(c.tr, cp.d)) + ' m'], mls = [], cur = '';   // V57: the line breaks between its parts, not inside one
       if (!first) { mt.push(_t('｜移動 ') + dur(r.seg)); if (r.rest >= 1) mt.push(_t('＋途中停留 ') + Math.round(r.rest) + _t(' 分')); }
       mt.forEach(function (pt) { if (cur && tw(cur + pt, lf2) > right - nx) { mls.push(cur); cur = pt.replace(/^[｜|\s]+/, ''); } else cur += pt; });
       mls.push(cur);
-      var yy = top + 16;
+      var yy = top + 16 + (chipDown ? 20 : 0);
       mls.forEach(function (ml) { wrap(ml, lf2, right - nx).forEach(function (ln) { yy += 17; text(ln, nx, yy, lf2, col['--ink2']); }); });
       if (!first && !isLast && r.stop > 0) { yy += 17; text(_f('停 {0} 分，{1} 出發', Math.round(r.stop), hm(r.dep)), nx, yy, '600 12px ' + fu, col['--ink']); }
       var yb = yy + 10;
       if (sep) { var ly = yb; ops.push(function (g) { g.fillStyle = col['--line']; g.fillRect(nx, ly, right - nx, 1); }); }
       return yb;
     }
-    if (!land) rows.forEach(function (r, i) { if (i === 0) rule(0); y = drawRow(r, i, X, CW, y, i < rows.length - 1); if (i === rows.length - 1) { rule(y); y += 6; } cut(); });
     var nR = rows.length, gap = 28;
     function colBlock(i0, i1, n) {   // landscape: rows i0..i1-1 in n columns, read top to bottom, then the next column
       var o0 = ops, y0 = y; ops = []; rule(0);
@@ -3338,6 +3339,19 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       pages[pages.length - 1].push({ bk: bk, y: cy, f: f }); cy += h * f;
     }
     blocks.forEach(place);
+    if (!land) {   // V71: portrait timetable in 2 columns (name and time sit closer); as many rows as fit go on each page
+      var j0 = 0;
+      while (j0 < nR) {
+        var room2 = (lim - cy) / sc, kk = nR - j0, bk4 = null;
+        while (kk >= 1) { bk4 = colBlock(j0, j0 + kk, nR - j0 >= 4 ? Math.min(2, kk) : 1); if (bk4.h <= room2) break; kk--; }
+        if (kk < 1) {
+          if (pages[pages.length - 1].length && cy > TOPY + RUN + 1) { newPage(); continue; }
+          kk = 1; bk4 = colBlock(j0, j0 + 1, 1);
+        }
+        place(bk4); j0 += kk;
+        if (j0 < nR) newPage();
+      }
+    }
     if (land) {
       var i0 = 0;
       while (i0 < nR) {

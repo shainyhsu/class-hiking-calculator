@@ -2,6 +2,7 @@
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
 
+- V71 | 2026-11-13 08:05 | In the portrait A4 picture the timetable runs in two columns, so each name sits close to its time and more of it fits on a page; a tag that leaves no room beside a name goes on its own line under it
 - V70 | 2026-11-13 07:40 | The A4 share picture fills its pages: when it runs just over a page (up to about 18%), the whole layout is shrunk to fit one page fewer, and the room left on a nearly full page is spread between its parts instead of sitting blank at the bottom
 - V69 | 2026-11-13 01:40 | One link per plan: sharing a plan again after changes asks whether to update the old link (everyone who has it opens the new version) or make a new one. The save panel, picture footer, GPX and copied text show the case code, version and time, so people can check they have the newest
 - V68 | 2026-11-11 19:35 | The share picture is now A4 JPG (300 dpi, portrait 2,480 × 3,508 px or landscape), split onto more pages when long, with a live A4 preview in the Share card; new "Mirroring" button adds the same way back from the destination (sections and points mirrored) for day hikes up and down one trail, press again to undo
