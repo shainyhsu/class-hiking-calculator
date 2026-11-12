@@ -3325,10 +3325,12 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       return bk;
     }
     // pages: A4 in pt, 10 mm margins, running head after page 1, footer on every page
-    var PW = A4P[land ? 'l' : 'p'][0], PH = A4P[land ? 'l' : 'p'][1], M0 = 28.35, CWp = PW - 2 * M0, sc = CWp / CW;
+    var PW = A4P[land ? 'l' : 'p'][0], PH = A4P[land ? 'l' : 'p'][1], M0 = 28.35, CWp = PW - 2 * M0, sc0 = CWp / CW, sc = sc0, SH = 1, OX = M0;
     var TOPY = M0, BOTY = PH - M0, FOOT = 18, RUN = 24, title = T.name || T.fileName || _t('路線');
-    var pages = [[]], cy = TOPY, lim = BOTY - FOOT - 4;
-    function newPage() { pages.push([]); cy = TOPY + RUN; }
+    var pages, cy, ends, lim = BOTY - FOOT - 4;
+    function layout(s) {   // V70: s = how much the whole content is shrunk; returns the number of pages
+    sc = sc0 * s; pages = [[]]; cy = TOPY; ends = [];
+    function newPage() { ends.push(cy); pages.push([]); cy = TOPY + RUN; }
     function place(bk) {
       var h = bk.h * sc;
       if (cy + h > lim && pages[pages.length - 1].length) newPage();
@@ -3353,6 +3355,17 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
         if (i0 < nR) newPage();
       }
     }
+    ends.push(cy);
+    return pages.length;
+    }
+    var n1 = layout(1);
+    if (n1 > 1) for (var s9 = 0.98; s9 > 0.81; s9 -= 0.02) if (layout(s9) < n1) { SH = s9; break; }   // V70: a little over: shrink onto one page fewer
+    if (SH === 1 && n1 > 1) layout(1);
+    OX = M0 + CWp * (1 - SH) / 2;
+    pages.forEach(function (pg, pi) {   // V70: spread the room left on a page between its blocks, unless the page is mostly empty
+      var top = pi ? TOPY + RUN : TOPY, spare = lim - ends[pi];
+      if (pg.length > 1 && spare > 0 && spare <= 0.35 * (lim - top)) pg.forEach(function (e, j) { e.y += spare * j / (pg.length - 1); });
+    });
     var N = pages.length, foot = _t('步程試算 © 2026 shainyhsu'), CS = (window.__savekit && window.__savekit.stamp ? window.__savekit.stamp() : null), fF = function (w, z) { return w + ' ' + z + 'px ' + fu; };
     return {
       W: PW, H: PH, n: N,
@@ -3365,7 +3378,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
           var rt = title + _t('（續）'); g.fillText(rt, M0, TOPY + 9); g.fillStyle = col['--line']; g.fillRect(M0, TOPY + 14, CWp, 0.6);
         }
         pages[i].forEach(function (e) {
-          g.save(); g.translate(M0, e.y); g.scale(sc * e.f, sc * e.f); g.translate(-X, 0);
+          g.save(); g.translate(OX, e.y); g.scale(sc * e.f, sc * e.f); g.translate(-X, 0);
           e.bk.ops.forEach(function (op) { g.save(); op(g); g.restore(); });
           g.restore();
         });
