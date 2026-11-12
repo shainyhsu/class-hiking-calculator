@@ -3353,7 +3353,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
         if (i0 < nR) newPage();
       }
     }
-    var N = pages.length, foot = _t('步程試算 © 2026 shainyhsu'), fF = function (w, z) { return w + ' ' + z + 'px ' + fu; };
+    var N = pages.length, foot = _t('步程試算 © 2026 shainyhsu'), CS = (window.__savekit && window.__savekit.stamp ? window.__savekit.stamp() : null), fF = function (w, z) { return w + ' ' + z + 'px ' + fu; };
     return {
       W: PW, H: PH, n: N,
       paint: function (cv, i, k) {
@@ -3371,7 +3371,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
         });
         g.fillStyle = col['--line']; g.fillRect(M0, BOTY - FOOT + 4, CWp, 0.6);
         g.font = fF(400, 7.2); g.fillStyle = col['--ink2']; g.textBaseline = 'alphabetic';
-        g.textAlign = 'left'; g.fillText(foot, M0, BOTY - 2);
+        var ft = foot, pgw = N > 1 ? 40 : 0;   // V69: the case and version, and the link to the newest when it fits
+        if (CS) { ft += '｜' + CS.label; if (!CS.mod && g.measureText(ft + '  ' + CS.url).width < CWp - pgw) ft += '  ' + CS.url; }
+        g.textAlign = 'left'; g.fillText(ft, M0, BOTY - 2);
         if (N > 1) { g.textAlign = 'right'; g.fillText(I18N.lang === 'en' ? 'Page ' + (i + 1) + ' of ' + N : (i + 1) + '／' + N, M0 + CWp, BOTY - 2); }
         return cv;
       }
@@ -3493,7 +3495,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     function ll(p) { return 'lat="' + (+p.lat).toFixed(6) + '" lon="' + (+p.lon).toFixed(6) + '"'; }
     var L = ['<?xml version="1.0" encoding="UTF-8"?>',
       _t('<gpx version="1.1" creator="步程試算 © 2026 shainyhsu" xmlns="http://www.topografix.com/GPX/1/1">'),
-      '<metadata><name>' + xmlEsc(name) + '</name><desc>' + xmlEsc(_f('{0}（{1}）{2} 出發，{3} 抵達｜移動 {4}｜{5}', ds, WD[dd.getDay()], hm(c.startMin), hm(last.arr), durZh(c.m.total * 60), wxText())) + '</desc><time>' + new Date().toISOString() + '</time>' +
+      '<metadata><name>' + xmlEsc(name) + '</name><desc>' + xmlEsc(_f('{0}（{1}）{2} 出發，{3} 抵達｜移動 {4}｜{5}', ds, WD[dd.getDay()], hm(c.startMin), hm(last.arr), durZh(c.m.total * 60), wxText())) + '</desc>' + (function () { var cs = (window.__savekit && window.__savekit.stamp ? window.__savekit.stamp() : null); return cs && !cs.mod ? '<link href="' + xmlEsc(cs.url) + '"><text>' + xmlEsc(cs.label) + '</text></link>' : ''; })() + '<time>' + new Date().toISOString() + '</time>' +
       '<extensions><ctp:plan xmlns:ctp="' + CTP_NS + '">' + xmlEsc(JSON.stringify(planState())) + '</ctp:plan></extensions></metadata>'];   // V56: the plan, for 步程試算 itself
     var mine = [];   // [lat, lon, name]
     rows.forEach(function (r, i) {   // every point of the timetable, numbered as on the profile and in the picture
@@ -3616,6 +3618,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       if (cal && !timed) throw new Error(_t('這個檔案沒有時間紀錄，不能校準。請用手機 App 或手錶「錄下來」的軌跡，GPX 裡每一點都要有時間。'));
       if (cal && !T.stash && T.parsed) T.stash = snapRoute();
       if (cal) S.calKg = '';
+      if (!cal && window.__savekit && window.__savekit.newCase) window.__savekit.newCase();   // V69: a new file is a new case
       var vi = vehicleInfo(parsed);
       T.parsed = parsed; T.name = parsed.name; T.fileName = name; T.reversed = false; T.range = null; T.isSample = false; T.mirrored = false; T.preMirror = null;
       T.secsFull = []; T.zStart = null; T.warn = ''; T.suggest = null; S.hourSkip = []; S.cutSkip = [];
@@ -3722,7 +3725,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     card.addEventListener('dragover', function (e) { e.preventDefault(); card.classList.add('drop'); });
     card.addEventListener('dragleave', function () { card.classList.remove('drop'); });
     card.addEventListener('drop', function (e) { e.preventDefault(); card.classList.remove('drop'); handleFile(e.dataTransfer.files && e.dataTransfer.files[0]); });
-    $('btnSample').addEventListener('click', function () { loadSample(); setRangeInputs(); hideError(); render(); });
+    $('btnSample').addEventListener('click', function () { if (window.__savekit && window.__savekit.newCase) window.__savekit.newCase(); loadSample(); setRangeInputs(); hideError(); render(); });
     $('btnReverse').addEventListener('click', function () {
       var tot = T.full.total;
       if (T.range) T.range = [tot - T.range[1], tot - T.range[0]];
@@ -4293,10 +4296,12 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       var ta = $('copyText'), msg = $('copyMsg');
       function fallback() { ta.focus(); ta.select(); msg.textContent = _t('已選取全文，請用系統的複製。'); }
       try {
-        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(ta.value).then(function () { msg.textContent = _t('已複製。'); }, fallback);
+        var cs = (window.__savekit && window.__savekit.stamp ? window.__savekit.stamp() : null), txt = ta.value + (cs ? '\n\n' + cs.label + (cs.mod ? '' : '\n' + cs.url) : '');   // V69: which case and version
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(function () { msg.textContent = _t('已複製。'); }, fallback);
         else fallback();
       } catch (err) { fallback(); }
     });
+    window.addEventListener('savekitcase', function () { schedulePreview(); });   // V69: the picture footer shows the new case or version
     var sumCard = $('hSum').closest('section'), bar = $('liveBar');   // v30: show the live bar while the summary is off screen
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (es) { es.forEach(function (en) { bar.hidden = en.isIntersecting; }); setPinTop(); }, { threshold: 0.05 }).observe(sumCard);
@@ -4400,7 +4405,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
 
 </script>
 <script>
-/* Save kit: the page already autosaves in this browser; this adds a short save link (#k=, encrypted here, ciphertext kept in a Google Form), the full link (#s=) as fallback, and a .json file, and opens them again. */
+/* Save kit: the page already autosaves in this browser; this adds a short save link (#k=, encrypted here, ciphertext kept in a Google Form), the full link (#s=) as fallback, and a .json file, and opens them again.
+   v3 cases: the first short link makes a case (id + key, kept in localStorage[key + '.case'] and in the .json file); sharing a changed case again can update the same link as a new version, so an old link always opens the newest version. */
 (function () {
   var H = window.SAVEKIT_HOOK; if (!H) return;
   function en() { return /^en/.test(document.documentElement.lang || ''); }
@@ -4460,8 +4466,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   function canShort() { return !!(window.crypto && crypto.subtle && window.fetch); }
   function rid(n) { var a = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789', r = crypto.getRandomValues(new Uint8Array(n)), s = ''; for (var i = 0; i < n; i++) s += a[r[i] % a.length]; return s; }
   function aes(raw, use) { return crypto.subtle.importKey('raw', raw, { name: 'AES-GCM' }, false, [use]); }
-  function seal(text) {   // -> {key, blob}: AES-GCM 128, blob = iv + ciphertext
-    var key = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  function seal(text, k64) {   // -> {key, blob}: AES-GCM 128, blob = iv + ciphertext; k64 = the case's key when updating it
+    var key = k64 ? unb64u(k64) : crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
     return aes(key, 'encrypt').then(function (k) { return crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, k, new TextEncoder().encode(text)); })
       .then(function (ct) { var b = new Uint8Array(12 + ct.byteLength); b.set(iv); b.set(new Uint8Array(ct), 12); return { key: b64u(key), blob: b64u(b) }; });
   }
@@ -4481,31 +4487,36 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     if (cell || row.length) { row.push(cell); rows.push(row); }
     return rows;
   }
-  function fetchParts(id) {   // -> joined blob, or null when not (yet) all there
+  function fetchVers(id) {   // -> {version: joined blob} for every version that is all there (rows "id.i.n" = version 1, "id.i.n.v" = version v)
     var q = "select B,C where B starts with '" + id + ".' order by B";
     return fetch(SK_SHEET + encodeURIComponent(q), { cache: 'no-store' }).then(function (r) { if (!r.ok) throw new Error('net'); return r.text(); }).then(function (t) {
-      var parts = {}, n = 0;
-      csv(t).forEach(function (r) { var m = /^([A-Za-z0-9]+)\.(\d+)\.(\d+)$/.exec(r[0] || ''); if (m && m[1] === id) { parts[+m[2]] = r[1]; n = +m[3]; } });
-      if (!n) return null;
-      var out = ''; for (var i = 0; i < n; i++) { if (parts[i] === undefined) return null; out += parts[i]; }
+      var V = {}, out = {};
+      csv(t).forEach(function (r) {
+        var m = /^([A-Za-z0-9]+)\.(\d+)\.(\d+)(?:\.(\d+))?$/.exec(r[0] || ''); if (!m || m[1] !== id) return;
+        var v = m[4] ? +m[4] : 1, o = V[v] || (V[v] = { n: +m[3], p: {} }); o.p[+m[2]] = r[1]; o.n = +m[3];
+      });
+      Object.keys(V).forEach(function (v) { var o = V[v], b = ''; for (var i = 0; i < o.n; i++) { if (o.p[i] === undefined) return; b += o.p[i]; } out[v] = b; });
       return out;
     });
   }
-  function postPart(id, i, n, d) {
-    var f = new URLSearchParams(); f.append(SK_ID, id + '.' + i + '.' + n); f.append(SK_D, d);
+  function newest(o) { return Object.keys(o).map(Number).sort(function (a, b) { return b - a; })[0]; }
+  function fetchLatest(id) { return fetchVers(id).then(function (o) { var v = newest(o); return v ? { v: v, blob: o[v] } : null; }); }
+  function fetchParts(id, v) { return fetchVers(id).then(function (o) { var w = v || newest(o); return w && o[w] !== undefined ? o[w] : null; }); }
+  function postPart(id, i, n, d, v) {
+    var f = new URLSearchParams(); f.append(SK_ID, id + '.' + i + '.' + n + (v > 1 ? '.' + v : '')); f.append(SK_D, d);
     return fetch(SK_FORM, { method: 'POST', mode: 'no-cors', body: f });
   }
-  function shortLink(code) {   // code = packed save; resolves to the short link once it can be read back
-    return seal(code).then(function (s) {
-      var id = rid(10), parts = [];
+  function shortLink(code, cs) {   // code = packed save; cs = the case to update (else a new one); resolves to {url, id, key, v} once it can be read back
+    return seal(code, cs && cs.key).then(function (s) {
+      var id = cs ? cs.id : rid(10), v = cs ? (cs.v || 1) + 1 : 1, parts = [];
       for (var i = 0; i < s.blob.length; i += SK_CHUNK) parts.push(s.blob.slice(i, i + SK_CHUNK));
       if (parts.length > SK_MAXCHUNKS) throw new Error('big');
       var chain = Promise.resolve();
-      parts.forEach(function (d, i) { chain = chain.then(function () { return postPart(id, i, parts.length, d); }); });
+      parts.forEach(function (d, i) { chain = chain.then(function () { return postPart(id, i, parts.length, d, v); }); });
       var tries = 0;
       function check() {
-        return new Promise(function (ok) { setTimeout(ok, tries ? 1500 : 700); }).then(function () { return fetchParts(id); }).then(function (got) {
-          if (got === s.blob) return home() + '#k=' + id + '.' + s.key;
+        return new Promise(function (ok) { setTimeout(ok, tries ? 1500 : 700); }).then(function () { return fetchParts(id, v); }).then(function (got) {
+          if (got === s.blob) return { url: home() + '#k=' + id + '.' + s.key, id: id, key: s.key, v: v };
           if (++tries >= 10) throw new Error('verify');
           return check();
         });
@@ -4513,30 +4524,50 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       return chain.then(check);
     });
   }
-  window.__savekit.seal = seal; window.__savekit.unseal = unseal; window.__savekit.csv = csv; window.__savekit.shortLink = shortLink; window.__savekit.fetchParts = fetchParts;
+  window.__savekit.seal = seal; window.__savekit.unseal = unseal; window.__savekit.csv = csv; window.__savekit.shortLink = shortLink; window.__savekit.fetchParts = fetchParts; window.__savekit.fetchLatest = fetchLatest;
   function home() { return location.origin + location.pathname.replace(/[^\/]*$/, ''); }
-  function put(w, okMsg) {   // w = wrapper read from a link or a file
+  // ---------- v3: the case this work belongs to ----------
+  var CK = H.key + '.case';
+  function hash(t) { var h = 0x811c9dc5; for (var i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36) + '.' + t.length; }
+  function getCase() { try { var c = JSON.parse(localStorage.getItem(CK)); return c && c.id && c.key ? c : null; } catch (e) { return null; } }
+  function setCase(c) { try { if (c) localStorage.setItem(CK, JSON.stringify(c)); else localStorage.removeItem(CK); } catch (e) { /* no storage */ } try { window.dispatchEvent(new Event('savekitcase')); } catch (e) { /* old browser */ } }
+  function curHash() { var st = H.get(); return st ? hash(JSON.stringify(st)) : ''; }
+  function when(iso) { var d = new Date(iso); if (isNaN(d)) return ''; function p(n) { return (n < 10 ? '0' : '') + n; } return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()); }
+  function caseCode(c) { return c.id.slice(0, 6); }
+  function caseLabel(c, mod) {
+    return mod ? T('案號 ' + caseCode(c) + '・第 ' + c.v + ' 版之後有修改，尚未分享', 'Case ' + caseCode(c) + ' · changed after version ' + c.v + ', not shared yet')
+      : T('案號 ' + caseCode(c) + '・第 ' + c.v + ' 版・' + when(c.t), 'Case ' + caseCode(c) + ' · version ' + c.v + ' · ' + when(c.t));
+  }
+  function stamp() {   // for the picture, GPX and text: which case and version they show, and the link that always opens the newest
+    var c = getCase(); if (!c) return null;
+    var mod = c.h !== 'p' && c.h !== curHash();
+    return { label: caseLabel(c, mod), url: home() + '#k=' + c.id + '.' + c.key, mod: mod, code: caseCode(c), v: c.v };
+  }
+  window.__savekit.stamp = stamp; window.__savekit.hash = hash;
+  window.__savekit.newCase = function () { setCase(null); };   // the app calls this when a new file or the sample replaces the work
+  if (window.addEventListener) window.addEventListener('load', function () { setTimeout(function () { var c = getCase(); if (c && c.h === 'p') { c.h = curHash(); setCase(c); } }, 300); });
+  function put(w, cs) {   // w = wrapper read from a link or a file; cs = its case (null: the loaded work starts without one)
     if (!w || w.app !== H.app || !w.data || typeof w.data !== 'object') { alert(T('這不是這個工具存的資料，沒有載入。', 'This was not saved by this tool, so nothing was loaded.')); return false; }
     var had = false; try { had = !!localStorage.getItem(H.key); } catch (e) { had = false; }
     if (had && !confirm(T('載入會取代這台裝置上目前的資料，確定嗎？', 'Loading replaces the current data on this device. Continue?'))) return false;
-    try { localStorage.setItem(H.key, JSON.stringify(grow(w.data))); } catch (e) { alert(T('這個瀏覽器存不下，無法載入。', 'This browser has no room to store it, so it could not be loaded.')); return false; }
+    try { localStorage.setItem(H.key, JSON.stringify(grow(w.data))); setCase(cs ? { id: cs.id, key: cs.key, v: cs.v || 1, t: cs.t || w.saved || '', h: 'p' } : null); } catch (e) { alert(T('這個瀏覽器存不下，無法載入。', 'This browser has no room to store it, so it could not be loaded.')); return false; }
     history.replaceState(null, '', home()); location.reload();
     return true;
   }
   // a save link opened: store it, then reload the page without the link part
   var m = /[#&]s=([A-Za-z0-9_\-]+)/.exec(location.hash);
   if (m) {
-    unpack(m[1]).then(function (w) { if (!put(w)) history.replaceState(null, '', location.pathname + location.search); },
+    unpack(m[1]).then(function (w) { if (!put(w, null)) history.replaceState(null, '', location.pathname + location.search); },
       function () { alert(T('這個儲存連結不完整，無法載入。', 'This save link is incomplete and could not be loaded.')); history.replaceState(null, '', location.pathname + location.search); });
   }
   var mk = /[#&]k=([A-Za-z0-9]+)\.([A-Za-z0-9_\-]+)/.exec(location.hash);
   if (mk && !m) {
     var clear = function () { history.replaceState(null, '', location.pathname + location.search); };
     if (!canShort()) { alert(T('這個瀏覽器無法開啟短連結，請改用 Chrome、Safari 或 Edge。', 'This browser cannot open short links; try Chrome, Safari or Edge.')); clear(); }
-    else fetchParts(mk[1]).then(function (blob) {
-      if (!blob) throw new Error('gone');
-      return unseal(blob, mk[2]).then(unpack);
-    }).then(function (w) { if (!put(w)) clear(); }, function (e) {
+    else fetchLatest(mk[1]).then(function (got) {   // v3: the newest version of this case
+      if (!got) throw new Error('gone');
+      return unseal(got.blob, mk[2]).then(unpack).then(function (w) { return { w: w, v: got.v }; });
+    }).then(function (o) { if (!put(o.w, { id: mk[1], key: mk[2], v: o.v, t: o.w.saved })) clear(); }, function (e) {
       alert(e && e.message === 'net' || e instanceof TypeError ? T('連不上儲存處，請確認網路後重新整理。', 'Could not reach the storage. Check the connection and reload.')
         : T('這條短連結找不到資料或不完整，無法載入。', 'This short link has no data or is incomplete, so it could not be loaded.'));
       clear();
@@ -4548,7 +4579,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   css.textContent = '.skpop{position:relative;grid-column:1/-1;width:100%;margin:2px 0 4px;padding:12px 14px;border:1px solid var(--ctl-line);border-radius:12px;background:var(--surface);color:var(--ink);box-sizing:border-box}' +
     '.skpop[hidden]{display:none}.skpop .skt{margin:0 0 4px;font-weight:700}.skpop .skn{margin:0 0 10px;color:var(--ink2);font-size:.88rem;line-height:1.5}' +
     '.skpop .skr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 8px}.skpop .skb{font:inherit;font-size:.9rem;line-height:1.25;min-height:40px;padding:.35rem .4rem;border:1px solid var(--ctl-line);border-radius:9px;background:var(--surface);color:var(--ink);cursor:pointer}' +
-    '.skpop .skb.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}.skpop .skm{margin:0;font-size:.86rem;color:var(--ink2);min-height:1.2em;white-space:pre-line}';
+    '.skpop .skb.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}.skpop .skm{margin:0;font-size:.86rem;color:var(--ink2);min-height:1.2em;white-space:pre-line}' +
+    '.skpop .skc{margin:0 0 8px;font-size:.86rem;color:var(--ink2)}.skpop .skc:empty{display:none}.skpop .skq{margin:0 0 8px;padding:10px;border:1px solid var(--ctl-line);border-radius:10px}.skpop .skq[hidden]{display:none}' +
+    '.skpop .skq p{margin:0 0 8px;font-size:.88rem;line-height:1.5}.skpop .skq .skr2{display:grid;grid-template-columns:1fr 1fr;gap:8px}';
   document.head.appendChild(css);
   var bar = document.querySelector('.topbar .tbctl'); if (!bar) return;
   var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'hbtn langbtn'; btn.id = 'saveBtn'; btn.setAttribute('aria-expanded', 'false');
@@ -4563,37 +4596,58 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       '<p class="skn">' + T('已自動存在這台裝置的瀏覽器。要換裝置或留備份，可以存成一條連結（傳給自己），或下載一個檔案；打開連結或開啟檔案就還原。', 'It already autosaves in this browser. To move to another device or keep a copy, save it as a link (send it to yourself) or as a file; opening the link or the file brings it back.') + '</p>' +
       '<div class="skr"><button type="button" class="skb pri" data-sk="share">' + T('分享連結', 'Share link') + '</button><button type="button" class="skb" data-sk="copy">' + T('複製連結', 'Copy link') + '</button>' +
       '<button type="button" class="skb" data-sk="file">' + T('下載檔案', 'Download file') + '</button><button type="button" class="skb" data-sk="open">' + T('開啟檔案', 'Open file') + '</button></div>' +
+      '<p class="skc"></p>' +
+      '<div class="skq" hidden><p>' + T('這份資料分享過，之後又改了。新版要怎麼給？', 'This was shared before and has changed since. How should the new version go out?') + '<br><span style="color:var(--ink2)">' +
+      T('更新原連結：之前收到連結的人打開就是新版。產生新連結：舊連結維持原樣。', 'Update the link: everyone with the old link opens the new version. New link: the old link stays as it was.') + '</span></p>' +
+      '<div class="skr2"><button type="button" class="skb pri" data-sk="upd"></button><button type="button" class="skb" data-sk="new">' + T('產生新連結', 'New link') + '</button></div></div>' +
       '<p class="skm" role="status"></p>';
+    showCase();
+  }
+  function showCase() {
+    var e = pop.querySelector('.skc'), c = getCase(); if (!e) return;
+    var st = c ? stamp() : null; e.textContent = st ? T('目前：', 'Now: ') + st.label : '';
+    var u = pop.querySelector('[data-sk="upd"]'); if (u && c) u.textContent = T('更新原連結（第 ' + (c.v + 1) + ' 版）', 'Update the link (version ' + (c.v + 1) + ')');
   }
   texts();
   new MutationObserver(function () { var open = !pop.hidden; texts(); pop.hidden = !open; }).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   function say(t) { var e = pop.querySelector('.skm'); if (e) e.textContent = t; }
-  btn.addEventListener('click', function () { pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', String(!pop.hidden)); say(''); });
-  var cache = { j: null, u: null };
-  function link() {   // short link when possible; the long #s= link if the storage can't be used
+  function ask(on) { var q = pop.querySelector('.skq'); if (q) q.hidden = !on; }
+  btn.addEventListener('click', function () { pop.hidden = !pop.hidden; btn.setAttribute('aria-expanded', String(!pop.hidden)); say(''); ask(false); showCase(); });
+  var cache = { j: null, u: null }, pend = null;
+  function link(mode) {   // short link when possible; the long #s= link if the storage can't be used. mode: 'upd' = a new version of the case, 'new' = a new case, none = ask when the case changed
     var st = H.get(); if (!st) return Promise.reject(new Error('empty'));
-    var j = JSON.stringify(st); if (cache.j === j) return Promise.resolve(cache.u);
+    var j = JSON.stringify(st), h = hash(j), cs = canShort() ? getCase() : null;
+    if (cs && cs.h === 'p') { cs.h = h; setCase(cs); }   // just loaded and not changed yet
+    if (cs && cs.h === h && !mode) return Promise.resolve(home() + '#k=' + cs.id + '.' + cs.key);   // unchanged since its last version: the same link
+    if (!cs && cache.j === j) return Promise.resolve(cache.u);
+    if (cs && !mode) return Promise.reject(new Error('ask'));
     return pack(wrap(shrink(st))).then(function (c) {
       var long = home() + '#s=' + c;
       if (!canShort()) return long;
       say(T('正在產生短連結…', 'Making a short link…'));
-      return shortLink(c).then(function (u) { cache = { j: j, u: u }; return u; }, function () { cache = { j: j, u: long }; say(''); longOnly = true; return long; });
+      return shortLink(c, mode === 'upd' ? cs : null).then(function (r) {
+        setCase({ id: r.id, key: r.key, v: r.v, t: new Date().toISOString(), h: h }); cache = { j: null, u: null }; showCase(); return r.url;
+      }, function () { cache = { j: j, u: long }; say(''); longOnly = true; return long; });
     });
   }
   var longOnly = false;
   function longNote(u) { var f = longOnly && /#s=/.test(u) ? '\n' + T('暫時無法產生短連結，先給完整連結。', 'A short link could not be made right now, so this is the full link.') : ''; longOnly = false; return f + (u.length > 4800 ? '\n' + T('連結有 ' + u.length.toLocaleString() + ' 個字，LINE 可能會截斷；傳給自己用 Email，或改用檔案。', 'The link is ' + u.length.toLocaleString() + ' characters long and LINE may cut it; send it by email, or use the file.') : ''); }
   pop.addEventListener('click', function (e) {
     var b = e.target.closest('[data-sk]'); if (!b) return;
-    var a = b.getAttribute('data-sk');
+    var a = b.getAttribute('data-sk'), mode = null;
+    if (a === 'upd' || a === 'new') { if (!pend) return; mode = a; a = pend; ask(false); }
     if (a === 'share' || a === 'copy') {
-      link().then(function (u) {
-        if (a === 'share' && navigator.share) navigator.share({ title: document.title, url: u }).then(function () { say(T('已分享。打開這條連結就會載入這份資料。', 'Shared. Opening the link loads this data.') + longNote(u)); }, function (er) { say(er && er.name === 'NotAllowedError' ? T('短連結好了，請再按一次「分享連結」。', 'The short link is ready; tap Share link again.') : ''); });
-        else if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(function () { say(T('已複製儲存連結。', 'Save link copied.') + longNote(u)); }, function () { prompt(T('複製這條連結：', 'Copy this link:'), u); });
+      pend = a;
+      link(mode).then(function (u) {
+        pend = null;
+        var c = getCase(), ver = c && /#k=/.test(u) ? T('（第 ' + c.v + ' 版）', ' (version ' + c.v + ')') : '';
+        if (a === 'share' && navigator.share) navigator.share({ title: document.title, url: u }).then(function () { say(T('已分享', 'Shared') + ver + T('。打開這條連結就會載入這份資料。', '. Opening the link loads this data.') + longNote(u)); }, function (er) { say(er && er.name === 'NotAllowedError' ? T('短連結好了，請再按一次「分享連結」。', 'The short link is ready; tap Share link again.') : ''); });
+        else if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(function () { say(T('已複製儲存連結', 'Save link copied') + ver + T('。', '.') + longNote(u)); }, function () { prompt(T('複製這條連結：', 'Copy this link:'), u); });
         else prompt(T('複製這條連結：', 'Copy this link:'), u);
-      }, function () { say(T('目前沒有可以儲存的資料。', 'There is nothing to save yet.')); });
+      }, function (er) { if (er && er.message === 'ask') { say(''); showCase(); ask(true); return; } pend = null; say(T('目前沒有可以儲存的資料。', 'There is nothing to save yet.')); });
     } else if (a === 'file') {
       var st = H.get(); if (!st) { say(T('目前沒有可以儲存的資料。', 'There is nothing to save yet.')); return; }
-      var name = (H.name() || 'save').replace(/[\\\/:*?"<>|\s]+/g, '_') + '.json', blob = new Blob([JSON.stringify(wrap(st))], { type: 'application/json' });
+      var name = (H.name() || 'save').replace(/[\\\/:*?"<>|\s]+/g, '_') + '.json', blob = new Blob([JSON.stringify((function () { var wf = wrap(st), cf = getCase(); if (cf) wf.case = { id: cf.id, key: cf.key, v: cf.v, t: cf.t }; return wf; })())], { type: 'application/json' });   // v3: the file keeps its case
       var url = URL.createObjectURL(blob), el = document.createElement('a'); el.href = url; el.download = name; el.style.display = 'none'; document.body.appendChild(el); el.click();
       setTimeout(function () { URL.revokeObjectURL(url); el.remove(); }, 1500);
       say(T('已下載「' + name + '」（' + Math.max(1, Math.round(blob.size / 1024)) + ' KB）。', 'Downloaded “' + name + '” (' + Math.max(1, Math.round(blob.size / 1024)) + ' KB).'));
@@ -4601,7 +4655,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   });
   fileIn.addEventListener('change', function () {
     var f = fileIn.files && fileIn.files[0]; if (!f) return;
-    f.text().then(function (t) { var w = null; try { w = JSON.parse(t); } catch (e) { w = null; } put(w); });
+    f.text().then(function (t) { var w = null; try { w = JSON.parse(t); } catch (e) { w = null; } put(w, w && w.case && w.case.id && w.case.key ? w.case : null); });
   });
 })();
 </script>
