@@ -196,6 +196,7 @@ td .del{min-width:28px}
 .del:hover{color:var(--crit);border-color:var(--crit);background:var(--crit-bg)}
 /* live result: pinned to the bottom while the summary card is off screen */
 .livebar{position:fixed;left:0;right:0;top:0;bottom:auto;z-index:30;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 16px;margin:0;border:0;border-bottom:3px solid var(--accent);background:var(--accent-soft);color:var(--ink);font:inherit;font-size:1.2rem;font-weight:700;cursor:pointer;padding-top:calc(10px + env(safe-area-inset-top, 0px));padding-bottom:10px;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));box-shadow:0 3px 14px var(--shadow)}
+.wrap{padding-top:max(80px, calc(var(--lb-h, 0px) + 20px))}   /* V74: on narrow phones the live bar wraps to two lines; keep the title clear of it */
 .livebar .lb{display:inline-flex;align-items:baseline;gap:6px}
 .livebar .lb-k{color:var(--ink);font-size:1rem;font-weight:600}
 .livebar b{font-family:var(--font-num);font-weight:800;font-size:1.45rem;font-variant-numeric:tabular-nums;color:var(--ink)}
@@ -4335,11 +4336,13 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (es) { es.forEach(function (en) { bar.hidden = en.isIntersecting; }); setPinTop(); }, { threshold: 0.05 }).observe(sumCard);
     }
+    if ('ResizeObserver' in window && bar) new ResizeObserver(function () { if (!bar.hidden) setPinTop(); }).observe(bar);   // V74: re-measure when the bar wraps or unwraps
     // V54: 路段與地形 and 時間表 fold (folded on load); while one is open the profile sticks under the live bar
     var zone = $('editZone'), pin = $('profPin'), folds = [$('secCard'), $('tblCard')], PIN_TOP = 0, stuckRaf = 0;
     function setPinTop() {
       PIN_TOP = bar && !bar.hidden ? Math.round(bar.getBoundingClientRect().height) : 0;
       document.documentElement.style.setProperty('--pin-top', PIN_TOP + 'px');
+      if (PIN_TOP) document.documentElement.style.setProperty('--lb-h', PIN_TOP + 'px');   // V74: keep the last height, so hiding the bar never shifts the page
       stuckCheck();
     }
     function stuckCheck() {
