@@ -35,6 +35,7 @@ Copyright (c) 2026 Shainy Hsu. All rights reserved. See [LICENSE](LICENSE).
 
 Newest first. Times are Taiwan time (UTC+8). Also kept in [CHANGELOG.md](CHANGELOG.md).
 
+- V74 | 2026-11-13 20:10 | On narrow phones, where the results bar at the top wraps to two lines, the page now leaves room for it, so the bar no longer covers the title.
 - V73 | 2026-11-13 09:36 | Added a classic favicon.ico tab icon for older browsers and search tools.
 - V72 | 2026-11-13 09:20 | Added a tab icon and an "All tools" link in the footer; the km range boxes and the GPX upload now have labels for screen readers, and the keyboard focus ring shows again.
 - V71 | 2026-11-13 08:05 | In the portrait A4 picture the timetable runs in two columns, so each name sits close to its time and more of it fits on a page; a tag that leaves no room beside a name goes on its own line under it
