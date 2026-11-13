@@ -2781,7 +2781,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       o.push('<g class="stag" aria-hidden="true"><rect x="' + x0.toFixed(1) + '" y="' + y0 + '" width="' + w + '" height="14" rx="3"></rect><text x="' + (x0 + w / 2).toFixed(1) + '" y="' + (y0 + 10.5) + '" text-anchor="middle" font-size="10">' + lab + '</text></g>');
     });
     o.push('<rect class="plot-hit" x="' + L + '" y="' + (Tp - 14) + '" width="' + pw + '" height="' + (ph + 14) + '" style="fill:transparent"></rect>');
-    o.push('<rect class="strip-hit" x="' + L + '" y="' + (ty - 2) + '" width="' + pw + '" height="18" aria-label="' + _t('點這裡跳到這一段的設定') + '"></rect>');
+    o.push('<rect class="strip-hit" x="' + L + '" y="' + (ty - 2) + '" width="' + pw + _t('" height="18"><title>點這裡跳到這一段的設定</title></rect>'));
     o.push(lead.join('') + mkA.join(''));
     BDS = []; var bdx = [];
     bounds().forEach(function (bd) {
