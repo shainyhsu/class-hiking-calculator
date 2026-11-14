@@ -11,6 +11,7 @@ Estimate how long a hiking route will take from a GPX track. Accounts for grade,
 - Per-segment tags: normal trail / roots & rock / muddy grass / forest road, heavy vs light pack, rain, running
 - Elevation profile, checkpoints, timetable, short stops, and an optional 10% buffer
 - Export image, GPX (with segment and timing settings), or plain-text summary
+- Walk analysis picture: load a timed record of the walk beside the plan; times come from the record, places are matched to the planned route, and every stop is listed with its start and end
 - Terrain sunrise/sunset and direct-sun shading on the profile
 - Traditional Chinese / English interface and a time-zone setting
 - Light/dark switch (dark by default); two-column layout on laptops and desktops
@@ -35,6 +36,7 @@ Copyright (c) 2026 Shainy Hsu. All rights reserved. See [LICENSE](LICENSE).
 
 Newest first. Times are Taiwan time (UTC+8). Also kept in [CHANGELOG.md](CHANGELOG.md).
 
+- V77 | 2026-11-14 15:07 | Share has a new “Load walk record” button: a timed record of the walk is kept beside the plan (the plan stays), and a “Walk analysis” picture appears, laid out like the A4 picture. All times come from the record; places are laid onto the planned route in the order walked, so the way back of an out-and-back route is never matched to the way out, and hour points sit where you actually were; stops follow the V76 rule, each listed with its start and end (a stop within 60 m of a checkpoint counts at that point); the profile's daylight, twilight, night and direct-sun shading follow the day and the times walked, even when the plan is dated another day. A route that is itself a timed record gets the picture directly.
 - V76 | 2026-11-14 13:35 | Calibration from timed records now finds stops of about a minute (under 8 m in 30 s for 40 s or more, where the record's heights and GPS stay steady while standing) and no longer cuts the ends off stops, so moving time and stops per hour come out closer to the real walk.
 - V75 | 2026-11-14 11:52 | Mirroring now swaps left and right on the way back, in point names and turn icons (reversing does too); the GPX writes each point's turn icon (sym, as Locus does) and keeps the source file's own waypoints; where a spot is passed twice the waypoint names carry the time (e.g. 09:44 out, 13:14 back), and a junction with the same name and icon both ways is one waypoint with both times; a switchback near a waypoint no longer adds a false second point.
 - V74 | 2026-11-13 20:10 | On narrow phones, where the results bar at the top wraps to two lines, the page now leaves room for it, so the bar no longer covers the title.
