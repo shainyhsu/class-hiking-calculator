@@ -39,7 +39,7 @@
   --bg:#f2f4f1; --surface:#ffffff; --ink:#16201a; --ink2:#4a574f; --muted:#7a877f; --line:#d8ded9; --soft:#eaeeea;
   --accent:#0c6a5d; --accent-ink:#ffffff; --accent-soft:#dcefe9;
   --accent-hover:#09584d; --accent-line:#a3cdc3; --ctl-line:#c2cbc4; --shadow:rgba(22,32,26,.08);
-  --warn:#9a5a00; --warn-bg:#fff0d4; --crit:#a32632; --crit-bg:#fbe2e4; --shade:#235d93; --shade-bg:#e1edf9;
+  --warn:#9a5a00; --warn-bg:#fff0d4; --crit:#a32632; --crit-bg:#fbe2e4; --shade:#235d93; --shade-bg:#e1edf9; --stopb:#f47c20; --stopb-ink:#1f1300;
   --night:rgba(22,32,26,.16); --dusk:rgba(22,32,26,.07); --sun:rgba(255,205,60,.28);
   --b0:#08519d; --b1:#3186e9; --b2:#87bafc; --b3:#d8d7d4; --b4:#fd978f; --b5:#e24947; --b6:#9b0d1a;
   --profile-line:#2f3833; --strip:#5b6a61; --t-root:#7a4b22; --t-mud:#8a8a3a; --t-trail:#c9cfc9; --t-road:#c2a878; --rain:#6b4fbb; --time:#f0a51c; --time-ink:#2a1c00;
@@ -3359,7 +3359,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     try {
       renderStrip(c || LAST); renderProfile(c || LAST, true);
       var cs = getComputedStyle(root), col = {};
-      ['--surface', '--ink', '--ink2', '--line', '--time', '--time-ink', '--accent', '--accent-ink', '--night', '--dusk', '--sun', '--warn', '--warn-bg', '--crit', '--crit-bg', '--shade', '--shade-bg', '--rain',
+      ['--surface', '--ink', '--ink2', '--line', '--time', '--time-ink', '--accent', '--accent-ink', '--night', '--dusk', '--sun', '--warn', '--warn-bg', '--crit', '--crit-bg', '--shade', '--shade-bg', '--rain', '--stopb', '--stopb-ink',
        '--t-root', '--t-mud', '--t-road', '--t-trail', '--font-ui', '--font-num', '--b0', '--b1', '--b2', '--b3', '--b4', '--b5', '--b6'].forEach(function (v) { col[v] = cs.getPropertyValue(v).trim(); });
       out = { strip: svgImage($('strip').querySelector('svg'), k), prof: svgImage($('profile').querySelector('svg'), k), col: col };
     } finally {
@@ -3508,7 +3508,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   }
   function buildPicDoc(cap, imS, imP, land, c0) {   // V68: A4 pages like 路線剖面比較: blocks laid out at phone-like px, scaled onto the page; V77: c0 = the 實走分析圖
     var c = c0 || LAST, act = !!c.act, A = c.A, col = cap.col, W = land ? PIC_WL : PIC_W, X = 16, CW = W - 2 * X, fu = col['--font-ui'] || 'sans-serif', fnum = col['--font-num'] || fu;
-    var mc = document.createElement('canvas').getContext('2d'), ops = [], y = 0, CUT = 0, blocks = [];
+    var mc = document.createElement('canvas').getContext('2d'), ops = [], y = 0, CUT = 0, BDN = 0, blocks = [];   // V80: BDN = stop badges that found no room beside their name
     function cut() { blocks.push({ ops: ops, h: y }); ops = []; y = 0; }
     function tw(t, f) { mc.font = f; return mc.measureText(t).width; }
     function fit(t, f, w) { if (tw(t, f) <= w) return t; while (t.length > 1 && tw(t + '…', f) > w) t = t.slice(0, -1); return t + '…'; }
@@ -3590,19 +3590,41 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       if (ls) chips.push([lightLabel(ls), ls === 2 ? 'crit' : 'warn']);
       else if (shadeAt(c, cp.d, first ? r.dep : r.arr)) chips.push([_t('地形遮蔽無日照'), 'shade']);
       if (!first && dl !== null && r.arr > dl) chips.push([_t('超過最晚抵達'), 'crit']);
-      var chipW = chips.reduce(function (sum, ch) { return sum + tw(ch[0], '600 11px ' + fu) + 18; }, 0), nf2 = '700 15px ' + fu;
-      var nm = fit(cp.name || '', nf2, Math.max(40, avail - chipW)), chipDown = false;
-      if (chips.length && nm !== (cp.name || '')) { chipDown = true; nm = fit(cp.name || '', nf2, Math.max(40, avail)); }   // V71: no room beside the name: tags go on a line of their own
-      if (nm !== (cp.name || '')) CUT++;
+      var chipW = chips.reduce(function (sum, ch) { return sum + tw(ch[0], '600 11px ' + fu) + 18; }, 0), nf2 = '700 15px ' + fu, nm0 = cp.name || '', nmW = tw(nm0, nf2);
+      // V80: the stop entered at this point is an orange badge right of the name, in type larger than the name (it was a bold line at the bottom);
+      //      one line when it fits, else its two halves stacked (still beside the name), else one line under the name
+      var sbT = !act && !first && !isLast && r.stop > 0 ? _f('停 {0} 分，{1} 出發', Math.round(r.stop), hm(r.dep)) : '', sbF = '700 18px ' + fu, sbP = sbT.split(/，|, /);
+      var sbW1 = sbT ? tw(sbT, sbF) + 16 : 0, sbW2 = sbT && sbP.length === 2 ? Math.max(tw(sbP[0], sbF), tw(sbP[1], sbF)) + 16 : 0;
+      var sbM = 0, chL = 1;   // badge: 0 none, 1 one line beside the name, 2 two lines beside it, 3 one line under it; tags: 1 beside, 2 under, 3 under the badge line
+      if (!sbT) { if (chips.length && nmW + chipW > avail) chL = 2; }   // V71: no room beside the name: tags go on a line of their own
+      else if (nmW + 8 + sbW1 + chipW <= avail) sbM = 1;
+      else if (nmW + 8 + sbW1 <= avail) { sbM = 1; chL = 2; }
+      else if (sbW2 && nmW + 8 + sbW2 <= avail) { sbM = 2; if (nmW + 8 + sbW2 + 8 + chipW > avail) chL = 2; }
+      else { sbM = 3; BDN++; chL = chips.length && sbW1 + 8 + chipW > right - nx ? 3 : 2; }
+      var nm = sbM === 1 || sbM === 2 ? nm0 : fit(nm0, nf2, Math.max(40, avail - (sbM === 0 && chL === 1 ? chipW : 0)));
+      if (nm !== nm0) CUT++;
       text(nm, nx, top + 16, nf2, col['--ink']);
-      var chx = chipDown ? nx : nx + tw(nm, nf2) + 6, chy = chipDown ? top + 35 : top + 15;
+      var badge = function (bx, by, two) {   // by = top of the box; the first line is centred with the circle
+        ops.push(function (g) {
+          g.fillStyle = col['--stopb']; rr(g, bx, by, two ? sbW2 : sbW1, two ? 48 : 26, 6); g.fill();
+          g.font = sbF; g.fillStyle = col['--stopb-ink']; g.textAlign = 'left'; g.textBaseline = 'middle';
+          if (two) { g.fillText(sbP[0], bx + 8, by + 14); g.fillText(sbP[1], bx + 8, by + 36); } else g.fillText(sbT, bx + 8, by + 14);
+          g.textBaseline = 'alphabetic';
+        });
+      };
+      var xn = nx + tw(nm, nf2), chx = xn + 6, chy = top + 15, ch2 = chL === 2 && chips.length > 0, ch3 = chL === 3 && chips.length > 0;
+      if (sbM === 1) { badge(xn + 8, top - 2, false); chx = xn + 16 + sbW1; }
+      else if (sbM === 2) { badge(xn + 8, top - 2, true); chx = xn + 16 + sbW2; }
+      else if (sbM === 3) badge(nx, top + 24, false);
+      if (ch2) { chx = sbM === 3 ? nx + sbW1 + 8 : nx; chy = sbM === 3 ? top + 41 : (sbM === 2 ? top + 62 : (sbM === 1 ? top + 37 : top + 35)); }
+      else if (ch3) { chx = nx; chy = top + 66; }
       chips.forEach(function (ch) { chx += chip(ch[0], chx, chy, ch[1]) + 4; });
       var mt = [km(R(cp.d)) + _t(' km｜') + nf(C.zAt(c.tr, cp.d)) + ' m'], mls = [], cur = '';   // V57: the line breaks between its parts, not inside one
       if (!first && act) { mt.push(_t('｜移動 ') + dur(r.seg)); if (r.list.length) mt.push(_t('＋途中停留 ') + stopDur(r.rest)); if (r.gap >= 0.5) mt.push(_t('＋紀錄中斷 ') + Math.round(r.gap) + _t(' 分')); }
       else if (!first) { mt.push(_t('｜移動 ') + dur(r.seg)); if (r.rest >= 1) mt.push(_t('＋途中停留 ') + Math.round(r.rest) + _t(' 分')); }
       mt.forEach(function (pt) { if (cur && tw(cur + pt, lf2) > right - nx) { mls.push(cur); cur = pt.replace(/^[｜|\s]+/, ''); } else cur += pt; });
       mls.push(cur);
-      var yy = top + 16 + (chipDown ? 20 : 0);
+      var yy = ch3 ? top + 68 : sbM === 3 ? top + 48 : sbM === 2 ? (ch2 ? top + 65 : top + 43) : sbM === 1 ? (ch2 ? top + 40 : top + 20) : (ch2 ? top + 36 : top + 16);   // V80: under the badge and tags
       mls.forEach(function (ml) { wrap(ml, lf2, right - nx).forEach(function (ln) { yy += 17; text(ln, nx, yy, lf2, col['--ink2']); }); });
       if (act) {   // V77: every stop with its start and end: on the way here, then at this point
         var sf = '600 12px ' + fu, sum = function (L) { return L.reduce(function (s, o) { return s + o.min; }, 0); };
@@ -3615,7 +3637,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
         r.list.forEach(function (o) { put([_f('途中停留 {0}–{1}', hm(o.a), hm(o.b)), _f('（{0}，{1} km）', stopDur(o.min), km(R(o.d)))], lf2); });
         if (r.at.length) put(r.at.map(function (o, j) { return (j ? '' : _t(first ? '出發前停留 ' : (isLast ? '抵達後停留 ' : '停留 '))) + hm(o.a) + '–' + hm(o.b) + (j < r.at.length - 1 ? _t('、') : ''); })
           .concat([_f('（{0}）', stopDur(sum(r.at)))]), sf);   // the end of the last stop is the departure
-      } else if (!first && !isLast && r.stop > 0) { yy += 17; text(_f('停 {0} 分，{1} 出發', Math.round(r.stop), hm(r.dep)), nx, yy, '600 12px ' + fu, col['--ink']); }
+      }
       var yb = yy + 10;
       if (sep) { var ly = yb; ops.push(function (g) { g.fillStyle = col['--line']; g.fillRect(nx, ly, right - nx, 1); }); }
       return yb;
@@ -3629,14 +3651,14 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     function colBlock(i0, i1, n) {   // landscape: rows i0..i1-1 in n columns, read top to bottom, then the next column
       var o0 = ops, y0 = y; ops = []; rule(0);
       var per = Math.ceil((i1 - i0) / n), colW = (CW - gap * (n - 1)) / n, yEnd = 0;
-      CUT = 0;
+      CUT = 0; BDN = 0;
       for (var ci = 0; ci < n; ci++) {
         var yc = 1.2, a0 = i0 + ci * per, a1 = Math.min(i1, a0 + per);
         for (var ri = a0; ri < a1; ri++) yc = drawRow(rows[ri], ri, X + ci * (colW + gap), colW, yc, ri < a1 - 1);
         yEnd = Math.max(yEnd, yc);
       }
       rule(yEnd);
-      var bk = { ops: ops, h: yEnd + 8, cut: CUT };
+      var bk = { ops: ops, h: yEnd + 8, cut: CUT, bdn: BDN };
       ops = o0; y = y0;
       return bk;
     }
@@ -3673,7 +3695,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
         var room = (lim - cy) / sc, best = null;
         for (var n = 1; n <= Math.min(4, nR - i0); n++) {   // fewest-cut layout that fits; names cut short count as 45 units taller
           var bk = colBlock(i0, nR, n);
-          if (bk.h <= room && (!best || bk.h + 45 * bk.cut < best.h + 45 * best.cut)) best = bk;
+          if (bk.h <= room && (!best || bk.h + 45 * (bk.cut + bk.bdn) < best.h + 45 * (best.cut + best.bdn))) best = bk;   // V80: a stop badge under its name counts like a cut name
         }
         if (best) { place(best); break; }
         if (pages[pages.length - 1].length && cy > TOPY + RUN + 1) { newPage(); continue; }
