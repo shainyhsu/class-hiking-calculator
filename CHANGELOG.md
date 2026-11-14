@@ -2,7 +2,7 @@
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
 
-- V75 | 2026-11-14 11:13 | Mirroring now swaps left and right on the way back, in point names and turn icons (reversing does too); the GPX writes each point's turn icon (sym, as Locus does) and keeps the source file's own waypoints; where a spot is passed twice the waypoint names carry the time (e.g. 09:44 out, 13:14 back), and a junction with the same name and icon both ways is one waypoint with both times; a switchback near a waypoint no longer adds a false second point.
+- V75 | 2026-11-14 11:52 | Mirroring now swaps left and right on the way back, in point names and turn icons (reversing does too); the GPX writes each point's turn icon (sym, as Locus does) and keeps the source file's own waypoints; where a spot is passed twice the waypoint names carry the time (e.g. 09:44 out, 13:14 back), and a junction with the same name and icon both ways is one waypoint with both times; a switchback near a waypoint no longer adds a false second point.
 - V74 | 2026-11-13 20:10 | On narrow phones, where the results bar at the top wraps to two lines, the page now leaves room for it, so the bar no longer covers the title.
 - V73 | 2026-11-13 09:36 | Added a classic favicon.ico tab icon for older browsers and search tools.
 - V72 | 2026-11-13 09:20 | Added a tab icon and an "All tools" link in the footer; the km range boxes and the GPX upload now have labels for screen readers, and the keyboard focus ring shows again.
