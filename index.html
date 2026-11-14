@@ -3169,25 +3169,28 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     });
   }
   function withTimeout(pr, ms) { return new Promise(function (ok, no) { var t = setTimeout(function () { no(new Error('timeout')); }, ms); pr.then(function (v) { clearTimeout(t); ok(v); }, function (e) { clearTimeout(t); no(e); }); }); }
-  function terrainSun(sun, tr) {   // dawn at the start, dusk at the end; sunrise / sunset behind the terrain when the DEM is in
+  var TSUN_A = { key: null, state: 'idle', res: null, promise: null, at: 0 };   // V77: the day walked, when it is not the plan's day (實走分析圖)
+  function terrainSun(sun, tr, dsA) {   // dawn at the start, dusk at the end; sunrise / sunset behind the terrain when the DEM is in; V77: dsA = another day, in its own slot
     if (!sun || !tr || !tr.raw || tr.raw.length < 2) return sun;
-    var a0 = tr.raw[0], b0 = tr.raw[tr.raw.length - 1], ds = S.date || todayStr();
+    var a0 = tr.raw[0], b0 = tr.raw[tr.raw.length - 1], ds = dsA || S.date || todayStr();
     var pa = { lat: a0.lat, lon: a0.lon, z: C.zAt(tr, 0) }, pb = { lat: b0.lat, lon: b0.lon, z: C.zAt(tr, tr.total) };
     var fb = null;
     try { fb = C.sunDay(ds, pb.lat, pb.lon, TZ); } catch (e) { fb = null; }
     var out = { rise: sun.rise, set: fb && fb.set !== null ? fb.set : sun.set, dawn: sun.dawn, dusk: fb && fb.dusk !== null ? fb.dusk : sun.dusk, terr: 'busy', tRise: null, tSet: null };   // rise / set: flat horizon; tRise / tSet: behind the terrain
     var key = ds + '|' + [pa.lat, pa.lon, pb.lat, pb.lon].map(function (v) { return v.toFixed(4); }).join(',') + '|' + Math.round(pa.z) + ',' + Math.round(pb.z);
-    if (TSUN.key !== key || (TSUN.state === 'fail' && Date.now() - TSUN.at > 60000)) {   // a failed download is tried again a minute later, or when back online
+    var cur = dsA ? TSUN_A : TSUN;
+    if (cur.key !== key || (cur.state === 'fail' && Date.now() - cur.at > 60000)) {   // a failed download is tried again a minute later, or when back online
       var my = { key: key, state: 'busy', res: null, promise: null, at: 0 };
-      TSUN = my;
+      if (dsA) TSUN_A = my; else TSUN = my;
+      cur = my;
       var ok = typeof DecompressionStream !== 'undefined' && typeof fetch === 'function' && typeof Response === 'function';
       my.promise = (ok ? withTimeout(terrainSunCompute(ds, pa, pb), 30000) : Promise.reject(new Error('unsupported')))
         .then(function (r) { my.state = 'ok'; my.res = r; }, function (e) { my.state = e && e.out ? 'out' : 'fail'; my.at = Date.now(); })
-        .then(function () { if (TSUN === my) render(); });
+        .then(function () { if ((dsA ? TSUN_A : TSUN) === my) render(); });
     }
-    out.terr = TSUN.state;
-    if (TSUN.state === 'ok' && TSUN.res) {   // the ends for now; groupSun() moves them onto the group's day once the route is in
-      var r = TSUN.res;
+    out.terr = cur.state;
+    if (cur.state === 'ok' && cur.res) {   // the ends for now; groupSun() moves them onto the group's day once the route is in
+      var r = cur.res;
       out.tRes = r;
       out.tRise = r.riseA; out.tRiseAt = _t('起點'); out.tSet = r.setB; out.tSetAt = _t('終點');
       out.blockedAM = r.riseA === null; out.blockedPM = r.setB === null;
@@ -3215,7 +3218,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     if (sun.terr === 'out') return _t('無資料，起點或終點不在地形資料範圍（台灣本島與龜山島、綠島、蘭嶼、小琉球）');
     return _t('無資料，抓不到地形資料；連上網路後會自動重算');
   }
-  window.addEventListener('online', function () { BAND_FAIL = {}; if (TSUN.state === 'fail') TSUN.at = 0; render(); });
+  window.addEventListener('online', function () { BAND_FAIL = {}; if (TSUN.state === 'fail') TSUN.at = 0; if (TSUN_A.state === 'fail') TSUN_A.at = 0; render(); });
   // ---------- v49: 無地形遮蔽日照 along the route: at each point, at the time we pass it, does the sun clear the terrain? ----------
   var SUNLIT = {}, SUNLIT_N = 0, BAND_WAIT = false, BAND_FAIL = {};
   function sunlitAt(lat, lon, zt, ms, miss) {   // 1 sun, 0 behind the terrain or below the horizon, null: a tile is not in yet
@@ -3236,7 +3239,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   }
   function sunBand(c, clocks) {   // per profile sample: 1 / 0 / null; null for all when the terrain is not in
     if (!c.sun || c.sun.terr !== 'ok') return null;
-    var tr = c.tr, n = tr.x.length, k = Math.max(1, Math.ceil(n / 240)), out = new Array(n), miss = {}, ds = S.date || todayStr();
+    var tr = c.tr, n = tr.x.length, k = Math.max(1, Math.ceil(n / 240)), out = new Array(n), miss = {}, ds = c.date || S.date || todayStr();   // V77: c.date = the day walked
     var p = ds.split('-').map(Number), day = Date.UTC(p[0], p[1] - 1, p[2]) - TZ * 3600e3, raw = tr.raw, cum = tr.cum, ci = 0, last = null;
     for (var i = 0; i < n; i++) {
       if (i % k && i !== n - 1) { out[i] = last; continue; }   // long routes: every k-th sample (at most 240 a profile)
@@ -3262,14 +3265,14 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     Promise.all(keys.map(function (q) { var a = miss[q]; return demTile(a[0], a[1], a[2]).then(function (t) { if (t) DEM_READY[q] = t; else BAND_FAIL[q] = 1; }); }))
       .then(function () { BAND_WAIT = false; render(); });
   }
-  function dayMs() { var p = (S.date || todayStr()).split('-').map(Number); return Date.UTC(p[0], p[1] - 1, p[2]) - TZ * 3600e3; }
+  function dayMs(c) { var p = ((c && c.date) || S.date || todayStr()).split('-').map(Number); return Date.UTC(p[0], p[1] - 1, p[2]) - TZ * 3600e3; }   // V77: c.date = the day walked
   function litAt(c, d, minute) {   // v51: sun at this point of the route at this clock minute? 1 / 0 / null
     if (!c.sun || c.sun.terr !== 'ok') return null;
-    var tr = c.tr, p = ptAt(tr, d), mi = Math.round(minute), ds = S.date || todayStr();
+    var tr = c.tr, p = ptAt(tr, d), mi = Math.round(minute), ds = c.date || S.date || todayStr();
     var key = ds + '|' + p.lat.toFixed(5) + ',' + p.lon.toFixed(5) + '|' + mi, v = SUNLIT[key];
     if (v === undefined) {
       var miss = {};
-      v = sunlitAt(p.lat, p.lon, C.zAt(tr, d), dayMs() + mi * 60e3, miss);
+      v = sunlitAt(p.lat, p.lon, C.zAt(tr, d), dayMs(c) + mi * 60e3, miss);
       if (v !== null) { if (++SUNLIT_N > 30000) { SUNLIT = {}; SUNLIT_N = 0; } SUNLIT[key] = v; } else bandFetch(miss);
     }
     return v;
@@ -3280,7 +3283,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     return v === 0 ? 1 : 0;
   }
   function litEdge(c, e0, e1) {   // where the band changes between samples e0 and e1: the first moment of the new state { t: minutes, d: GPX m }
-    var tr = c.tr, cl = c.clocks, va = c.lit[e0], day = dayMs(), da = tr.x[e0], db = tr.x[e1], ta = cl[e0], tb = cl[e1];
+    var tr = c.tr, cl = c.clocks, va = c.lit[e0], day = dayMs(c), da = tr.x[e0], db = tr.x[e1], ta = cl[e0], tb = cl[e1];
     for (var it = 0; it < 7; it++) {
       var dm = (da + db) / 2, tm = ta + (tb - ta) * (dm - da) / ((db - da) || 1), pt = ptAt(tr, dm), v = sunlitAt(pt.lat, pt.lon, C.zAt(tr, dm), day + tm * 60e3, {});
       if (v === null) break;
@@ -3314,7 +3317,10 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     s.tRise = rise; s.tRiseAt = riseAt; s.blockedAM = rise === null;
     s.tSet = set; s.tSetAt = setAt; s.blockedPM = set === null;
   }
-  function waitTerrain(ms) { return TSUN.state === 'busy' && TSUN.promise ? withTimeout(TSUN.promise, ms).catch(function () { return null; }) : Promise.resolve(null); }
+  function waitTerrain(ms, act) {   // V77: the 實走分析圖 may wait for the day walked too
+    var ps = (act ? [TSUN, TSUN_A] : [TSUN]).filter(function (q) { return q.state === 'busy' && q.promise; }).map(function (q) { return q.promise; });
+    return ps.length ? withTimeout(Promise.all(ps), ms).catch(function () { return null; }) : Promise.resolve(null);
+  }
 
   // ---------- v42: one picture to share: route line, charts, timetable ----------
   var PIC_WL = 1093;   // V68: layout width of the landscape A4 page (content 1,061 px → 785 pt), same scale as portrait
@@ -3441,19 +3447,14 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     var da = Math.max(0, rows[0].cp.d), db = Math.min(tr.total, rows[nr - 1].cp.d), full = da <= 1 && db >= tr.total - 1, up = 0, dn = 0;
     if (full) { up = c.st.up; dn = c.st.dn; }
     else for (i = 1; i < tr.x.length; i++) { if (tr.x[i] <= da || tr.x[i - 1] >= db) continue; var dz = tr.z[i] - tr.z[i - 1]; if (dz > 0) up += dz; else dn -= dz; }
-    var sunA = null;
-    if (ds === (S.date || todayStr()) && c.sun) { sunA = {}; for (var key in c.sun) sunA[key] = c.sun[key]; }   // the plan's day: with the terrain, moved onto the times walked below
-    else {
-      try {
-        var e0 = tr.raw[0], e1 = tr.raw[tr.raw.length - 1], fa = C.sunDay(ds, e0.lat, e0.lon, TZ), fb = C.sunDay(ds, e1.lat, e1.lon, TZ);
-        if (fa) sunA = { rise: fa.rise, dawn: fa.dawn, set: fb && fb.set !== null ? fb.set : fa.set, dusk: fb && fb.dusk !== null ? fb.dusk : fa.dusk, terr: 'na' };
-      } catch (e) { sunA = null; }
-    }
+    var sunA = null;   // the sky and the terrain of the day walked, moved onto the times walked below (groupSun)
+    if (ds === (S.date || todayStr()) && c.sun) { sunA = {}; for (var key in c.sun) sunA[key] = c.sun[key]; }   // the plan's day: its own terrain result
+    else { try { sunA = terrainSun(C.sunDay(ds, tr.raw[0].lat, tr.raw[0].lon, TZ), tr, ds); } catch (e) { sunA = null; } }   // another day: computed for that day
     var stopIn = over(stops, dep0, arrN), gapIn = over(gaps, dep0, arrN);
     var A = { src: src, mt: mt, G: G, ds: ds, da: da, db: db, full: full, up: up, dn: dn, total: (arrN - dep0) / 60, stopMin: stopIn / 60, gapMin: gapIn / 60,
               mv: (arrN - dep0 - stopIn - gapIn) / 60, n: stops.filter(function (o) { return o.b > dep0 && o.a < arrN; }).length, gapN: gaps.filter(function (o) { return o.b > dep0 && o.a < arrN; }).length,
               rec: [mn(G.t[0]), mn(G.t[n - 1])] };
-    var cA = { act: true, A: A, tr: tr, st: c.st, m: c.m, buf: c.buf, rows: out, sun: sunA, startMin: mn(dep0) };
+    var cA = { act: true, A: A, date: ds, tr: tr, st: c.st, m: c.m, buf: c.buf, rows: out, sun: sunA, startMin: mn(dep0) };
     cA.clocks = tr.x.map(function (x) { return mn(Math.min(arrN, Math.max(dep0, tAt(Math.min(Math.max(x, d0), d1))))); });
     cA.lit = sunA && sunA.terr === 'ok' ? sunBand(cA, cA.clocks) : null;
     if (cA.lit) groupSun(cA);
@@ -3461,16 +3462,16 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     return A;
   }
   function stopDur(min) { return min < 0.5 ? _t('不到 1 分') : Math.round(min) + _t(' 分'); }
-  function actNotes(A) {   // the sources and the rules, under the timetable of the picture
-    var L = [];
-    L.push(_f('時刻：取自紀錄「{0}」（{1}–{2}）。', A.src.name || _t('紀錄'), hm(A.rec[0]), hm(A.rec[1])));
-    L.push(A.src.own ? _t('位置：紀錄本身的路線。') : _f('位置：依前進方向對到計畫路線，偏離中位數 {0} m。', nf(A.mt.offMed)));
-    if (!A.full) L.push(_f('紀錄只走到路線的 {0}–{1} km。', km(R(A.da)), km(R(A.db))));
-    L.push(_t('停留：紀錄每 5 秒一點，前後 1 分鐘淨移動不到每小時 0.6 km 算停留。'));
-    zNote(A.G).split('<br><br>').forEach(function (s) { if (s) L.push(s); });
-    L.push(_f('檢查點前後 {0} m 內的停留算在那一點；其餘列在下一點的「途中停留」。', ACT_R));
-    if (A.gapN) L.push(_f('紀錄中斷 {0} 次共 {1}，不算移動也不算停留。', A.gapN, durZh(A.gapMin)));
-    return L;
+  function actNotes(A) {   // the sources and the rules, under the timetable of the picture: two paragraphs, so a landscape page keeps them
+    var j = I18N.lang === 'en' ? ' ' : '', P1 = [], P2 = [];
+    P1.push(_f('時刻：取自紀錄「{0}」（{1}–{2}）。', A.src.name || _t('紀錄'), hm(A.rec[0]), hm(A.rec[1])));
+    P1.push(A.src.own ? _t('位置：紀錄本身的路線。') : _f('位置：依前進方向對到計畫路線，偏離中位數 {0} m。', nf(A.mt.offMed)));
+    if (!A.full) P1.push(_f('紀錄只走到路線的 {0}–{1} km。', km(R(A.da)), km(R(A.db))));
+    P2.push(_t('停留：紀錄每 5 秒一點，前後 1 分鐘淨移動不到每小時 0.6 km 算停留。'));
+    zNote(A.G).split('<br><br>').forEach(function (s) { if (s) P2.push(s); });
+    P2.push(_f('檢查點前後 {0} m 內的停留算在那一點；其餘列在下一點的「途中停留」。', ACT_R));
+    if (A.gapN) P2.push(_f('紀錄中斷 {0} 次共 {1}，不算移動也不算停留。', A.gapN, durZh(A.gapMin)));
+    return [P1.join(j), P2.join(j)];
   }
   function renderAct() {
     var ad = actData(), txt = '';
@@ -3532,7 +3533,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
                  act ? [km(R(A.db) - R(A.da)) + _t(' km｜爬升 ') + nf(A.up) + _t(' m｜下降 ') + nf(A.dn) + _t(' m｜移動 ') + durZh(A.mv) + _t('｜停留 ') + durZh(A.stopMin) + _f('（{0} 次）', A.n) +
                          (A.gapN ? _t('｜紀錄中斷 ') + durZh(A.gapMin) : ''), '400 13px ' + fu, col['--ink2'], 19]
                      : [km(R(c.tr.total)) + _t(' km｜爬升 ') + nf(c.st.up) + _t(' m｜下降 ') + nf(c.st.dn) + _t(' m｜移動 ') + durZh(c.m.total * 60), '400 13px ' + fu, col['--ink2'], 19]];
-    if (c.sun) sunLines(c.sun, true).slice(0, act && c.sun.terr !== 'ok' ? 1 : 2).forEach(function (ln) { heads.push([ln, '400 13px ' + fu, col['--ink2'], 19]); });   // V77: another day than the plan's: the flat sky only
+    if (c.sun) sunLines(c.sun, true).forEach(function (ln) { heads.push([ln, '400 13px ' + fu, col['--ink2'], 19]); });   // V77: the 實走分析圖 has its own day's sky and terrain
     heads.forEach(function (h) { wrap(h[0], h[1], CW).forEach(function (ln) { y += h[3]; text(ln, X, y, h[1], h[2]); }); });
     y += 12; cut();
     // charts
@@ -3893,7 +3894,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     var land = S.picOri === 'l', msg = $('copyMsg');
     if (!LAST || (act && !ACT)) return;
     msg.textContent = act ? _t('製作實走分析圖中…') : _t('製作圖片中…');
-    waitTerrain(3000).then(function () { if (act) renderAct(); return makePictures(land, act); }).then(function (list) {
+    waitTerrain(3000, act).then(function () { if (act) renderAct(); return makePictures(land, act); }).then(function (list) {
       var files = null;
       try { files = list.map(function (o) { return new File([o.blob], o.name, { type: 'image/jpeg' }); }); } catch (e) { files = null; }
       function saveAll() { list.forEach(function (o, i) { setTimeout(function () { saveBlob(o.blob, o.name); }, i * 700); }); }
