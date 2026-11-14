@@ -39,7 +39,7 @@
   --bg:#f2f4f1; --surface:#ffffff; --ink:#16201a; --ink2:#4a574f; --muted:#7a877f; --line:#d8ded9; --soft:#eaeeea;
   --accent:#0c6a5d; --accent-ink:#ffffff; --accent-soft:#dcefe9;
   --accent-hover:#09584d; --accent-line:#a3cdc3; --ctl-line:#c2cbc4; --shadow:rgba(22,32,26,.08);
-  --warn:#9a5a00; --warn-bg:#fff0d4; --crit:#a32632; --crit-bg:#fbe2e4; --shade:#235d93; --shade-bg:#e1edf9; --stopb:#f47c20; --stopb-ink:#1f1300;
+  --warn:#9a5a00; --warn-bg:#fff0d4; --crit:#a32632; --crit-bg:#fbe2e4; --shade:#235d93; --shade-bg:#e1edf9; --stopb:#cdeccf; --stopb-ink:#14532d;
   --night:rgba(22,32,26,.16); --dusk:rgba(22,32,26,.07); --sun:rgba(255,205,60,.28);
   --b0:#08519d; --b1:#3186e9; --b2:#87bafc; --b3:#d8d7d4; --b4:#fd978f; --b5:#e24947; --b6:#9b0d1a;
   --profile-line:#2f3833; --strip:#5b6a61; --t-root:#7a4b22; --t-mud:#8a8a3a; --t-trail:#c9cfc9; --t-road:#c2a878; --rain:#6b4fbb; --time:#f0a51c; --time-ink:#2a1c00;
@@ -3591,7 +3591,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       else if (shadeAt(c, cp.d, first ? r.dep : r.arr)) chips.push([_t('地形遮蔽無日照'), 'shade']);
       if (!first && dl !== null && r.arr > dl) chips.push([_t('超過最晚抵達'), 'crit']);
       var chipW = chips.reduce(function (sum, ch) { return sum + tw(ch[0], '600 11px ' + fu) + 18; }, 0), nf2 = '700 15px ' + fu, nm0 = cp.name || '', nmW = tw(nm0, nf2);
-      // V80: the stop entered at this point is an orange badge right of the name, in the name's type (it was a bold line at the bottom);
+      // V80: the stop entered at this point is a light green badge right of the name, in the name's type (it was a bold line at the bottom);
       //      one line when it fits, else its two halves stacked (still beside the name), else one line under the name
       var sbT = !act && !first && !isLast && r.stop > 0 ? _f('停 {0} 分，{1} 出發', Math.round(r.stop), hm(r.dep)) : '', sbF = nf2, sbP = sbT.split(/，|, /);
       var sbW1 = sbT ? tw(sbT, sbF) + 16 : 0, sbW2 = sbT && sbP.length === 2 ? Math.max(tw(sbP[0], sbF), tw(sbP[1], sbF)) + 16 : 0;
