@@ -6,8 +6,8 @@ Estimate how long a hiking route will take from a GPX track. Accounts for grade,
 
 ## Features
 
-- Default model: average of **Tobler’s hiking function** and **DIN 33466**
-- Upload past GPX logs and fit a group-specific **Lorentz speed curve** (Gauss–Newton); once fitted, that curve becomes the base speed
+- Default model: average of **Tobler’s hiking function** and **DIN 33466**, its overall pace set from 7 measured class sections, weighted by how much the route looks like each
+- Upload 3 or more past GPX logs to fit a group-specific **Lorentz speed curve** (Gauss–Newton) that becomes the base speed, its level set from the logs’ moving time; with fewer logs, uphill and downhill team speeds are worked out instead
 - Per-segment tags: normal trail / roots & rock / muddy grass / forest road, heavy vs light pack, rain, running
 - Elevation profile, checkpoints, timetable, short stops, and an optional 10% buffer
 - Export image, GPX (with segment and timing settings), or plain-text summary
@@ -21,7 +21,7 @@ Estimate how long a hiking route will take from a GPX track. Accounts for grade,
 1. Open the link above (fully client-side; nothing is uploaded to a server)
 2. Load a route GPX, or try the sample
 3. Adjust settings, terrain segments, and checkpoints as needed
-4. Optionally upload historical GPX files to optimize the Lorentz parameters
+4. Optionally upload past GPX files of your group (3 or more for the Lorentz curve, fewer give team speed factors)
 5. Review the timetable and summary, then share or download
 
 ## Tech
@@ -36,6 +36,7 @@ Copyright (c) 2026 Shainy Hsu. All rights reserved. See [LICENSE](LICENSE).
 
 Newest first. Times are Taiwan time (UTC+8). Also kept in [CHANGELOG.md](CHANGELOG.md).
 
+- V81 | 2026-11-15 14:12 | The default pace is now set from the moving time of the 7 measured class sections (10/6 and 10/20–21), weighted by how much the route looks like each, instead of a fixed walking time ÷ 0.964; the built-in example now reads 15:17, 6:13 with stops, 3:21 moving (3:32 all rain). Past GPX uploads: with 3 or more timed records the Lorentz curve is fitted on one-minute samples measured along the track (the straight line between their ends ran about 5% slow), then its overall level is set from each record's actual moving time, records more like the current route counting more; with fewer than 3 records the uphill and downhill team speeds are worked out instead.
 - V80 | 2026-11-15 07:31 | In the A4 picture, a stop entered at a point is a light green badge in the same type size as the point's name, right of the name (its two halves stacked when one line does not fit; under the name only when the name leaves no room), instead of a bold line at the bottom of the point.
 - V79 | 2026-11-14 16:14 | The Share notes are about half as long and no longer name LINE: the plain text is for any messaging app, and the save panel's long-link warning says messaging apps too.
 - V78 | 2026-11-14 15:49 | The “Walk analysis” button now sits in the walk-record row, right of “Load walk record” and “Remove record”, so the record and its picture are in one place. Mirroring no longer puts a section boundary at the turnaround: the last section of the way out and its copy on the way back become one section (same surface); the boundary stays only when that section has a measured end altitude, to keep it.
