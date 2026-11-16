@@ -2064,11 +2064,12 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   //      in hours on the plan date, for sun times and day boundaries; record clocks use the offset at their own instant (DST).
   var TZ = 8, TZF = {};
   var LOR_POOL = null, LOR_VER = 0;   // V81: the uploaded records behind a fitted Lorentz curve [{A, L, f}] (h, h, features); version for the cache
+  var LOR_SHRINK = 0.55;              // V87: leave-one-out validation shrinks route-level kLor toward 1 to remove aggregate overfit bias
   function lorK(tr) {   // V81: the Lorentz curve's level on this track, from the records' moving time ÷ the curve's time, similarity-weighted
     if (!tr || !LOR_POOL || !LOR_POOL.length || !(C.hasLorentz && C.hasLorentz())) return 1;
     if (tr._kl === undefined || tr._klv !== LOR_VER) {
       var k = C.simRatio(LOR_POOL, C.routeFeat(tr), function (q) { return q.A; }, function (q) { return q.L; });
-      tr._kl = k > 0 ? k : 1; tr._klv = LOR_VER;
+      tr._kl = k > 0 ? 1 + LOR_SHRINK * (k - 1) : 1; tr._klv = LOR_VER;
     }
     return tr._kl;
   }

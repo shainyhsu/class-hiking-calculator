@@ -2,6 +2,7 @@
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
 
+- V87 | 2026-11-16 14:54 | Lorentz route-level pace calibration now shrinks the similarity-weighted `kLor` toward 1 with a 0.55 factor selected by leave-one-out cross-validation on the v85 stable GPX subset. This reduces out-of-sample aggregate bias from the unshrunk fit while retaining the Lorentz curve's lower absolute error; the validation workflow and all-record sensitivity case are documented in the reusable maintenance skill.
 - V85 | 2026-11-16 12:32 | The page title is now “步程試算 與 實走紀錄分析”, including the visible heading, browser title, link-preview title and application metadata, so the time estimator and walk-record analysis are named together.
 - V84 | 2026-11-16 12:21 | After the walk-analysis A4 preview is ready, a separate button now appears beside its heading to share the generated JPEG pages on browsers that support file sharing, or download them when they do not. The button is hidden again when no valid walk analysis is available.
 - V83 | 2026-11-16 09:57 | A4 and walk-analysis pictures now use a ten-minute threshold for the light-green long-stop badge and profile marker; shorter stops remain neutral stop entries. The English A4 wording is complete while point names may remain Chinese, and the Share help now explains A4 images, copied text, exported GPX contents and waypoint merging within 30 m, walk-record loading and route matching, cleaned stop analysis and GPS gaps, and that records are not saved after refresh.
