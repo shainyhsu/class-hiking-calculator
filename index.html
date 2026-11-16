@@ -705,7 +705,7 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
     <textarea class="copybox" id="copyText" readonly aria-label="純文字時間表"></textarea>
     <p class="hint picinfo" id="picInfo" aria-live="polite"></p>
     <div class="pages" id="picPages" aria-label="A4 預覽"></div>
-    <p class="acthead" id="actHead" hidden>實走分析圖預覽</p>
+    <p class="acthead" id="actHead" hidden>實走分析圖預覽 <button class="btn primary sm" id="btnActPic" type="button" hidden><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.25" y="3" width="11.5" height="10" rx="1.5"/><path d="M2.75 11.25 6 8l2.5 2.5 1.75-1.75 3 3"/><circle cx="10.5" cy="5.9" r="1"/></svg><span id="btnActPicTxt">分享圖片</span></button></p>
     <p class="hint picinfo" id="actInfo" aria-live="polite"></p>
     <div class="pages" id="actPages" aria-label="實走分析圖預覽"></div>
   </section>
@@ -3634,7 +3634,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   function renderAct() {
     var ad = actData(), txt = '';
     ACT = ad && !ad.err ? ad : null;
-    $('btnAct').hidden = !ACT; $('actClear').hidden = !T.act;
+    $('btnAct').hidden = !ACT; $('btnActPic').hidden = !ACT; $('actClear').hidden = !T.act;
     if (ad && ad.err === 'short') txt = _t('紀錄不到 10 分鐘或有時間的點太少，做不出實走分析圖。');
     else if (ad && ad.err === 'match') txt = _t('這份紀錄的位置和時間對不起來，做不出實走分析圖。');   // V82: a record is always laid onto its own track when nothing else fits
     else if (ACT && ACT.src.own) txt = _t('目前的路線本身是有時間的紀錄，「實走分析圖」直接用它。');
@@ -4012,8 +4012,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     }
     function actPart() {   // V77: the 實走分析圖 under it
       var ab = $('actPages'), ai = $('actInfo');
-      if (!ACT) { ab.innerHTML = ''; ai.textContent = ''; $('actHead').hidden = true; return null; }
-      return makePicDoc(land, Math.max(1, kpx * 1.4), true).then(function (d2) { if (my !== PREV_N) return; $('actHead').hidden = false; show(d2, ab, ai); });
+      if (!ACT) { ab.innerHTML = ''; ai.textContent = ''; $('actHead').hidden = true; $('btnActPic').hidden = true; return null; }
+      return makePicDoc(land, Math.max(1, kpx * 1.4), true).then(function (d2) { if (my !== PREV_N) return; $('actHead').hidden = false; $('btnActPic').hidden = false; show(d2, ab, ai); });
     }
     if (!LAST) { box.innerHTML = ''; info.textContent = ''; Promise.resolve().then(actPart).catch(function () { /* preview only */ }); return; }   // V82: no route: only the walk
     makePicDoc(land, Math.max(1, kpx * 1.4)).then(function (doc) {
@@ -4271,8 +4271,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   function setTx(id, f) { TXF[id] = f; var el = $(id); if (el) el.textContent = f(); }
   function shareLabels() {
     $('btnGpxTxt').textContent = _t('下載 GPX'); $('btnPicTxt').textContent = _t('下載圖片');
+    $('btnActPicTxt').textContent = _t('下載圖片');
     try { if (navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.gpx', { type: 'application/gpx+xml' })] })) $('btnGpxTxt').textContent = _t('分享 GPX'); } catch (err) { /* save only */ }
-    try { if (navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.jpg', { type: 'image/jpeg' })] })) $('btnPicTxt').textContent = _t('分享圖片'); } catch (err) { /* save only */ }
+    try { if (navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.jpg', { type: 'image/jpeg' })] })) { $('btnPicTxt').textContent = _t('分享圖片'); $('btnActPicTxt').textContent = _t('分享圖片'); } } catch (err) { /* save only */ }
   }
   function swapName(s, c) {   // names the page itself gave (start, end, examples, hour and boundary points) follow the language; typed names stay
     if (typeof s !== 'string' || !s) return s;
@@ -4935,6 +4936,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     document.querySelectorAll('input[name="pori"]').forEach(function (el) { el.addEventListener('change', function () { if (el.checked) { S.picOri = el.value; save(); schedulePreview(); } }); });   // V57
     $('btnPic').addEventListener('click', function () { sharePicture(false); });    // v42: one picture with the charts and the timetable
     $('btnAct').addEventListener('click', function () { sharePicture(true); });     // V77: the 實走分析圖
+    $('btnActPic').addEventListener('click', function () { sharePicture(true); });  // V83: share/download the completed walk picture again
     $('actFile').addEventListener('change', function (e) { handleActFile(e.target.files && e.target.files[0]); });
     $('actClear').addEventListener('click', function () { T.act = null; $('actError').hidden = true; render(); });
     $('btnGpx').addEventListener('click', shareGpx);        // v50: the track and its points as GPX
