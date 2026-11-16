@@ -3820,7 +3820,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     function drawStopRow(item, X0, CW0, y1, sep) {   // V83: on-the-way stops sit between the points they occurred between.
       var o = item.stop, top = y1 + 10, nx = X0 + 30, right = X0 + CW0, avail = Math.max(24, right - nx);
       var yEnd = top + 16, f = '700 15px ' + fu, lf = '400 12px ' + fu;
-      var start = hm(o.a), end = hm(o.b), mins = Math.round(o.min);
+      var start = hm(o.a), end = hm(o.b), mins = Math.round(o.b) - Math.round(o.a);
       ops.push(function (g) {
         g.beginPath(); g.arc(X0 + 11, top + 11, 4.2, 0, Math.PI * 2);
         g.fillStyle = '#ffffff'; g.fill(); g.strokeStyle = col['--stopb-ink']; g.lineWidth = 1.5; g.stroke();
@@ -3841,7 +3841,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
         text(_f('途中停留｜{0} km', km(R(o.d))), nx, yEnd, lf, col['--ink2']);
         yEnd += 9;
       } else {
-        var desc = _f('途中停留 {0}–{1}（{2}，{3} km）', start, end, stopDur(o.min), km(R(o.d)));
+        var desc = o.min < 1 ? _f('途中停留 {0}（{1}，{2} km）', start, stopDur(o.min), km(R(o.d))) : _f('途中停留 {0}–{1}（{2}，{3} km）', start, end, stopDur(o.min), km(R(o.d)));
         wrap(desc, lf, avail).forEach(function (ln) { text(ln, nx, yEnd, lf, col['--ink2']); yEnd += 17; });
       }
       var yb = yEnd + 4;
