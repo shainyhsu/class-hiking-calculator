@@ -12,11 +12,11 @@
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Hiking Time Estimator: upload a GPX to get a timetable adjusted for grade, terrain, weather and group pace">
+<meta property="og:image:alt" content="Hike Time Estimator &amp; Walk Record Analysis: upload a GPX to get a timetable; load a walk record for moving time and stops">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://shainyhsu.github.io/class-hiking-calculator/og.png">
-<meta name="twitter:image:alt" content="Hiking Time Estimator: upload a GPX to get a timetable adjusted for grade, terrain, weather and group pace">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "步程試算 與 實走紀錄分析 Hiking Time Estimator & Walk Record Analysis", "url": "https://shainyhsu.github.io/class-hiking-calculator/", "description": "上傳 GPX 估算登山步程時間並分析實走紀錄：依坡度、地形、雨天、重裝與海拔修正，以八年級班級實測校準，可用歷史軌跡擬合團體專屬步速，輸出時間表、高度剖面、日照遮蔽與實走分析圖。", "applicationCategory": "SportsApplication", "operatingSystem": "Any", "inLanguage": "zh-Hant", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "TWD"}, "author": {"@type": "Person", "name": "Shainy Hsu", "url": "https://github.com/shainyhsu"}}</script>
+<meta name="twitter:image:alt" content="Hike Time Estimator &amp; Walk Record Analysis: upload a GPX to get a timetable; load a walk record for moving time and stops">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "步程試算 與 實走紀錄分析 Hike Time Estimator & Walk Record Analysis", "url": "https://shainyhsu.github.io/class-hiking-calculator/", "description": "上傳 GPX 估算登山步程時間並分析實走紀錄：依坡度、地形、雨天、重裝與海拔修正，以八年級班級實測校準，可用歷史軌跡擬合團體專屬步速，輸出時間表、高度剖面、日照遮蔽與實走分析圖。", "applicationCategory": "SportsApplication", "operatingSystem": "Any", "inLanguage": "zh-Hant", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "TWD"}, "author": {"@type": "Person", "name": "Shainy Hsu", "url": "https://github.com/shainyhsu"}}</script>
 <style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:calc(56px + env(safe-area-inset-top,0px))}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}:root[lang=en]{--font-ui:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;--font-num:var(--font-ui)}   /* v57: English in the system font, as on the phone */
 #tbody td[data-k]:empty::before{content:none}
 :root[lang=en] .ig label{min-width:7.4em}   /* v57: English labels are longer; keep the boxes in one column */
@@ -701,7 +701,7 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
     </div>
     <p class="error" id="actError" hidden></p>
     <p class="hint" id="actMsg" aria-live="polite"></p>
-    <details class="help"><summary>說明</summary><p class="hint">圖片（A4 JPG）：匯出 A4 圖片，下方可預覽。直式適合手機閱讀，橫式適合呈現較寬的路線剖面。實走分析圖完成後可用「儲存圖片」直接存到本機。<br>複製全文：複製純文字時間表，適合登山計畫報備與訊息分享。<br>GPX：匯出的 GPX 包含路線軌跡、整點計劃經過點、地標點及其預計時間，可匯入其他登山 App，顯示路線與時間點。同名、同圖示且相距 30 m 內的航點會合併。同一位置若有多次經過，名稱會附上時間，例如「左轉 09:44」、「右轉 13:14」。<br>載入實走紀錄：載入手機或手錶記錄的 GPX，檔案須包含足夠的時間資訊。載入不會改變目前規劃的路線。若實走紀錄能與規劃路線對應，分析圖會沿用規劃路線中已編輯的點位表，以及整點、每公里等標示點位。若沒有規劃路線，或實走紀錄無法與路線對應，分析圖就改用紀錄本身的軌跡與航點。<br>實走分析圖：將實際行走紀錄轉成時間與位置分析圖。若紀錄能與規劃路線對應，圖上會顯示規劃路線中已編輯的點位表，以及整點、每公里等標示點位。停留經 GPS 漂移與海拔雜訊清洗後判定，圖上留下的停留即為分析結果。檢查點前後沿路線 60 m 內的停留會合併歸入該點，以淺綠底標示停留時間（第一次抵達至最後一次出發）及出發時間。其他停留依時間順序排列，顯示起訖時間；未滿 1 分鐘只顯示開始時間。GPS 斷訊也會在分享圖上標示，避免將紀錄中斷誤認為正常行走或停留。<br>紀錄保存：實走紀錄不會儲存，重新整理頁面後必須重新載入。</p></details>
+    <details class="help"><summary>說明</summary><p class="hint">圖片（A4 JPG）：匯出 A4 圖片，下方可預覽。直式適合手機閱讀，橫式適合呈現較寬的路線剖面。實走分析圖完成後可用「儲存圖片」直接存到本機。<br>複製全文：複製純文字時間表，適合登山計畫報備與訊息分享。<br>GPX：匯出的 GPX 包含路線軌跡、整點計劃經過點、地標點及其預計時間，可匯入其他登山 App，顯示路線與時間點。同名、同圖示且相距 30 m 內的航點會合併。同一位置若有多次經過，名稱會附上時間，例如「左轉 09:44」、「右轉 13:14」。<br>載入實走紀錄：載入手機或手錶記錄的 GPX，檔案須包含足夠的時間資訊。載入不會改變目前規劃的路線。若實走紀錄能與規劃路線對應，分析圖會沿用規劃路線中已編輯的點位表，以及整點、每公里等標示點位。若沒有規劃路線，或實走紀錄無法與路線對應，分析圖就改用紀錄本身的軌跡與航點。<br>實走分析圖：將實際行走紀錄轉成時間與位置分析圖。若紀錄能與規劃路線對應，圖上會顯示規劃路線中已編輯的點位表，以及整點、每公里等標示點位。停留經 GPS 漂移與海拔雜訊清洗後判定，圖上留下的停留即為分析結果。檢查點前後沿路線 60 m 內的停留會合併歸入該點，停留時間從第一次抵達算到最後一次出發，10 分鐘以上以淺綠底標示。其他停留依時間順序插在前後兩點之間，顯示起訖時間，單次 10 分鐘以上以淺綠底標示；未滿 1 分鐘只顯示一個時間；不到 10 分鐘、彼此在 300 m 內的合併成一行，列出次數、分鐘加總與起訖時間。分鐘數都由圖上印出的時刻相減，每段的移動、途中停留、紀錄中斷加起來等於前後兩點的時間差。頁首另列短休息每小時平均（不到 10 分鐘的停留加總 ÷（移動＋這些停留）× 60），對照計畫的途中停留。GPS 斷訊也會在分享圖上標示，避免將紀錄中斷誤認為正常行走或停留。<br>紀錄保存：實走紀錄不會儲存，重新整理頁面後必須重新載入。</p></details>
     <textarea class="copybox" id="copyText" readonly aria-label="純文字時間表"></textarea>
     <p class="hint picinfo" id="picInfo" aria-live="polite"></p>
     <div class="pages" id="picPages" aria-label="A4 預覽"></div>
@@ -814,7 +814,8 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
   });
   Object.assign(EN, {'步程試算 與 實走紀錄分析｜GPX 登山行程時間估算（Tobler、DIN 33466、團體步速擬合）':'Hike Time Estimator & Walk Record Analysis | GPX Hiking Time Estimator (Tobler, DIN 33466, group pace fit)',"步程試算 與 實走紀錄分析":"Hike Time Estimator & Walk Record Analysis","淺綠底標示的停留點":"Light-green stop badge","＋途中停留":" + stops ","＋紀錄中斷":" + gap ","停留 {0} 分，{1} 出發":"Stop {0} min, leave {1}","途中停留 ":"Stop on the way ","停 {0} 分":"Stop {0} min","途中停留｜{0} km":"Stop on the way | {0} km","途中停留 {0}（{1}，{2} km）":"Stop on the way {0} ({1}, {2} km)","途中停留 {0}–{1}（{2}，{3} km）":"Stop on the way {0}–{1} ({2}, {3} km)","兩段停留之間不到 2 分鐘、又回到原處的移動算停留（這筆約 ":"Movement between two stops under 2 min that returns to its starting point counts as a stop (about ","停不到 2 分鐘的短停另看前後 15 秒：30 秒內走不到 8 m、連續 40 秒以上算停留（這筆約 ":"Short stops under 2 min are also checked over ±15 s: under 8 m in 30 s for 40 s or more counts as a stop (about "})
   Object.assign(EN, {"停 {0} 分，{1} 出發":"Stop {0} min, leave {1}","全晴移動":"Dry moving ","／全雨移動":" / Rain moving ","輕裝 {0} kg／重裝路段":"Light pack {0} kg / Heavy-pack sections","重裝（全段）":"Heavy pack (entire route)","輕裝 {0} kg（全段）":"Light pack {0} kg (entire route)","{0}；全晴抵達 {1}／全雨抵達 {2}；途中停留：上坡與平路 {3} 分／小時、下坡 {4} 分／小時；勞侖茲函數：{5}":"{0}; dry arrival {1} / rainy arrival {2}; stops on the way: uphill & flat {3} min/hour, downhill {4} min/hour; Lorentz function: {5}","有":"yes","無":"no","已套用":"applied","未套用":"not applied"});
-  Object.assign(EN, {"圖片（A4 JPG）：匯出 A4 圖片，下方可預覽。直式適合手機閱讀，橫式適合呈現較寬的路線剖面。實走分析圖完成後可用「儲存圖片」直接存到本機。":"Image (A4 JPG): export an A4 image, with a preview below. Portrait is suited to reading on a phone; landscape shows a wider route profile. After walk analysis is complete, use “Save image” to save it directly to this computer.","複製全文：複製純文字時間表，適合登山計畫報備與訊息分享。":"Copy all text: copy the plain-text timetable for trip registration and sharing in messaging apps.","GPX：匯出的 GPX 包含路線軌跡、整點計劃經過點、地標點及其預計時間，可匯入其他登山 App，顯示路線與時間點。同名、同圖示且相距 30 m 內的航點會合併。同一位置若有多次經過，名稱會附上時間，例如「左轉 09:44」、「右轉 13:14」。":"GPX: the exported GPX contains the route track, planned hourly passage points, landmarks and their expected times. Import it into another hiking app to show the route and time points. Waypoints with the same name and icon within 30 m are merged. When the same place is passed more than once, its name includes the time, e.g. “Left 09:44” and “Right 13:14”.","載入實走紀錄：載入手機或手錶記錄的 GPX，檔案須包含足夠的時間資訊。載入不會改變目前規劃的路線。若實走紀錄能與規劃路線對應，分析圖會沿用規劃路線中已編輯的點位表，以及整點、每公里等標示點位。若沒有規劃路線，或實走紀錄無法與路線對應，分析圖就改用紀錄本身的軌跡與航點。":"Load walk record: load a GPX recorded by a phone or watch; it must contain enough time information. Loading it does not change the current planned route. If the walk record matches the planned route, the analysis keeps the route’s edited timetable points and markers such as full-hour and kilometre points. If there is no planned route, or the record cannot be matched to it, the analysis uses the record’s own track and waypoints.","實走分析圖：將實際行走紀錄轉成時間與位置分析圖。若紀錄能與規劃路線對應，圖上會顯示規劃路線中已編輯的點位表，以及整點、每公里等標示點位。停留經 GPS 漂移與海拔雜訊清洗後判定，圖上留下的停留即為分析結果。檢查點前後沿路線 60 m 內的停留會合併歸入該點，以淺綠底標示停留時間（第一次抵達至最後一次出發）及出發時間。其他停留依時間順序排列，顯示起訖時間；未滿 1 分鐘只顯示開始時間。GPS 斷訊也會在分享圖上標示，避免將紀錄中斷誤認為正常行走或停留。":"Walk analysis: turn the actual walk record into a time-and-location analysis. If the record matches the planned route, the image shows the route’s edited timetable points and markers such as full-hour and kilometre points. Stops are identified after GPS drift and altitude noise are cleaned; the stops left on the image are the analysis result. Stops within 60 m along the route before or after a checkpoint are merged into that checkpoint, with a light-green badge showing the stop time (first arrival to last departure) and departure time. Other stops are listed in time order with their start and end times; stops under 1 minute show only their start time. GPS signal gaps are also marked on the shared image, so an interruption is not mistaken for normal walking or a stop.","紀錄保存：實走紀錄不會儲存，重新整理頁面後必須重新載入。":"Record storage: walk records are not saved; reload them after refreshing the page."});
+  Object.assign(EN, {"圖片（A4 JPG）：匯出 A4 圖片，下方可預覽。直式適合手機閱讀，橫式適合呈現較寬的路線剖面。實走分析圖完成後可用「儲存圖片」直接存到本機。":"Image (A4 JPG): export an A4 image, with a preview below. Portrait is suited to reading on a phone; landscape shows a wider route profile. After walk analysis is complete, use “Save image” to save it directly to this computer.","複製全文：複製純文字時間表，適合登山計畫報備與訊息分享。":"Copy all text: copy the plain-text timetable for trip registration and sharing in messaging apps.","GPX：匯出的 GPX 包含路線軌跡、整點計劃經過點、地標點及其預計時間，可匯入其他登山 App，顯示路線與時間點。同名、同圖示且相距 30 m 內的航點會合併。同一位置若有多次經過，名稱會附上時間，例如「左轉 09:44」、「右轉 13:14」。":"GPX: the exported GPX contains the route track, planned hourly passage points, landmarks and their expected times. Import it into another hiking app to show the route and time points. Waypoints with the same name and icon within 30 m are merged. When the same place is passed more than once, its name includes the time, e.g. “Left 09:44” and “Right 13:14”.","載入實走紀錄：載入手機或手錶記錄的 GPX，檔案須包含足夠的時間資訊。載入不會改變目前規劃的路線。若實走紀錄能與規劃路線對應，分析圖會沿用規劃路線中已編輯的點位表，以及整點、每公里等標示點位。若沒有規劃路線，或實走紀錄無法與路線對應，分析圖就改用紀錄本身的軌跡與航點。":"Load walk record: load a GPX recorded by a phone or watch; it must contain enough time information. Loading it does not change the current planned route. If the walk record matches the planned route, the analysis keeps the route’s edited timetable points and markers such as full-hour and kilometre points. If there is no planned route, or the record cannot be matched to it, the analysis uses the record’s own track and waypoints.","紀錄保存：實走紀錄不會儲存，重新整理頁面後必須重新載入。":"Record storage: walk records are not saved; reload them after refreshing the page."});
+  Object.assign(EN, {"途中停留 {0} 次共 {1}（{2}–{3} 之間，{4} km）":"{0} stops on the way, {1} in all (within {2}–{3}, {4} km)","停留的分鐘都用印出的時刻相減；每段的移動＝印出的抵達減前一點的出發，再扣途中停留和紀錄中斷。":"Stop minutes are the printed times subtracted; each leg’s moving time is the printed arrival less the printed departure before it, less the stops on the way and recording gaps.","最初照到陽光是地形遮蔽日出，最後一道光結束則是地形遮蔽日落。出發前看起點位置有無日光，途中按照預計時間的位置，抵達後按照終點位置":"the first sunlight is the terrain sunrise, and the end of the last light is the terrain sunset. Before departure, check whether there is sunlight at the start; along the route, use the position at the expected time; after arrival, use the end position","短休息每小時平均 {0} 分（計畫：上坡與平路 {1} 分、下坡 {2} 分）":"short stops {0} min per hour on average (plan: uphill & flat {1} min, downhill {2} min)","實走紀錄「{0}」：{1} {2} 出發、{3} 抵達，停留 {4} 次，{6}；和目前的路線對不上（偏離中位數 {5} m），位置改用紀錄本身的軌跡和航點；要對到路線的檢查點，請確認是同一條路線，走的方向相反時先按「反轉方向」。只留在這個視窗，重新整理後要再載入。":"Walk record “{0}”: {1}, left {2}, arrived {3}, {4} stops, {6}; it does not match the current route (median offset {5} m), so places come from the record’s own track and waypoints. To use the route’s checkpoints, check that it is the same route; if you walked it the other way, tap “Reverse direction” first. Kept in this window only; load it again after reloading the page.","實走紀錄「{0}」：{1} {2} 出發、{3} 抵達，停留 {4} 次，{5}；目前沒有路線，位置用紀錄本身的軌跡和航點。只留在這個視窗，重新整理後要再載入。":"Walk record “{0}”: {1}, left {2}, arrived {3}, {4} stops, {5}; there is no route, so places come from the record’s own track and waypoints. Kept in this window only; load it again after reloading the page.","實走紀錄「{0}」：{1} {2} 出發、{3} 抵達，停留 {4} 次，{8}；對到路線 {5}–{6} km，偏離中位數 {7} m。只留在這個視窗，重新整理後要再載入。":"Walk record “{0}”: {1}, left {2}, arrived {3}, {4} stops, {8}; matched to {5}–{6} km of the route, median offset {7} m. Kept in this window only; load it again after reloading the page.","目前的路線本身是有時間的紀錄，「實走分析圖」直接用它；{0}。":"The current route is itself a timed record; “Walk analysis” uses it directly; {0}.","短休息每小時平均 {0} 分（不到 10 分鐘的 {1} 次共 {2}，不含 10 分鐘以上的長休息）":"Short stops: {0} min per hour on average ({1} stops under 10 min, {2} in all; stops of 10 min or more not counted)","計畫的途中停留：上坡與平路 {0} 分／小時、下坡 {1} 分／小時":"Planned stops on the way: uphill & flat {0} min/hour, downhill {1} min/hour","檢查點前後 {0} m 內的停留算在那一點，停幾次都合併；其餘的「途中停留」照時間插在前後兩點之間，不到 10 分鐘、彼此在 {1} m 內的合併成一行，分鐘數是各次停下的加總。10 分鐘以上的停留是長休息，用淺綠底標示；合併的那一行由短休息組成，不標淺綠。":"Stops within {0} m of a checkpoint belong to that point and are merged, however many there were; the other stops on the way sit in their place in time between two points, and those under 10 min within {1} m of each other are one line whose minutes are the stops added up. A stop of 10 min or more is a long stop with a light green badge; a merged line is short stops and has none.","短休息每小時平均＝短休息加總 ÷（移動＋短休息）× 60，和計畫的途中停留同一算法；長休息不算，像計畫在各點另填的停留。":"Short stops per hour = the short stops added up ÷ (moving + short stops) × 60, worked out like the plan’s stops on the way; long stops are left out, like the stops the plan enters at its points.","｜全晴移動 ":" | dry moving ","／全雨移動 ":" / rain moving ","實走分析圖：將實際行走紀錄轉成時間與位置分析圖。若紀錄能與規劃路線對應，圖上會顯示規劃路線中已編輯的點位表，以及整點、每公里等標示點位。停留經 GPS 漂移與海拔雜訊清洗後判定，圖上留下的停留即為分析結果。檢查點前後沿路線 60 m 內的停留會合併歸入該點，停留時間從第一次抵達算到最後一次出發，10 分鐘以上以淺綠底標示。其他停留依時間順序插在前後兩點之間，顯示起訖時間，單次 10 分鐘以上以淺綠底標示；未滿 1 分鐘只顯示一個時間；不到 10 分鐘、彼此在 300 m 內的合併成一行，列出次數、分鐘加總與起訖時間。分鐘數都由圖上印出的時刻相減，每段的移動、途中停留、紀錄中斷加起來等於前後兩點的時間差。頁首另列短休息每小時平均（不到 10 分鐘的停留加總 ÷（移動＋這些停留）× 60），對照計畫的途中停留。GPS 斷訊也會在分享圖上標示，避免將紀錄中斷誤認為正常行走或停留。":"Walk analysis: turn the actual walk record into a time-and-location analysis. If the record matches the planned route, the image shows the route’s edited timetable points and markers such as full-hour and kilometre points. Stops are identified after GPS drift and altitude noise are cleaned; the stops left on the image are the analysis result. Stops within 60 m along the route before or after a checkpoint are merged into that checkpoint, timed from the first arrival to the last departure, with a light-green badge from 10 minutes. Other stops sit in time order between the two points they fell between, with their start and end times and a light-green badge for a single stop of 10 minutes or more; stops under 1 minute show one time; stops under 10 minutes within 300 m of each other are one line with how many, their minutes added and the first start and last end. Every duration is the printed times subtracted, so in each leg the moving time, stops on the way and recording gaps add up to the time between the two points. The header also gives the short stops per hour (stops under 10 minutes added ÷ (moving time + those stops) × 60) beside the plan’s stops on the way. GPS signal gaps are also marked on the shared image, so an interruption is not mistaken for normal walking or a stop."});   // V94
   var NAMES = {"航點":"Waypoint","起點":"Start","終點":"End","最高點":"Highest point","折返點":"Turnaround","最高點／折返":"Highest point / turnaround","四季公墓→巨木登山口後 239 m 營地":"Siji cemetery → camp 239 m past the giant-tree trailhead","四季公墓（停車處）":"Siji cemetery (parking)","新柵門":"New gate","紅柵欄（舊柵門）":"Red gate (old gate)","途中午餐":"Lunch on the way","廢棄護管所":"Abandoned ranger post","加納富溪":"Jianafu Creek","巨木登山口":"Giant-tree trailhead","營地":"Camp","大同鄉 健行":"Datong hike","戒茂斯-溪邊營地":"Jiemaosi – creekside camp","戒茂斯登山口（拉繩排隊）":"Jiemaosi trailhead (rope queue)","戒茂斯山前峰":"Jiemaosi fore-peak","碎石坡":"Scree slope","戒茂斯山三叉路口":"Jiemaosi junction","新武呂溪溪底":"Xinwulu Creek bed","溪邊營地":"Creekside camp","武陵山莊停車場":"Wuling Lodge car park","廢棄工寮":"Abandoned work hut","桃山指示牌":"Taoshan signpost","木橋":"Wooden bridge","小空地與指示牌":"Small clearing and signpost","小平台":"Small platform","2K 手機可通訊處":"2K phone signal","大平台與兩張長椅休息處":"Big platform with two benches","兩張長椅休息處(二)":"Two-bench rest stop (2)","黑水塘":"Heishui Pond","停機坪":"Helipad","瞭望小平台":"Lookout platform","4K手機可通訊點":"4K phone signal","桃山":"Taoshan"};
   var L = null, q = /[?&]lang=(zh|en)(&|$)/.exec(location.search);
   if (q) L = q[1];
@@ -3123,9 +3124,10 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     if (pic) {
       var stopMarks = [], stopSeen = {};
       if (c.act) {
-        c.rows.forEach(function (r, j) {
-          if (j > 0 && j < c.rows.length - 1 && actAtMin(r) >= 10) stopMarks.push(r.cp.d);   // V94: as the badge
-          (r.list || []).forEach(function (q) { if (q.min >= 10) stopMarks.push(q.d); });
+        var V8 = actView(c);
+        V8.rows.forEach(function (w, j) {
+          if (j > 0 && j < V8.rows.length - 1 && w.stop >= 10) stopMarks.push(w.r.cp.d);   // V94: as the badge
+          w.ents.forEach(function (e) { if (e.long) stopMarks.push((e.d0 + e.d1) / 2); });   // V94: one ring for the stops merged into one entry
         });
       } else {
         c.rows.forEach(function (r, j) { if (j > 0 && j < c.rows.length - 1 && r.stop >= 10) stopMarks.push(r.cp.d); });
@@ -3168,7 +3170,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       if (ls === 2 || ls === 1 || ls === 3) chips += ' ' + lightChip(ls);
       else if (shadeAt(c, cp.d, first ? r.dep : r.arr)) chips += _t(' <span class="chip shade">地形遮蔽無日照</span>');   // v51
       if (!first && dl !== null && r.arr > dl) chips += _t(' <span class="chip crit">超過最晚抵達</span>');
-      var meta = km(R(cp.d)) + _t(' km｜') + nf(zv) + ' m' + (first ? '' : _t('<br>移動 ') + dur(r.seg) + (r.rest >= 1 ? _t('＋途中停留 ') + Math.round(r.rest) + _t(' 分') : ''));
+      var lgT = first ? null : legShown(c.rows, i), meta = km(R(cp.d)) + _t(' km｜') + nf(zv) + ' m' + (first ? '' : _t('<br>移動 ') + dur(lgT.mv) + (lgT.rest ? _t('＋途中停留 ') + minTxt(lgT.rest) : ''));   // V94: as printed
       var transBox = '';   // v23: transition regroups are part of the hourly stop
       html.push('<tr>' +
         '<td><span class="idx">' + i + '</span></td>' +
@@ -3408,7 +3410,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   }
   function sunNote(sun) {
     if (sun.terr === 'ok') {
-      return _t('最初照到陽光是地形遮蔽日出，最後一道光結束則是地形遮蔽日落。出發前看起點位置有無日光，途中按照預計時間的位置，抵達後按照終點位置。');
+      return _t('最初照到陽光是地形遮蔽日出，最後一道光結束則是地形遮蔽日落。出發前看起點位置有無日光，途中按照預計時間的位置，抵達後按照終點位置');   // V94: the summary adds the full stop
     }
     if (sun.terr === 'busy') return _t('正在下載地形資料');
     if (sun.terr === 'out') return _t('無資料，起點或終點不在地形資料範圍（台灣本島與龜山島、綠島、蘭嶼、小琉球）');
@@ -3642,12 +3644,16 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       return { cp: p, arr: arr, dep: dep, at: at, list: [] };
     });
     for (i = rows.length - 1; i > 0; i--) { if (rows[i - 1].dep > rows[i].arr) rows[i - 1].dep = rows[i].arr; if (rows[i - 1].arr > rows[i - 1].dep) rows[i - 1].arr = rows[i - 1].dep; }   // a point inside the next point's stop area: reached at that stop
+    stops.forEach(function (sp) {   // V94: a stop going on past the departure from the start is the start's: the departure is its end
+      if (sp.at < 0 && sp.a < rows[0].dep && sp.b > rows[0].dep && (lastI < 1 || sp.b <= rows[1].arr)) { sp.at = 0; rows[0].at.push(sp); rows[0].dep = sp.b; }
+    });
     var dep0 = rows[0].dep, arrN = rows[lastI].arr, lt = new Date(dep0 * 1000 + TZ * 3600e3);
     var ds = lt.getUTCFullYear() + '-' + pad(lt.getUTCMonth() + 1) + '-' + pad(lt.getUTCDate()), day0 = Date.UTC(lt.getUTCFullYear(), lt.getUTCMonth(), lt.getUTCDate()) / 1000 - TZ * 3600;
     function mn(ts) { return (ts - day0) / 60; }
     if (S.hourPts) for (var h = Math.floor(mn(dep0) / 60) + 1; h * 60 < mn(arrN); h++) {   // every full hour where the record was then
       var th = day0 + h * 3600, dh = dAt(th);
       if (rows.some(function (r) { return r.at.length && th >= r.arr && th <= r.dep; })) continue;   // inside the stop at a point: see that point
+      if (stops.some(function (sp) { return th > sp.a && th < sp.b; })) continue;   // V94: inside a stop on the way: see that stop
       if (base.some(function (p) { return Math.abs(p.d - dh) < 40; })) continue;
       rows.push({ cp: { d: dh, name: pad(((h % 24) + 24) % 24) + _t(':00 整點'), kind: 'hour', stop: 0, id: 100000 + h }, arr: th, dep: th, at: [], list: [] });
     }
@@ -3675,7 +3681,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     var stopIn = over(stops, dep0, arrN), gapIn = over(gaps, dep0, arrN);
     var A = { src: src, mt: mt, G: G, ds: ds, da: da, db: db, full: full, up: up, dn: dn, total: (arrN - dep0) / 60, stopMin: stopIn / 60, gapMin: gapIn / 60,
               mv: (arrN - dep0 - stopIn - gapIn) / 60, n: stops.filter(function (o) { return o.b > dep0 && o.a < arrN; }).length, gapN: gaps.filter(function (o) { return o.b > dep0 && o.a < arrN; }).length,
-              rec: [mn(G.t[0]), mn(G.t[n - 1])] };
+              rec: [mn(G.t[0]), mn(G.t[n - 1])], gaps: gaps.map(function (o) { return { a: mn(o.a), b: mn(o.b) }; }) };
     var cA = { act: true, A: A, date: ds, tr: tr, st: c.st, m: c.m, buf: c.buf, rows: out, sun: sunA, startMin: mn(dep0) };
     if (X) { cA.alone = true; cA.secs = X.secs; cA.secsFull = X.secsFull; cA.range = null; cA.cps = X.cps; cA.name = X.name; A.alone = true; A.miss = miss; }   // V82
     cA.clocks = tr.x.map(function (x) { return mn(Math.min(arrN, Math.max(dep0, tAt(Math.min(Math.max(x, d0), d1))))); });
@@ -3684,8 +3690,56 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     A.c = cA;
     return A;
   }
-  function actAtMin(r) { return r.at && r.at.length ? Math.round(r.dep) - Math.round(r.arr) : 0; }   // V94: a stop at a point of the walk: from its arrival to its departure as printed
-  function stopDur(min) { return min < 1 ? _t('不到 1 分') : Math.round(min) + _t(' 分'); }   // V82: under 1 min is 不到 1 分, the same stops that print one time
+  var ACT_MERGE = 300;   // V94: on-the-way stops under 10 min within 300 m (real distance from the first of them) are one entry, still short stops
+  function actView(c) {   // V94: the 實走分析圖 as printed. A stop is its printed end less its printed start; a leg's moving time is the printed arrival
+    // less the printed departure before it, less the stops and the gap shown, so every line and the header add up.
+    if (c.view) return c.view;
+    return withSecs(c, function () {
+      var rows = c.rows, n = rows.length, P0 = Math.round, gaps = (c.A && c.A.gaps) || [];
+      function gapIn(a, b) { return gaps.some(function (g) { return g.b > a && g.a < b; }); }
+      var V = { rows: [], mv: 0, st: 0, gap: 0, n: 0, sMin: 0, sN: 0, lMin: 0, lN: 0 };
+      rows.forEach(function (r, j) {
+        var first = j === 0, last = j === n - 1, lo = j ? rows[j - 1].dep : -Infinity, ents = [];
+        (r.list || []).forEach(function (o) {
+          var q = { a: Math.max(o.a, lo), b: Math.min(o.b, r.arr), d: o.d };
+          if (q.b <= q.a) return;   // inside the stop at the point before: that point's
+          var m = P0(q.b) - P0(q.a), e = ents[ents.length - 1];
+          if (m < 10 && e && e.open && Math.abs(R(q.d) - R(e.d0)) <= ACT_MERGE && !gapIn(e.b, q.a)) { e.k++; e.b = q.b; e.d1 = q.d; e.min += m; return; }
+          ents.push({ a: q.a, b: q.b, d0: q.d, d1: q.d, min: m, k: 1, open: m < 10 });
+        });
+        var w = { r: r, ents: ents, pa: P0(r.arr), pd: P0(r.dep), mv: 0, rest: 0, gap: 0, stop: 0, at: [] }, rs = 0;
+        ents.forEach(function (e) {
+          e.long = !e.open; rs += e.min; V.n += e.k;   // long: one stop of 10 min or more; a merged entry is short stops, however many minutes in all
+          if (e.long) { V.lMin += e.min; V.lN += e.k; } else { V.sMin += e.min; V.sN += e.k; }
+        });
+        if (j) {
+          var E = w.pa - V.rows[j - 1].pd, g = r.gap >= 0.5 ? Math.min(P0(r.gap), Math.max(0, E - rs)) : 0;
+          w.rest = rs; w.gap = g; w.mv = Math.max(0, E - rs - g);
+          V.mv += w.mv; V.st += rs; V.gap += g;
+        }
+        if (!first && !last && r.at.length) {   // V94: a stop at a point, however many times: its printed arrival to its printed departure
+          w.stop = w.pd - w.pa; V.st += w.stop; V.n++;
+          if (w.stop >= 10) { V.lMin += w.stop; V.lN++; } else { V.sMin += w.stop; V.sN++; }
+        }
+        if (first || last) w.at = r.at.map(function (o) { return { a: o.a, b: o.b, min: P0(o.b) - P0(o.a) }; });
+        V.rows.push(w);
+      });
+      V.dep = V.rows[0].pd; V.arr = V.rows[n - 1].pa; V.total = V.arr - V.dep;
+      V.rate = V.mv + V.sMin > 0 ? V.sMin / (V.mv + V.sMin) * 60 : 0;   // as the plan's 途中停留: minutes in each hour of walking and short stops
+      c.view = V;
+      return V;
+    });
+  }
+  function minTxt(m) { return m < 1 ? _t('不到 1 分') : (m < 60 ? m + _t(' 分') : dur(m)); }   // V94: a printed span in minutes
+  function legShown(rows, j) {   // V94: a leg of the plan as printed: the printed arrival less the printed departure before it, less the stops shown
+    var r = rows[j], E = Math.round(r.arr) - Math.round(rows[j - 1].dep), rs = r.rest >= 1 ? Math.round(r.rest) : 0;
+    return { mv: Math.max(0, E - rs), rest: Math.min(rs, Math.max(0, E)) };
+  }
+  function shortTxt(V, brief) {   // V94: the walk's short stops per hour beside the plan's
+    if (brief) return _f('短休息每小時平均 {0} 分（計畫：上坡與平路 {1} 分、下坡 {2} 分）', nf1(V.rate), f2(S.stopH), f2(S.stopHDn));
+    return [_f('短休息每小時平均 {0} 分（不到 10 分鐘的 {1} 次共 {2}，不含 10 分鐘以上的長休息）', nf1(V.rate), V.sN, durZh(V.sMin)),
+            _f('計畫的途中停留：上坡與平路 {0} 分／小時、下坡 {1} 分／小時', f2(S.stopH), f2(S.stopHDn))];
+  }
   function enRecordName(name) {
     if (I18N.lang !== 'en' || !name) return name;
     return String(name).replace(/^(\d{4})年(\d{1,2})月(\d{1,2})日[_ ]?(\d{1,2})[-:](\d{2})$/, function (_, y, m, d, h, n) {
@@ -3693,14 +3747,16 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     });
   }
   function actNotes(A) {   // the sources and the rules, under the timetable of the picture: two paragraphs, so a landscape page keeps them
-    var j = I18N.lang === 'en' ? ' ' : '', P1 = [], P2 = [];
+    var j = I18N.lang === 'en' ? ' ' : '', P1 = [], P2 = [], V = actView(A.c);
     P1.push(_f('時刻：取自紀錄「{0}」（{1}–{2}）。', enRecordName(A.src.name || _t('紀錄')), hm(A.rec[0]), hm(A.rec[1])));
     P1.push(A.src.own || A.alone ? _t('位置：紀錄本身的路線。') : _f('位置：依前進方向對到計畫路線，偏離中位數 {0} m。', nf(A.mt.offMed)));   // V82: a record on its own too
     if (!A.full) P1.push(_f('紀錄只走到路線的 {0}–{1} km。', km(R(A.da)), km(R(A.db))));
     P2.push(_t('停留：紀錄每 5 秒一點，前後 1 分鐘淨移動不到每小時 0.6 km 算停留。'));
     zNote(A.G).split('<br><br>').forEach(function (s) { if (s) P2.push(s); });
-    P2.push(_f('檢查點前後 {0} m 內的停留算在那一點，停幾次都合併；其餘的「途中停留」照時間插在前後兩點之間。10 分鐘以上的用淺綠底標示。', ACT_R));   // V94
-    if (A.gapN) P2.push(_f('紀錄中斷 {0} 次共 {1}，不算移動也不算停留。', A.gapN, durZh(A.gapMin)));
+    P2.push(_f('檢查點前後 {0} m 內的停留算在那一點，停幾次都合併；其餘的「途中停留」照時間插在前後兩點之間，不到 10 分鐘、彼此在 {1} m 內的合併成一行，分鐘數是各次停下的加總。10 分鐘以上的停留是長休息，用淺綠底標示；合併的那一行由短休息組成，不標淺綠。', ACT_R, ACT_MERGE));   // V94
+    P2.push(_t('停留的分鐘都用印出的時刻相減；每段的移動＝印出的抵達減前一點的出發，再扣途中停留和紀錄中斷。'));
+    P2.push(_t('短休息每小時平均＝短休息加總 ÷（移動＋短休息）× 60，和計畫的途中停留同一算法；長休息不算，像計畫在各點另填的停留。'));
+    if (A.gapN && V.gap) P2.push(_f('紀錄中斷 {0} 次共 {1}，不算移動也不算停留。', A.gapN, durZh(V.gap)));
     return [P1.join(j), P2.join(j)];
   }
   function renderAct() {
@@ -3709,17 +3765,17 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     $('btnAct').hidden = !ACT; $('btnActPic').hidden = !ACT; $('btnActSave').hidden = !ACT; $('actClear').hidden = !T.act;
     if (ad && ad.err === 'short') txt = _t('紀錄不到 10 分鐘或有時間的點太少，做不出實走分析圖。');
     else if (ad && ad.err === 'match') txt = _t('這份紀錄的位置和時間對不起來，做不出實走分析圖。');   // V82: a record is always laid onto its own track when nothing else fits
-    else if (ACT && ACT.src.own) txt = _t('目前的路線本身是有時間的紀錄，「實走分析圖」直接用它。');
+    else if (ACT && ACT.src.own) txt = _f('目前的路線本身是有時間的紀錄，「實走分析圖」直接用它；{0}。', shortTxt(actView(ACT.c), true));   // V94
     else if (ACT && ACT.alone) {   // V82
-      var ra = ACT.c.rows, nm0 = enRecordName(ACT.src.name || _t('紀錄')), h0 = hm(ra[0].dep), h1 = hm(ra[ra.length - 1].arr);
-      txt = ACT.miss ? _f('實走紀錄「{0}」：{1} {2} 出發、{3} 抵達，停留 {4} 次；和目前的路線對不上（偏離中位數 {5} m），位置改用紀錄本身的軌跡和航點；要對到路線的檢查點，請確認是同一條路線，走的方向相反時先按「反轉方向」。只留在這個視窗，重新整理後要再載入。',
-          nm0, ACT.ds, h0, h1, ACT.n, ACT.miss.offMed !== undefined && ACT.miss.offMed !== null ? nf(ACT.miss.offMed) : '—')
-        : _f('實走紀錄「{0}」：{1} {2} 出發、{3} 抵達，停留 {4} 次；目前沒有路線，位置用紀錄本身的軌跡和航點。只留在這個視窗，重新整理後要再載入。', nm0, ACT.ds, h0, h1, ACT.n);
+      var Va = actView(ACT.c), nm0 = enRecordName(ACT.src.name || _t('紀錄')), h0 = hm(Va.dep), h1 = hm(Va.arr);   // V94: as the picture prints
+      txt = ACT.miss ? _f('實走紀錄「{0}」：{1} {2} 出發、{3} 抵達，停留 {4} 次，{6}；和目前的路線對不上（偏離中位數 {5} m），位置改用紀錄本身的軌跡和航點；要對到路線的檢查點，請確認是同一條路線，走的方向相反時先按「反轉方向」。只留在這個視窗，重新整理後要再載入。',
+          nm0, ACT.ds, h0, h1, Va.n, ACT.miss.offMed !== undefined && ACT.miss.offMed !== null ? nf(ACT.miss.offMed) : '—', shortTxt(Va, true))
+        : _f('實走紀錄「{0}」：{1} {2} 出發、{3} 抵達，停留 {4} 次，{5}；目前沒有路線，位置用紀錄本身的軌跡和航點。只留在這個視窗，重新整理後要再載入。', nm0, ACT.ds, h0, h1, Va.n, shortTxt(Va, true));
     }
     else if (ACT) {
-      var rw = ACT.c.rows;
-      txt = _f('實走紀錄「{0}」：{1} {2} 出發、{3} 抵達，停留 {4} 次；對到路線 {5}–{6} km，偏離中位數 {7} m。只留在這個視窗，重新整理後要再載入。', enRecordName(ACT.src.name || _t('紀錄')), ACT.ds,
-        hm(rw[0].dep), hm(rw[rw.length - 1].arr), ACT.n, km(R(ACT.da)), km(R(ACT.db)), nf(ACT.mt.offMed));
+      var Vm = actView(ACT.c);
+      txt = _f('實走紀錄「{0}」：{1} {2} 出發、{3} 抵達，停留 {4} 次，{8}；對到路線 {5}–{6} km，偏離中位數 {7} m。只留在這個視窗，重新整理後要再載入。', enRecordName(ACT.src.name || _t('紀錄')), ACT.ds,
+        hm(Vm.dep), hm(Vm.arr), Vm.n, km(R(ACT.da)), km(R(ACT.db)), nf(ACT.mt.offMed), shortTxt(Vm, true));
     }
     say('actStatus', txt);
   }
@@ -3743,15 +3799,26 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     function cut() { blocks.push({ ops: ops, h: y }); ops = []; y = 0; }
     function tw(t, f) { mc.font = f; return mc.measureText(t).width; }
     function fit(t, f, w) { if (tw(t, f) <= w) return t; while (t.length > 1 && tw(t + '…', f) > w) t = t.slice(0, -1); return t + '…'; }
-    function wrap(t, f, w) {   // v57: break at spaces (English) or between characters (Chinese)
-      var out = [], line = '', TK = /[\u2e80-\u9fff\uf900-\ufaff\u3000-\u303f\uff00-\uffef]|[^\s\u2e80-\u9fff\uf900-\ufaff\u3000-\u303f\uff00-\uffef]+\s*|\s+/g;
+    function wrap(t, f, w) {   // v57: break at spaces (English) or between characters (Chinese); V94: no line starts with a closing mark
+      var out = [], cur = [], TK = /[\u2e80-\u9fff\uf900-\ufaff\u3000-\u303f\uff00-\uffef]|[^\s\u2e80-\u9fff\uf900-\ufaff\u3000-\u303f\uff00-\uffef]+\s*|\s+/g, CL = /^[。，、；：！？）」』〉》】]/;
       function rt(s) { return s.replace(/\s+$/, ''); }
+      function str(a) { return rt(a.join('')); }
       (t.match(TK) || []).forEach(function (tk) {
-        if (line && tw(rt(line + tk), f) > w) { out.push(rt(line)); line = ''; tk = tk.replace(/^\s+/, ''); }
-        if (!line && tw(rt(tk), f) > w) { Array.from(tk).forEach(function (ch) { if (line && tw(line + ch, f) > w) { out.push(rt(line)); line = ch; } else line += ch; }); return; }
-        line += tk;
+        if (cur.length && tw(str(cur.concat(tk)), f) > w) {
+          var down = [];
+          if (CL.test(tk)) while (cur.length > 1 && down.length < 3) { down.unshift(cur.pop()); if (!CL.test(down[0])) break; }   // the word before the mark goes down with it
+          while (down.length && /^\s+$/.test(down[0])) down.shift();
+          out.push(str(cur)); cur = down;
+          if (!cur.length) tk = tk.replace(/^\s+/, '');
+        }
+        if (!cur.length && tw(rt(tk), f) > w) {
+          var line = '';
+          Array.from(tk).forEach(function (ch) { if (line && tw(line + ch, f) > w) { out.push(rt(line)); line = ch; } else line += ch; });
+          cur = line ? [line] : []; return;
+        }
+        cur.push(tk);
       });
-      if (rt(line)) out.push(rt(line));
+      if (str(cur)) out.push(str(cur));
       return out;
     }
     function text(t, x, yy, f, color, align) { ops.push(function (g) { g.font = f; g.fillStyle = color; g.textAlign = align || 'left'; g.textBaseline = 'alphabetic'; g.fillText(t, x, yy); }); }
@@ -3761,14 +3828,13 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       return w;
     }
     function rr(g, x, yy, w, h, r) { g.beginPath(); g.moveTo(x + r, yy); g.arcTo(x + w, yy, x + w, yy + h, r); g.arcTo(x + w, yy + h, x, yy + h, r); g.arcTo(x, yy + h, x, yy, r); g.arcTo(x, yy, x + w, yy, r); g.closePath(); }
-    var pointRows = c.rows, last = pointRows[pointRows.length - 1], dl = act ? null : parseHM(S.deadline);
-    // V83: keep the route points, but insert each on-the-way stop as its own timed row.
+    var pointRows = c.rows, last = pointRows[pointRows.length - 1], dl = act ? null : parseHM(S.deadline), V = act ? actView(c) : null;
+    // V83: keep the route points, but insert each on-the-way stop as its own timed row. V94: right before the point it led to, short ones within 300 m as one
     var rows = [];
     pointRows.forEach(function (r, idx) {
-      rows.push({ type: 'point', data: r, index: idx, sortTime: idx === 0 ? r.dep : r.arr });
-      if (act) (r.list || []).forEach(function (o) { rows.push({ type: 'stop', stop: o, sortTime: o.a }); });
+      if (act) V.rows[idx].ents.forEach(function (e) { rows.push({ type: 'stop', e: e }); });
+      rows.push({ type: 'point', data: r, index: idx });
     });
-    if (act) rows.sort(function (a, b) { return a.sortTime - b.sortTime || (a.type === 'point' ? -1 : 1); });
     var day = act ? A.ds : (S.date || todayStr()), dp = day.split('-').map(Number), dd = new Date(dp[0], dp[1] - 1, dp[2]);
     var title = enRecordName((c.alone ? c.name : (T.name || T.fileName)) || _t('路線')) + (act ? _t('（實際行程）') : '');   // V82: a record on its own: its name
     // header
@@ -3776,13 +3842,17 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     var routeSecs = c.secs || T.secs || [], hasHeavy = routeSecs.some(function (q) { return q.heavy !== false; }), hasLight = routeSecs.some(function (q) { return q.heavy === false; }),
         lightKg = numOr(S.mainLightKg, 2), gearText = hasHeavy && hasLight ? _f('輕裝 {0} kg／重裝路段', f2(lightKg)) : (hasHeavy ? _t('重裝（全段）') : _f('輕裝 {0} kg（全段）', f2(lightKg))), lorentzApplied = !!(C.hasLorentz && C.hasLorentz()),
         heads = [[_f('{0}（{1}）{2} 出發，{3} 抵達', day, WD[dd.getDay()], hm(act ? pointRows[0].dep : c.startMin), hm(last.arr)), '600 15px ' + fu, col['--ink'], 22],
-                 act ? [km(R(A.db) - R(A.da)) + _t(' km｜爬升 ') + nf(A.up) + _t(' m｜下降 ') + nf(A.dn) + _t(' m｜移動 ') + durZh(A.mv) + _t('｜停留 ') + durZh(A.stopMin) + _f('（{0} 次）', A.n) +
-                         (A.gapN ? _t('｜紀錄中斷 ') + durZh(A.gapMin) : ''), '400 13px ' + fu, col['--ink2'], 19]
+                 act ? [km(R(A.db) - R(A.da)) + _t(' km｜爬升 ') + nf(A.up) + _t(' m｜下降 ') + nf(A.dn) + _t(' m｜移動 ') + durZh(V.mv) + _t('｜停留 ') + durZh(V.st) + _f('（{0} 次）', V.n) +
+                         (V.gap ? _t('｜紀錄中斷 ') + durZh(V.gap) : ''), '400 13px ' + fu, col['--ink2'], 19]
                      : [km(R(c.tr.total)) + _t(' km｜爬升 ') + nf(c.st.up) + _t(' m｜下降 ') + nf(c.st.dn) + _t(' m｜移動 ') + durZh(c.m.total * 60) +
                          _t('｜全晴移動 ') + durZh(c.mSun.total * 60) + _t('／全雨移動 ') + durZh(c.mRain.total * 60), '400 13px ' + fu, col['--ink2'], 19]];
     if (!act) heads.push([_f('{0}；全晴抵達 {1}／全雨抵達 {2}；途中停留：上坡與平路 {3} 分／小時、下坡 {4} 分／小時；勞侖茲函數：{5}',
       gearText, hm(c.arrSun), hm(c.arrRain), f2(S.stopH), f2(S.stopHDn), lorentzApplied ? _t('已套用') : _t('未套用')
     ), '600 12px ' + fu, col['--ink2'], 18]);
+    else {   // V94: the walk's short stops beside the plan's, in one line when it fits
+      var sp9 = shortTxt(V), j9 = I18N.lang === 'en' ? '. ' : _t('；'), f9 = '600 12px ' + fu;
+      (tw(sp9[0] + j9 + sp9[1], f9) <= CW ? [sp9[0] + j9 + sp9[1]] : sp9).forEach(function (t9) { heads.push([t9, f9, col['--ink2'], 18]); });
+    }
     if (c.sun) sunLines(c.sun, true).forEach(function (ln) { heads.push([ln, '400 13px ' + fu, col['--ink2'], 19]); });   // V77: the 實走分析圖 has its own day's sky and terrain
     heads.forEach(function (h) { wrap(h[0], h[1], CW).forEach(function (ln) { y += h[3]; text(ln, X, y, h[1], h[2]); }); });
     y += 12; cut();
@@ -3802,7 +3872,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       lg.push([col['--dusk'], _t('暮光／曙光')], [col['--night'], _t('夜間')]);
     }
     var hasStopMarks = c.act
-      ? c.rows.some(function (r, j) { return (j > 0 && j < c.rows.length - 1 && actAtMin(r) >= 10) || (r.list || []).some(function (q) { return q.min >= 10; }); })
+      ? V.rows.some(function (w, j) { return (j > 0 && j < V.rows.length - 1 && w.stop >= 10) || w.ents.some(function (e) { return e.long; }); })
       : c.rows.some(function (r, j) { return j > 0 && j < c.rows.length - 1 && r.stop >= 10; });
     if (hasStopMarks) lg.push([col['--stopb-ink'], _t('淺綠底標示的停留點'), 'ring']);
     var lx = X, lf = '400 11px ' + fu;
@@ -3850,7 +3920,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       // V80: the stop entered at this point is a light green badge right of the name, in the name's type (it was a bold line at the bottom);
       //      one line when it fits, else its two halves stacked (still beside the name), else one line under the name
       //      V81: the 實走分析圖 too, where the record stopped at the point: minutes from the arrival to the departure as printed
-      var pointStopMin = act ? actAtMin(r) : (r.stop || 0), sbT = '', sbF = nf2;   // V94: the walk as printed (it was the minutes standing still, which did not match the times)
+      var w9 = act ? V.rows[pointIndex] : null, pointStopMin = act ? w9.stop : (r.stop || 0), sbT = '', sbF = nf2;   // V94: the walk as printed (it was the minutes standing still, which did not match the times)
       if (!first && !isLast && pointStopMin >= 10) {
         sbT = _f('停 {0} 分，{1} 出發', Math.round(pointStopMin), hm(r.dep));
       }
@@ -3881,8 +3951,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       else if (ch3) { chx = nx; chy = top + 62; }
       chips.forEach(function (ch) { chx += chip(ch[0], chx, chy, ch[1]) + 4; });
       var mt = [km(R(cp.d)) + _t(' km｜') + nf(C.zAt(c.tr, cp.d)) + ' m'], mls = [], cur = '';   // V57: the line breaks between its parts, not inside one
-      if (!first && act) { mt.push(_t('｜移動 ') + dur(r.seg)); if (r.list.length) mt.push(_t('＋途中停留 ') + stopDur(r.rest)); if (r.gap >= 0.5) mt.push(_t('＋紀錄中斷 ') + Math.round(r.gap) + _t(' 分')); }
-      else if (!first) { mt.push(_t('｜移動 ') + dur(r.seg)); if (r.rest >= 1) mt.push(_t('＋途中停留 ') + Math.round(r.rest) + _t(' 分')); }
+      if (!first && act) { mt.push(_t('｜移動 ') + dur(w9.mv)); if (w9.ents.length) mt.push(_t('＋途中停留 ') + minTxt(w9.rest)); if (w9.gap) mt.push(_t('＋紀錄中斷 ') + minTxt(w9.gap)); }   // V94: as printed
+      else if (!first) { var lg9 = legShown(pointRows, pointIndex); mt.push(_t('｜移動 ') + dur(lg9.mv)); if (lg9.rest) mt.push(_t('＋途中停留 ') + minTxt(lg9.rest)); }
       mt.forEach(function (pt) { if (cur && tw(cur + pt, lf2) > right - nx) { mls.push(cur); cur = pt.replace(/^[｜|\s]+/, ''); } else cur += pt; });
       mls.push(cur);
       var yy = ch3 ? top + 63 : sbM === 3 ? top + 43 : sbM === 2 ? (ch2 ? top + 57 : top + 37) : sbM === 1 ? (ch2 ? top + 37 : top + 19) : (ch2 ? top + 36 : top + 16);   // V80: under the badge and tags
@@ -3891,31 +3961,31 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
         wrap(pointStopMin >= 1 ? _f('停留 {0} 分，{1} 出發', Math.round(pointStopMin), hm(r.dep)) : _t('停留不到 1 分'), lf2, right - nx).forEach(function (ln) { yy += 17; text(ln, nx, yy, lf2, col['--ink2']); });
       }
       if (act) {   // V77: every stop with its start and end: on the way here, then at this point
-        var sf = '600 12px ' + fu, sum = function (L) { return L.reduce(function (s, o) { return s + o.min; }, 0); };
+        var sf = '600 12px ' + fu, sum = function (L) { return L.reduce(function (s, o) { return s + o.min; }, 0); }, atP = w9.at;   // V94: printed spans
         var put = function (parts, f) {   // breaks between the parts (a time span stays whole, the bracket stays with it)
           var cur = '', out = [];
           parts.forEach(function (pt) { if (cur && tw(cur + pt, f) > right - nx) { out.push(cur); cur = pt; } else cur += pt; });
           out.push(cur);
           out.forEach(function (l) { wrap(l, f, right - nx).forEach(function (ln) { yy += 17; text(ln, nx, yy, f, col['--ink']); }); });
         };
-        var span = function (o) { return o.min < 1 ? hm(o.a) : hm(o.a) + '–' + hm(o.b); };   // V82: a stop under 1 min has one time
-        if (r.at.length && (first || isLast)) put(r.at.map(function (o, j) { return (j ? '' : _t(first ? '出發前停留 ' : '抵達後停留 ')) + span(o) + (j < r.at.length - 1 ? _t('、') : ''); })
-          .concat([_f('（{0}）', stopDur(sum(r.at)))]), sf);   // V82: at a point on the way all its stops are the one badge; the end of the last stop is the departure
+        var span = function (o) { return o.min < 1 ? hm(o.a) : hm(o.a) + '–' + hm(o.b); };   // V82: a stop under 1 min has one time (V94: as printed)
+        if (atP.length && (first || isLast)) put(atP.map(function (o, j) { return (j ? '' : _t(first ? '出發前停留 ' : '抵達後停留 ')) + span(o) + (j < atP.length - 1 ? _t('、') : ''); })
+          .concat([_f('（{0}）', minTxt(sum(atP)))]), sf);   // V82: at a point on the way all its stops are the one badge; the end of the last stop is the departure
       }
       var yb = yy + 10;
       if (sep) { var ly = yb; ops.push(function (g) { g.fillStyle = col['--line']; g.fillRect(nx, ly, right - nx, 1); }); }
       return yb;
     }
-    function drawStopRow(item, X0, CW0, y1, sep) {   // V83: on-the-way stops sit between the points they occurred between.
-      var o = item.stop, top = y1 + 10, nx = X0 + 30, right = X0 + CW0, avail = Math.max(24, right - nx);
+    function drawStopRow(item, X0, CW0, y1, sep) {   // V83: on-the-way stops sit between the points they occurred between. V94: e = one entry, k stops
+      var e = item.e, top = y1 + 10, nx = X0 + 30, right = X0 + CW0, avail = Math.max(24, right - nx);
       var yEnd = top + 16, f = '700 15px ' + fu, lf = '400 12px ' + fu;
-      var start = hm(o.a), end = hm(o.b), mins = Math.round(o.b) - Math.round(o.a);
+      var start = hm(e.a), end = hm(e.b), k0 = km(R(e.d0)), k1 = km(R(e.d1)), kmT = k0 === k1 ? k0 : k0 + '–' + k1;
       ops.push(function (g) {
         g.beginPath(); g.arc(X0 + 11, top + 11, 4.2, 0, Math.PI * 2);
-        g.fillStyle = '#ffffff'; g.fill(); g.strokeStyle = o.min >= 10 ? col['--stopb-ink'] : col['--ink2']; g.lineWidth = 1.5; g.stroke();
+        g.fillStyle = '#ffffff'; g.fill(); g.strokeStyle = e.long ? col['--stopb-ink'] : col['--ink2']; g.lineWidth = 1.5; g.stroke();
       });
-      if (o.min >= 10) {
-        var a = _f('停 {0} 分', mins), b = start + '–' + end, one = a + (I18N.lang === 'en' ? ', ' : '，') + b;
+      if (e.long) {
+        var a = _f('停 {0} 分', e.min), b = start + '–' + end, one = a + (I18N.lang === 'en' ? ', ' : '，') + b;
         var oneW = tw(one, f) + 16, twoW = Math.max(tw(a, f), tw(b, f)) + 16, two = oneW > avail;
         if (two && twoW > avail) b = fit(b, f, Math.max(8, avail - 16));
         var bw = Math.min(avail, two ? Math.max(tw(a, f), tw(b, f)) + 16 : oneW), bh = two ? 40 : 22;
@@ -3927,10 +3997,11 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
           g.textBaseline = 'alphabetic';
         });
         yEnd = top + bh + 16;
-        text(_f('途中停留｜{0} km', km(R(o.d))), nx, yEnd, lf, col['--ink2']);
+        text(_f('途中停留｜{0} km', kmT), nx, yEnd, lf, col['--ink2']);
         yEnd += 9;
       } else {
-        var desc = o.min < 1 ? _f('途中停留 {0}（{1}，{2} km）', start, stopDur(o.min), km(R(o.d))) : _f('途中停留 {0}–{1}（{2}，{3} km）', start, end, stopDur(o.min), km(R(o.d)));
+        var desc = e.k > 1 ? _f('途中停留 {0} 次共 {1}（{2}–{3} 之間，{4} km）', e.k, minTxt(e.min), start, end, kmT)
+          : (e.min < 1 ? _f('途中停留 {0}（{1}，{2} km）', start, minTxt(e.min), kmT) : _f('途中停留 {0}–{1}（{2}，{3} km）', start, end, minTxt(e.min), kmT));
         wrap(desc, lf, avail).forEach(function (ln) { text(ln, nx, yEnd, lf, col['--ink2']); yEnd += 17; });
       }
       var yb = yEnd + 4;
