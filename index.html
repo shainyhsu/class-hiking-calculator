@@ -3043,6 +3043,25 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
         '<path class="bd-grip" d="M' + (x - 2).toFixed(1) + ' ' + (ty - 2) + 'v10M' + (x + 2).toFixed(1) + ' ' + (ty - 2) + 'v10"></path></g>');
     });
     o.push(mkB.join(''));
+    // V83: hollow green rings on the A4 elevation line for every point carrying a light-green stop badge.
+    if (pic) {
+      var stopMarks = [], stopSeen = {};
+      if (c.act) {
+        c.rows.forEach(function (r, j) {
+          if (j > 0 && j < c.rows.length - 1 && r.at && r.at.length) stopMarks.push(r.cp.d);
+          (r.list || []).forEach(function (q) { if (q.min >= 10) stopMarks.push(q.d); });
+        });
+      } else {
+        c.rows.forEach(function (r, j) { if (j > 0 && j < c.rows.length - 1 && r.stop > 0) stopMarks.push(r.cp.d); });
+      }
+      stopMarks.forEach(function (d) {
+        var key = Math.round(d);
+        if (stopSeen[key]) return;
+        stopSeen[key] = true;
+        var xx = sx(R(d)), yy = sy(C.zAt(tr, d));
+        o.push('<circle cx="' + xx.toFixed(1) + '" cy="' + yy.toFixed(1) + '" r="4.1" style="fill:#ffffff;stroke:var(--stopb-ink);stroke-width:1.7"></circle>');
+      });
+    }
     o.push('<line class="cutg" id="cutG" x1="0" x2="0" y1="' + Tp + '" y2="' + (ty + 6) + '" visibility="hidden"></line>');
     o.push('<g class="tip" id="pTip" visibility="hidden"><rect x="0" y="' + (Tp + 3) + '" width="10" height="19" rx="4"></rect><text x="0" y="' + (Tp + 16.5) + '" text-anchor="middle" font-size="11"></text></g>');
     box.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + _t('" role="img" aria-label="高度剖面，依坡度分色，標出檢查點、整點時刻、地形與可拖拉的路段分界">') + o.join('') + '</svg>';
@@ -3661,12 +3680,19 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       return w;
     }
     function rr(g, x, yy, w, h, r) { g.beginPath(); g.moveTo(x + r, yy); g.arcTo(x + w, yy, x + w, yy + h, r); g.arcTo(x + w, yy + h, x, yy + h, r); g.arcTo(x, yy + h, x, yy, r); g.arcTo(x, yy, x + w, yy, r); g.closePath(); }
-    var rows = c.rows, last = rows[rows.length - 1], dl = act ? null : parseHM(S.deadline);   // V77: the walk has no 最晚抵達 tags
+    var pointRows = c.rows, last = pointRows[pointRows.length - 1], dl = act ? null : parseHM(S.deadline);
+    // V83: keep the route points, but insert each on-the-way stop as its own timed row.
+    var rows = [];
+    pointRows.forEach(function (r, idx) {
+      rows.push({ type: 'point', data: r, index: idx, sortTime: idx === 0 ? r.dep : r.arr });
+      if (act) (r.list || []).forEach(function (o) { rows.push({ type: 'stop', stop: o, sortTime: o.a }); });
+    });
+    if (act) rows.sort(function (a, b) { return a.sortTime - b.sortTime || (a.type === 'point' ? -1 : 1); });
     var day = act ? A.ds : (S.date || todayStr()), dp = day.split('-').map(Number), dd = new Date(dp[0], dp[1] - 1, dp[2]);
     var title = ((c.alone ? c.name : (T.name || T.fileName)) || _t('路線')) + (act ? _t('（實際行程）') : '');   // V82: a record on its own: its name
     // header
     wrap(title, '700 20px ' + fu, CW).forEach(function (ln) { y += 22; text(ln, X, y, '700 20px ' + fu, col['--ink']); });
-    var heads = [[_f('{0}（{1}）{2} 出發，{3} 抵達', day, WD[dd.getDay()], hm(act ? rows[0].dep : c.startMin), hm(last.arr)), '600 15px ' + fu, col['--ink'], 22],
+    var heads = [[_f('{0}（{1}）{2} 出發，{3} 抵達', day, WD[dd.getDay()], hm(act ? pointRows[0].dep : c.startMin), hm(last.arr)), '600 15px ' + fu, col['--ink'], 22],
                  act ? [km(R(A.db) - R(A.da)) + _t(' km｜爬升 ') + nf(A.up) + _t(' m｜下降 ') + nf(A.dn) + _t(' m｜移動 ') + durZh(A.mv) + _t('｜停留 ') + durZh(A.stopMin) + _f('（{0} 次）', A.n) +
                          (A.gapN ? _t('｜紀錄中斷 ') + durZh(A.gapMin) : ''), '400 13px ' + fu, col['--ink2'], 19]
                      : [km(R(c.tr.total)) + _t(' km｜爬升 ') + nf(c.st.up) + _t(' m｜下降 ') + nf(c.st.dn) + _t(' m｜移動 ') + durZh(c.m.total * 60), '400 13px ' + fu, col['--ink2'], 19]];
@@ -3688,13 +3714,24 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       if (c.sun.terr === 'ok') lg.push([col['--sun'], _t('無地形遮蔽日照')]);
       lg.push([col['--dusk'], _t('暮光／曙光')], [col['--night'], _t('夜間')]);
     }
+    var hasStopMarks = c.act
+      ? c.rows.some(function (r, j) { return (j > 0 && j < c.rows.length - 1 && r.at && r.at.length) || (r.list || []).some(function (q) { return q.min >= 10; }); })
+      : c.rows.some(function (r, j) { return j > 0 && j < c.rows.length - 1 && r.stop > 0; });
+    if (hasStopMarks) lg.push([col['--stopb-ink'], _t('淺綠底標示的停留點'), 'ring']);
     var lx = X, lf = '400 11px ' + fu;
     y += 16;
     lg.forEach(function (it) {
       var w = 14 + tw(it[1], lf) + 12;
       if (lx + w > X + CW) { lx = X; y += 17; }
       var px = lx, py = y;
-      ops.push(function (g) { g.fillStyle = it[0]; rr(g, px, py - 9, 10, 10, 2); g.fill(); g.strokeStyle = col['--line']; g.lineWidth = 0.6; g.stroke(); });
+      ops.push(function (g) {
+        if (it[2] === 'ring') {
+          g.beginPath(); g.arc(px + 5, py - 4, 4, 0, Math.PI * 2);
+          g.fillStyle = '#ffffff'; g.fill(); g.strokeStyle = it[0]; g.lineWidth = 1.6; g.stroke();
+        } else {
+          g.fillStyle = it[0]; rr(g, px, py - 9, 10, 10, 2); g.fill(); g.strokeStyle = col['--line']; g.lineWidth = 0.6; g.stroke();
+        }
+      });
       text(it[1], lx + 14, y, lf, col['--ink2']);
       lx += w;
     });
@@ -3703,15 +3740,16 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     // timetable
     var TT = blocks.length;   // first timetable block
     function rule(yy) { ops.push(function (g) { g.fillStyle = col['--ink']; g.fillRect(X, yy, CW, 1.2); }); }
-    function drawRow(r, i, X0, CW0, y1, sep) {   // V57: one row of the timetable at X0, CW0 wide, from y1; returns where the next one starts
-      var cp = r.cp, first = i === 0, isLast = i === rows.length - 1, kd = cp.kind, top = y1 + 10;
+    function drawRow(item, i, X0, CW0, y1, sep) {   // V57: one row of the timetable at X0, CW0 wide, from y1; returns where the next one starts
+      if (item.type === 'stop') return drawStopRow(item, X0, CW0, y1, sep);
+      var r = item.data, pointIndex = item.index, cp = r.cp, first = pointIndex === 0, isLast = pointIndex === pointRows.length - 1, kd = cp.kind, top = y1 + 10;
       var cx = X0 + 11, cy = top + 11;
       ops.push(function (g) {
         g.beginPath(); g.arc(cx, cy, 10.5, 0, Math.PI * 2);
         g.fillStyle = kd === 'hour' ? col['--time'] : (kd === 'km' ? col['--surface'] : (kd === 'cut' ? col['--accent'] : col['--ink'])); g.fill();
         if (kd === 'km') { g.strokeStyle = col['--ink2']; g.lineWidth = 1.2; g.stroke(); }
         g.font = '700 12px ' + fnum; g.fillStyle = kd === 'hour' ? col['--time-ink'] : (kd === 'km' ? col['--ink2'] : (kd === 'cut' ? col['--accent-ink'] : col['--surface']));
-        g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(i), cx, cy + 0.5); g.textBaseline = 'alphabetic';
+        g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(pointIndex), cx, cy + 0.5); g.textBaseline = 'alphabetic';
       });
       var tLab = first ? _t('出發') : (isLast ? _t('抵達') : ''), tVal = hm(first ? r.dep : r.arr), tf = '700 19px ' + fnum, lf2 = '400 12px ' + fu;   // V82: no 抵達 at the points on the way
       var rw = tw(tVal, tf), right = X0 + CW0;
@@ -3772,13 +3810,43 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
           out.forEach(function (l) { wrap(l, f, right - nx).forEach(function (ln) { yy += 17; text(ln, nx, yy, f, col['--ink']); }); });
         };
         var span = function (o) { return o.min < 1 ? hm(o.a) : hm(o.a) + '–' + hm(o.b); };   // V82: a stop under 1 min has one time
-        r.list.forEach(function (o) { put([o.min < 1 ? _f('途中停留 {0}', hm(o.a)) : _f('途中停留 {0}–{1}', hm(o.a), hm(o.b)), _f('（{0}，{1} km）', stopDur(o.min), km(R(o.d)))], lf2); });
         if (r.at.length && (first || isLast)) put(r.at.map(function (o, j) { return (j ? '' : _t(first ? '出發前停留 ' : '抵達後停留 ')) + span(o) + (j < r.at.length - 1 ? _t('、') : ''); })
           .concat([_f('（{0}）', stopDur(sum(r.at)))]), sf);   // V82: at a point on the way all its stops are the one badge; the end of the last stop is the departure
       }
       var yb = yy + 10;
       if (sep) { var ly = yb; ops.push(function (g) { g.fillStyle = col['--line']; g.fillRect(nx, ly, right - nx, 1); }); }
       return yb;
+    }
+    function drawStopRow(item, X0, CW0, y1, sep) {   // V83: on-the-way stops sit between the points they occurred between.
+      var o = item.stop, top = y1 + 10, nx = X0 + 30, right = X0 + CW0, avail = Math.max(24, right - nx);
+      var yEnd = top + 16, f = '700 15px ' + fu, lf = '400 12px ' + fu;
+      var start = hm(o.a), end = hm(o.b), mins = Math.round(o.min);
+      ops.push(function (g) {
+        g.beginPath(); g.arc(X0 + 11, top + 11, 4.2, 0, Math.PI * 2);
+        g.fillStyle = '#ffffff'; g.fill(); g.strokeStyle = col['--stopb-ink']; g.lineWidth = 1.5; g.stroke();
+      });
+      if (o.min >= 10) {
+        var a = _f('停 {0} 分', mins), b = start + '–' + end, one = a + '，' + b;
+        var oneW = tw(one, f) + 16, twoW = Math.max(tw(a, f), tw(b, f)) + 16, two = oneW > avail;
+        if (two && twoW > avail) b = fit(b, f, Math.max(8, avail - 16));
+        var bw = Math.min(avail, two ? Math.max(tw(a, f), tw(b, f)) + 16 : oneW), bh = two ? 40 : 22;
+        ops.push(function (g) {
+          g.fillStyle = col['--stopb']; rr(g, nx, top, bw, bh, 5); g.fill();
+          g.font = f; g.fillStyle = col['--stopb-ink']; g.textAlign = 'left'; g.textBaseline = 'middle';
+          if (two) { g.fillText(a, nx + 8, top + 12); g.fillText(b, nx + 8, top + 30); }
+          else g.fillText(one, nx + 8, top + 12);
+          g.textBaseline = 'alphabetic';
+        });
+        yEnd = top + bh + 16;
+        text(_f('途中停留｜{0} km', km(R(o.d))), nx, yEnd, lf, col['--ink2']);
+        yEnd += 9;
+      } else {
+        var desc = _f('途中停留 {0}–{1}（{2}，{3} km）', start, end, stopDur(o.min), km(R(o.d)));
+        wrap(desc, lf, avail).forEach(function (ln) { text(ln, nx, yEnd, lf, col['--ink2']); yEnd += 17; });
+      }
+      var yb = yEnd + 4;
+      if (sep) ops.push(function (g) { g.fillStyle = col['--line']; g.fillRect(nx, yb, right - nx, 1); });
+      return yb + 1;
     }
     var nR = rows.length, gap = 28, noteBk = null;
     if (act) {   // V77: where the times, places and stops come from
