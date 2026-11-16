@@ -3048,11 +3048,11 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       var stopMarks = [], stopSeen = {};
       if (c.act) {
         c.rows.forEach(function (r, j) {
-          if (j > 0 && j < c.rows.length - 1 && r.at && r.at.length) stopMarks.push(r.cp.d);
+          if (j > 0 && j < c.rows.length - 1 && (r.at || []).reduce(function (s, q) { return s + q.min; }, 0) >= 10) stopMarks.push(r.cp.d);
           (r.list || []).forEach(function (q) { if (q.min >= 10) stopMarks.push(q.d); });
         });
       } else {
-        c.rows.forEach(function (r, j) { if (j > 0 && j < c.rows.length - 1 && r.stop > 0) stopMarks.push(r.cp.d); });
+        c.rows.forEach(function (r, j) { if (j > 0 && j < c.rows.length - 1 && r.stop >= 10) stopMarks.push(r.cp.d); });
       }
       stopMarks.forEach(function (d) {
         var key = Math.round(d);
@@ -3715,8 +3715,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       lg.push([col['--dusk'], _t('暮光／曙光')], [col['--night'], _t('夜間')]);
     }
     var hasStopMarks = c.act
-      ? c.rows.some(function (r, j) { return (j > 0 && j < c.rows.length - 1 && r.at && r.at.length) || (r.list || []).some(function (q) { return q.min >= 10; }); })
-      : c.rows.some(function (r, j) { return j > 0 && j < c.rows.length - 1 && r.stop > 0; });
+      ? c.rows.some(function (r, j) { return (j > 0 && j < c.rows.length - 1 && (r.at || []).reduce(function (s, q) { return s + q.min; }, 0) >= 10) || (r.list || []).some(function (q) { return q.min >= 10; }); })
+      : c.rows.some(function (r, j) { return j > 0 && j < c.rows.length - 1 && r.stop >= 10; });
     if (hasStopMarks) lg.push([col['--stopb-ink'], _t('淺綠底標示的停留點'), 'ring']);
     var lx = X, lf = '400 11px ' + fu;
     y += 16;
@@ -3763,10 +3763,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       // V80: the stop entered at this point is a light green badge right of the name, in the name's type (it was a bold line at the bottom);
       //      one line when it fits, else its two halves stacked (still beside the name), else one line under the name
       //      V81: the 實走分析圖 too, where the record stopped at the point: minutes from the arrival to the departure as printed
-      var sbT = '', sbF = nf2;
-      if (!first && !isLast && (act ? r.at.length > 0 : r.stop > 0)) {
-        var sbN = act ? Math.round(r.dep) - Math.round(r.arr) : Math.round(r.stop);
-        sbT = sbN >= 1 ? _f('停 {0} 分，{1} 出發', sbN, hm(r.dep)) : _f('停不到 1 分，{0} 出發', hm(r.dep));
+      var pointStopMin = act ? r.at.reduce(function (s, o) { return s + o.min; }, 0) : (r.stop || 0), sbT = '', sbF = nf2;
+      if (!first && !isLast && pointStopMin >= 10) {
+        sbT = _f('停 {0} 分，{1} 出發', Math.round(pointStopMin), hm(r.dep));
       }
       var sbP = sbT.split(/，|, /);
       var sbW1 = sbT ? tw(sbT, sbF) + 16 : 0, sbW2 = sbT && sbP.length === 2 ? Math.max(tw(sbP[0], sbF), tw(sbP[1], sbF)) + 16 : 0;
@@ -3801,6 +3800,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       mls.push(cur);
       var yy = ch3 ? top + 63 : sbM === 3 ? top + 43 : sbM === 2 ? (ch2 ? top + 57 : top + 37) : sbM === 1 ? (ch2 ? top + 37 : top + 19) : (ch2 ? top + 36 : top + 16);   // V80: under the badge and tags
       mls.forEach(function (ml) { wrap(ml, lf2, right - nx).forEach(function (ln) { yy += 17; text(ln, nx, yy, lf2, col['--ink2']); }); });
+      if (!act && !first && !isLast && pointStopMin > 0 && pointStopMin < 10) {
+        wrap(_f('停留 {0} 分，{1} 出發', Math.round(pointStopMin), hm(r.dep)), lf2, right - nx).forEach(function (ln) { yy += 17; text(ln, nx, yy, lf2, col['--ink2']); });
+      }
       if (act) {   // V77: every stop with its start and end: on the way here, then at this point
         var sf = '600 12px ' + fu, sum = function (L) { return L.reduce(function (s, o) { return s + o.min; }, 0); };
         var put = function (parts, f) {   // breaks between the parts (a time span stays whole, the bracket stays with it)
@@ -3812,6 +3814,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
         var span = function (o) { return o.min < 1 ? hm(o.a) : hm(o.a) + '–' + hm(o.b); };   // V82: a stop under 1 min has one time
         if (r.at.length && (first || isLast)) put(r.at.map(function (o, j) { return (j ? '' : _t(first ? '出發前停留 ' : '抵達後停留 ')) + span(o) + (j < r.at.length - 1 ? _t('、') : ''); })
           .concat([_f('（{0}）', stopDur(sum(r.at)))]), sf);   // V82: at a point on the way all its stops are the one badge; the end of the last stop is the departure
+        if (r.at.length && !first && !isLast && pointStopMin < 10) put(r.at.map(function (o, j) { return (j ? '' : _t('途中停留 ')) + span(o) + (j < r.at.length - 1 ? _t('、') : ''); })
+          .concat([_f('（{0}）', stopDur(pointStopMin))]), lf2);
       }
       var yb = yy + 10;
       if (sep) { var ly = yb; ops.push(function (g) { g.fillStyle = col['--line']; g.fillRect(nx, ly, right - nx, 1); }); }
