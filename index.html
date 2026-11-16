@@ -4883,7 +4883,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
           if (old) C.setLorentzParams(old); else C.clearLorentzParams();
           if (pool.length >= 3) {
             pendingLorentz = { p: p, pool: pool };
-            var k = C.simRatio(pool, T.track ? C.routeFeat(T.track) : null, function (q) { return q.A; }, function (q) { return q.L; }) || 1, m = pool.length;
+            var kRaw = C.simRatio(pool, T.track ? C.routeFeat(T.track) : null, function (q) { return q.A; }, function (q) { return q.L; }) || 1;
+            var k = kRaw > 0 ? 1 + LOR_SHRINK * (kRaw - 1) : 1, m = pool.length; // V88: preview the same shrunk level that lorK will apply
             setTx('lorentzParamsView', function () {
               if (!T.track) return _f('已解出勞侖茲函數參數（尚未套用）：a={0} km/h　b={1}　c={2}（最省力坡度約 {3}%）；整體快慢用 {4} 筆紀錄的實際移動時間校正。按「最佳化」後才會套用。',
                 p[0].toFixed(2), p[1].toFixed(2), p[2].toFixed(3), ((-p[2] / p[1]) * 100).toFixed(1), m);   // V82: no route
