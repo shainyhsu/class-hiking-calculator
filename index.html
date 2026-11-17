@@ -3879,48 +3879,54 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     });
     var day = act ? A.ds : (S.date || todayStr()), dp = day.split('-').map(Number), dd = new Date(dp[0], dp[1] - 1, dp[2]);
     var title = enRecordName((c.alone ? c.name : (T.name || T.fileName)) || _t('路線')) + (act ? _t('（實際行程）') : '');   // V82: a record on its own: its name
-    var headerGap = 20, headerW = (CW - headerGap) / 2, titleY = y;
-    var titleLines = wrap(title, '700 20px ' + fu, headerW);
-    titleLines.forEach(function (ln) { titleY += 22; text(ln, X, titleY, '700 20px ' + fu, col['--ink']); });
-    var headerRight = [];
+    var headerGap = 16, titleY = y, day = act ? A.ds : (S.date || todayStr()), dp = day.split('-').map(Number), dd = new Date(dp[0], dp[1] - 1, dp[2]);
+    var headerMeta, metricLine;
     if (!act) {
       var routeSecs0 = c.secs || T.secs || [], hasHeavy0 = routeSecs0.some(function (q) { return q.heavy !== false; }), hasLight0 = routeSecs0.some(function (q) { return q.heavy === false; });
       var lightKg0 = numOr(PP.lightKg, 2), gearText0 = hasHeavy0 && hasLight0 ? _f('輕裝 {0} kg／重裝路段', f2(lightKg0)) : (hasHeavy0 ? _t('重裝（全段）') : _f('輕裝 {0} kg（全段）', f2(lightKg0)));
-      headerRight.push([_f('{0}（{1}）{2} 出發，{3} 抵達，{4}', day, WD[dd.getDay()], hm(c.startMin), hm(last.arr), gearText0), '600 15px ' + fu, col['--ink'], 22]);
-      headerRight.push([_f('{0} km｜爬升 {1} m｜下降 {2} m｜移動 {3}', km(R(c.tr.total)), nf(c.st.up), nf(c.st.dn), durZh(c.m.total * 60)), '400 13px ' + fu, col['--ink2'], 19]);
+      headerMeta = _f('{0}（{1}）{2} 出發，{3} 抵達，{4}', day, WD[dd.getDay()], hm(c.startMin), hm(last.arr), gearText0);
+      metricLine = _f('{0} km｜爬升 {1} m｜下降 {2} m｜移動 {3}', km(R(c.tr.total)), nf(c.st.up), nf(c.st.dn), durZh(c.m.total * 60));
     } else {
-      headerRight.push([_f('{0}（{1}）{2} 出發，{3} 抵達', day, WD[dd.getDay()], hm(pointRows[0].dep), hm(last.arr)), '600 15px ' + fu, col['--ink'], 22]);
-      headerRight.push([_f('{0} km｜爬升 {1} m｜下降 {2} m｜移動 {3}｜停留 {4}（{5} 次）', km(R(A.db) - R(A.da)), nf(A.up), nf(A.dn), durZh(V.mv), durZh(V.st), V.n) + (V.gap ? _t('｜紀錄中斷 ') + durZh(V.gap) : ''), '400 13px ' + fu, col['--ink2'], 19]);
+      headerMeta = _f('{0}（{1}）{2} 出發，{3} 抵達', day, WD[dd.getDay()], hm(pointRows[0].dep), hm(last.arr));
+      metricLine = _f('{0} km｜爬升 {1} m｜下降 {2} m｜移動 {3}｜停留 {4}（{5} 次）', km(R(A.db) - R(A.da)), nf(A.up), nf(A.dn), durZh(V.mv), durZh(V.st), V.n) + (V.gap ? _t('｜紀錄中斷 ') + durZh(V.gap) : '');
     }
-    var rightY = y;
-    headerRight.forEach(function (h) { wrap(h[0], h[1], headerW).forEach(function (ln) { rightY += h[3]; text(ln, X + headerW + headerGap, rightY, h[1], h[2]); }); });
-    y = Math.max(titleY, rightY);
+    // Keep the title and its metadata on one full-width line; shrink both together instead of wrapping either side.
+    var headerTextW = tw(title, '700 20px ' + fu) + headerGap + tw(headerMeta, '600 15px ' + fu), headerScale = Math.min(1, CW / headerTextW);
+    var titleF = '700 ' + Math.max(13, Math.floor(20 * headerScale)) + 'px ' + fu, metaF = '600 ' + Math.max(11, Math.floor(15 * headerScale)) + 'px ' + fu;
+    var titleW = tw(title, titleF), metaW = tw(headerMeta, metaF), headerTotal = titleW + headerGap + metaW;
+    text(title, X, titleY + 22, titleF, col['--ink']);
+    text(headerMeta, X + Math.max(0, CW - metaW), titleY + 22, metaF, col['--ink']);
+    y = titleY + 22;
+    var metricF = '400 13px ' + fu;
+    var metricDisplay = fit(metricLine, metricF, CW);
+    text(metricDisplay, X + CW - tw(metricDisplay, metricF), y + 19, metricF, col['--ink2']);
+    y += 19;
 
     var leftHeads = [], rightHeads = [];
     if (!act) {
       leftHeads.push([_t('全晴移動') + ' ' + durZh(c.mSun.total * 60) + _t('／全雨移動') + ' ' + durZh(c.mRain.total * 60), '600 12px ' + fu, col['--ink2'], 18]);
+      leftHeads.push([_f('小休：上坡與平路 {0} 分／小時、下坡 {1} 分／小時', f2(S.stopH), f2(S.stopHDn)), '600 12px ' + fu, col['--ink2'], 18]);
       leftHeads.push([S.margin === false ? _t('各點大休已計入，未計入10%的餘裕時間') : _t('各點大休已計入，10%的餘裕時間亦已計入'), '600 12px ' + fu, col['--ink2'], 18]);
       leftHeads.push([_f('勞侖茲函數：{0}', C.hasLorentz && C.hasLorentz() ? _t('已套用') : _t('未套用')), '600 12px ' + fu, col['--ink2'], 18]);
       var gearArr0 = planGearArrivals(c);
       rightHeads.push([_f('若全程都：輕裝＋晴天 {0}／重裝＋雨天 {1}／晴天＋跑 {2}（路跑 {3} km／小時計算）', hm(gearArr0 ? gearArr0.lightSun : c.arrSun), hm(gearArr0 ? gearArr0.heavyRain : c.arrRain), hm(gearArr0 ? gearArr0.runSun : c.arrSun), nf1(runFlat())), '600 12px ' + fu, col['--ink2'], 18]);
       rightHeads.push([_t('最快與最慢情境僅供模型對照，非行程保證，請自行評估風險。'), '600 12px ' + fu, col['--ink2'], 18]);
-      rightHeads.push([_f('小休：上坡與平路 {0} 分／小時、下坡 {1} 分／小時', f2(S.stopH), f2(S.stopHDn)), '600 12px ' + fu, col['--ink2'], 18]);
     } else {
-      var sp10 = shortTxt(V), sj10 = I18N.lang === 'en' ? '. ' : _t('；');
+      var sp10 = shortTxt(V);
       leftHeads.push([sp10[0], '600 12px ' + fu, col['--ink2'], 18]);
       leftHeads.push([sp10[1], '600 12px ' + fu, col['--ink2'], 18]);
       if (A.gapN && V.gap) rightHeads.push([_f('紀錄中斷：{0} 次共 {1}，不算移動或停留。', A.gapN, durZh(V.gap)), '600 12px ' + fu, col['--ink2'], 18]);
     }
+    // Sunrise, terrain-shaded sunrise/sunset, sunset and dusk belong at the end of the right column.
+    if (c.sun) sunLines(c.sun, true).forEach(function (ln) { rightHeads.push([ln, '400 13px ' + fu, col['--ink2'], 19]); });
     function drawHeadColumn(list, x0, y0) {
       var yy = y0;
       list.forEach(function (h) { wrap(h[0], h[1], headerW).forEach(function (ln) { yy += h[3]; text(ln, x0, yy, h[1], h[2]); }); });
       return yy;
     }
+    var headerW = (CW - headerGap) / 2;
     var leftY = drawHeadColumn(leftHeads, X, y), rightCondY = drawHeadColumn(rightHeads, X + headerW + headerGap, y);
     y = Math.max(leftY, rightCondY);
-    var sunHeads = [];
-    if (c.sun) sunLines(c.sun, true).forEach(function (ln) { sunHeads.push([ln, '400 13px ' + fu, col['--ink2'], 19]); });   // V77: the 實走分析圖 has its own day's sky and terrain
-    sunHeads.forEach(function (h) { wrap(h[0], h[1], CW).forEach(function (ln) { y += h[3]; text(ln, X, y, h[1], h[2]); }); });
     y += 12; cut();
     // charts
     var ys = y; ops.push(function (g) { g.drawImage(imS, X, ys, cap.strip.w, cap.strip.h); }); y += cap.strip.h + 6; cut();
