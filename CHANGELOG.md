@@ -1,6 +1,7 @@
 # Hike Time Estimator: changelog
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
+- V97 | 2026-11-17 15:15 | 分享圖頁首改為單行標題與右側日期／抵達／負重資訊，距離摘要右對齊且不換行；小休移到左欄大休之前，曙光、日出、地形遮蔽日出／日落、日落、暮光移到右欄最後；實走圖採相同排版並刪除圖下方說明，英文同步。
 - V96 | 2026-11-17 14:25 | 修正雙欄位置：預計行程的兩張 A4 分享圖頁首條件說明改為左右兩欄；網頁說明恢復單欄；刪除「模型怎麼算／公式、資料來源、限制」整個收合頁；頁尾方法說明保留並同步中英文。
 - V96 | 2026-11-17 12:42 | Planned-route A4 images and plain-text sharing use the entered light-pack weight rather than a fixed 2 kg fallback. The summaries now order current finish time, all-route comparisons, risk note, long stops, short breaks and Lorentz status. The long-stop line reports whether the 10% time margin is included or not according to the checkbox; English translations are included. The overlong formatter that exposed {10}–{15} placeholders was removed. Walk-analysis help remains in the three-point form with GPS gaps covered.
 
