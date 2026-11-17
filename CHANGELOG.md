@@ -1,7 +1,7 @@
 # Hike Time Estimator: changelog
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
-- V96 | 2026-11-17 13:36 | 頁首說明在桌機改為左右兩欄、手機維持單欄；頁尾改以概念、資料方法、限制與不採用 Munter／上河圖／EP 固定時間表的理由說明，未公開詳細計算式，並同步補上英文翻譯。
+- V96 | 2026-11-17 14:25 | 修正雙欄位置：預計行程的兩張 A4 分享圖頁首條件說明改為左右兩欄；網頁說明恢復單欄；刪除「模型怎麼算／公式、資料來源、限制」整個收合頁；頁尾方法說明保留並同步中英文。
 - V96 | 2026-11-17 12:42 | Planned-route A4 images and plain-text sharing use the entered light-pack weight rather than a fixed 2 kg fallback. The summaries now order current finish time, all-route comparisons, risk note, long stops, short breaks and Lorentz status. The long-stop line reports whether the 10% time margin is included or not according to the checkbox; English translations are included. The overlong formatter that exposed {10}–{15} placeholders was removed. Walk-analysis help remains in the three-point form with GPS gaps covered.
 
 - V95 | 2026-11-17 00:56 | Walk analysis picture: short stops per hour are given uphill & flat and downhill apart, as in the plan (steeper than −5% downhill counts as downhill; a stop goes by the grade over 100 m on each side; a direction with under 15 min of moving is left out), with each direction’s moving time and short stops in the notes under the picture; the status line under the buttons gives the same two figures.
