@@ -46,6 +46,15 @@ details.fold>summary .hinfo{margin-left:6px;flex:none}
 .actcard .actrow{margin-top:0;padding-top:0;border-top:0}
 details.fold>summary h2{white-space:nowrap}
 #advCard .fsub{min-width:0}
+@media (min-width:1200px){
+  /* V100: two panes; each column scrolls on its own, the page itself barely moves */
+  .split .wrap{padding-top:16px;padding-bottom:0}
+  .split .col-in,.split .col-out{position:sticky;top:0;max-height:100vh;overflow-y:auto;overscroll-behavior:contain;padding:8px 6px 16px 2px;scrollbar-gutter:stable;scrollbar-width:thin}
+  .split .col-in>.rights{margin-top:8px}
+  .split .editzone.editing .profpin{position:static}
+  .split .profpin.stuck{box-shadow:none}
+  .split #liveBar{display:none!important}
+}
 </style></head><body>
 <!-- 步程試算 © 2026 shainyhsu. All rights reserved. License: https://github.com/shainyhsu/class-hiking-calculator/blob/main/LICENSE -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -623,20 +632,6 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
   </section>
 
 
-  <section class="card sharecard" aria-labelledby="hCopy">
-    <h2 id="hCopy" tabindex="-1">匯出<button type="button" class="hinfo" data-help="hpShare" aria-expanded="false" aria-controls="hpShare" aria-label="說明" title="說明">i</button></h2>
-    <div class="helppanel" id="hpShare" hidden><div class="hp-sec"><p class="hint">圖片（A4 JPG）：匯出 A4 圖片，下方可預覽。直式適合手機閱讀，橫式適合呈現較寬的路線剖面。實走分析圖完成後可用「儲存圖片」直接存到本機。<br>複製全文：複製純文字時間表，適合登山計畫報備與訊息分享。<br>GPX：匯出的 GPX 包含路線軌跡、整點計劃經過點、地標點及其預計時間，可匯入其他登山 App，顯示路線與時間點。同名、同圖示且相距 30 m 內的航點會合併。同一位置若有多次經過，名稱會附上時間，例如「左轉 09:44」、「右轉 13:14」。</p></div></div>
-    <div class="ttlrow"><label for="picTitle">計畫圖標題</label><input type="text" id="picTitle" maxlength="80" autocomplete="off" spellcheck="false"></div>
-    <div class="tools">
-      <span class="picgrp"><span class="seg" role="radiogroup" aria-label="圖片方向"><input type="radio" name="pori" id="poP" value="p" checked><label for="poP">直式</label><input type="radio" name="pori" id="poL" value="l"><label for="poL">橫式</label></span><button class="btn primary" id="btnPic" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.25" y="3" width="11.5" height="10" rx="1.5"/><path d="M2.75 11.25 6 8l2.5 2.5 1.75-1.75 3 3"/><circle cx="10.5" cy="5.9" r="1"/></svg><span id="btnPicTxt">下載圖片</span></button></span>
-      <button class="btn" id="btnGpx" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 12.5c1.6-.4 2.2-2.6 4.3-3.2 2.4-.7 2.8-3.4 4.7-5.3"/><circle cx="3.25" cy="12.6" r="1.25"/><circle cx="12.75" cy="3.6" r="1.25"/></svg><span id="btnGpxTxt">下載 GPX</span></button>
-      <button class="btn" id="btnCopy" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.25" y="5.25" width="8.25" height="8.25" rx="1.5"/><path d="M10.75 5.25V3.75a1.25 1.25 0 0 0-1.25-1.25h-6A1.25 1.25 0 0 0 2.25 3.75v6A1.25 1.25 0 0 0 3.5 11h1.75"/></svg>複製全文</button>
-      <p class="hint" id="copyMsg" aria-live="polite"></p>
-    </div>
-    <details class="disc" id="copyPrev"><summary>文字預覽<span class="dsub">「複製全文」的內容</span></summary><textarea class="copybox" id="copyText" readonly aria-label="純文字時間表"></textarea></details>
-    <p class="hint picinfo" id="picInfo" aria-live="polite"></p>
-    <div class="pages" id="picPages" aria-label="A4 預覽"></div>
-  </section>
 
   <details class="card fold" id="advCard">
     <summary><h2 id="hAdv">進階</h2><span class="fsub">跑步速度、勞侖茲最佳化、公式參數</span><button type="button" class="hinfo" data-help="hpAdv" aria-expanded="false" aria-controls="hpAdv" aria-label="說明" title="說明">i</button></summary>
@@ -780,6 +775,21 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
     </div>
   </details>
   </div>
+
+  <section class="card sharecard" aria-labelledby="hCopy">
+    <h2 id="hCopy" tabindex="-1">匯出<button type="button" class="hinfo" data-help="hpShare" aria-expanded="false" aria-controls="hpShare" aria-label="說明" title="說明">i</button></h2>
+    <div class="helppanel" id="hpShare" hidden><div class="hp-sec"><p class="hint">圖片（A4 JPG）：匯出 A4 圖片，下方可預覽。直式適合手機閱讀，橫式適合呈現較寬的路線剖面。實走分析圖完成後可用「儲存圖片」直接存到本機。<br>複製全文：複製純文字時間表，適合登山計畫報備與訊息分享。<br>GPX：匯出的 GPX 包含路線軌跡、整點計劃經過點、地標點及其預計時間，可匯入其他登山 App，顯示路線與時間點。同名、同圖示且相距 30 m 內的航點會合併。同一位置若有多次經過，名稱會附上時間，例如「左轉 09:44」、「右轉 13:14」。</p></div></div>
+    <div class="ttlrow"><label for="picTitle">計畫圖標題</label><input type="text" id="picTitle" maxlength="80" autocomplete="off" spellcheck="false"></div>
+    <div class="tools">
+      <span class="picgrp"><span class="seg" role="radiogroup" aria-label="圖片方向"><input type="radio" name="pori" id="poP" value="p" checked><label for="poP">直式</label><input type="radio" name="pori" id="poL" value="l"><label for="poL">橫式</label></span><button class="btn primary" id="btnPic" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.25" y="3" width="11.5" height="10" rx="1.5"/><path d="M2.75 11.25 6 8l2.5 2.5 1.75-1.75 3 3"/><circle cx="10.5" cy="5.9" r="1"/></svg><span id="btnPicTxt">下載圖片</span></button></span>
+      <button class="btn" id="btnGpx" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 12.5c1.6-.4 2.2-2.6 4.3-3.2 2.4-.7 2.8-3.4 4.7-5.3"/><circle cx="3.25" cy="12.6" r="1.25"/><circle cx="12.75" cy="3.6" r="1.25"/></svg><span id="btnGpxTxt">下載 GPX</span></button>
+      <button class="btn" id="btnCopy" type="button"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.25" y="5.25" width="8.25" height="8.25" rx="1.5"/><path d="M10.75 5.25V3.75a1.25 1.25 0 0 0-1.25-1.25h-6A1.25 1.25 0 0 0 2.25 3.75v6A1.25 1.25 0 0 0 3.5 11h1.75"/></svg>複製全文</button>
+      <p class="hint" id="copyMsg" aria-live="polite"></p>
+    </div>
+    <details class="disc" id="copyPrev"><summary>文字預覽<span class="dsub">「複製全文」的內容</span></summary><textarea class="copybox" id="copyText" readonly aria-label="純文字時間表"></textarea></details>
+    <p class="hint picinfo" id="picInfo" aria-live="polite"></p>
+    <div class="pages" id="picPages" aria-label="A4 預覽"></div>
+  </section>
   <section class="card actcard" id="actCard" aria-labelledby="hAct">
     <h2 id="hAct">實走紀錄分析<button type="button" class="hinfo" data-help="hpAct" aria-expanded="false" aria-controls="hpAct" aria-label="說明" title="說明">i</button></h2>
     <div class="helppanel" id="hpAct" hidden><div class="hp-sec"><p class="hint">載入實走紀錄：載入手機或手錶記錄的 GPX，檔案須包含足夠的時間資訊。載入不會改變目前規劃的路線。若實走紀錄能與規劃路線對應，分析圖會沿用規劃路線中已編輯的點位表，以及整點、每公里等標示點位。若沒有規劃路線，或實走紀錄無法與路線對應，分析圖就改用紀錄本身的軌跡與航點。<br>實走分析圖：<br>1. 這份圖表將「實際軌跡」與「規劃路線」對照，拆解整趟行程的時間分配。若軌跡能與規劃路線對應，圖上會自動標出已設定的檢查點、整點時刻與每公里里程。<br>2. 凡是單次或檢查點累計休息達 10 分鐘以上，一律以淺綠底色標註，方便辨識大休的位置。<br>3. 未滿 10 分鐘的休息，會按照「上坡與平路」／「下坡」兩組數據分開計算為每小時之中的平均小休時間，供對照原定計畫的小休比對。GPS 斷訊仍會在分享圖上標示，避免將紀錄中斷誤認為正常行走或停下。<br>紀錄保存：實走紀錄不會儲存，重新整理頁面後必須重新載入。</p></div></div>
@@ -797,7 +807,6 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
     <p class="hint picinfo" id="actInfo" aria-live="polite"></p>
     <div class="pages" id="actPages" aria-label="實走分析圖預覽"></div>
   </section>
-
   </div>
 
   <footer class="rights"><p>本工具用 GPX 的距離、坡度、地形、負重、天候與海拔，估算團體的行走時間；有歷史實走紀錄時，也可用資料擬合團體步速，並把大休與小休分開呈現。這些結果是模型對照與規劃參考，不是保證抵達時間。</p><p>不直接採用 Munter、上河圖或 EP 的固定時間表：不同隊伍、路線、路面與負重會造成差異，本工具需要讓使用者檢查路線條件、調整設定，或用自己的實走紀錄校準。</p><p>© 2026 Shainy Hsu｜步程試算｜<a href="https://github.com/shainyhsu/class-hiking-calculator/blob/main/LICENSE" target="_blank" rel="noopener">使用條款</a>｜<a href="https://shainyhsu.github.io/">所有工具</a></p></footer>
@@ -2491,6 +2500,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   function scrollFree(el) {   // V54: bring el into view below the live bar and, in the editing zone, below the pinned profile
     var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches, z = $('editZone'), pin = $('profPin'), bar = $('liveBar');
     var top = (bar && !bar.hidden ? bar.getBoundingClientRect().height : 0) + (z && pin && z.classList.contains('editing') && z.contains(el) ? pin.getBoundingClientRect().height : 0) + 10;
+    var col = el.closest && el.closest('.col-in,.col-out');
+    if (col && col.scrollHeight > col.clientHeight + 1 && getComputedStyle(col).overflowY === 'auto') { el.scrollIntoView({ block: 'center', behavior: still ? 'auto' : 'smooth' }); return; }   // V100: desktop columns scroll on their own
     var r = el.getBoundingClientRect(), room = window.innerHeight - top, y = window.scrollY + r.top - top - Math.max(0, (room - r.height) / 2);
     window.scrollTo({ top: Math.max(0, y), behavior: still ? 'auto' : 'smooth' });
   }
@@ -5211,6 +5222,19 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     $('btnAct').addEventListener('click', function () { sharePicture(true); });     // V77: the 實走分析圖
     $('btnActPic').addEventListener('click', function () { sharePicture(true); });  // V83: share/download the completed walk picture again
     $('btnActSave').addEventListener('click', function () { savePicture(true); });
+    (function () {   // V100 desktop (≥ 1200 px): inputs on the left (sections and timetable move there), results on the right; each column scrolls on its own
+      var mq = window.matchMedia ? window.matchMedia('(min-width:1200px)') : null, zone = $('editZone'), colIn = document.querySelector('.col-in'), adv = $('advCard'), foot = document.querySelector('.wrap>.rights, .col-in>.rights');
+      if (!mq || !zone || !colIn || !adv) return;
+      var home = foot ? foot.nextSibling : null, wrap = foot ? foot.parentNode : null;
+      function lay() {
+        var wide = mq.matches;
+        ['secCard', 'tblCard'].forEach(function (id) { var el = $(id); if (!el) return; if (wide) colIn.insertBefore(el, adv); else zone.appendChild(el); });
+        if (foot) { if (wide) colIn.appendChild(foot); else if (foot.parentNode !== wrap) wrap.insertBefore(foot, home); }
+        document.body.classList.toggle('split', wide);
+      }
+      lay();
+      if (mq.addEventListener) mq.addEventListener('change', lay); else if (mq.addListener) mq.addListener(lay);
+    })();
     document.addEventListener('click', function (e) {   // V100: each card's ⓘ opens its help under the title (in a folded card it opens the card too)
       var b = e.target && e.target.closest ? e.target.closest('.hinfo') : null, p = b && $(b.getAttribute('data-help'));
       if (!p) return;
