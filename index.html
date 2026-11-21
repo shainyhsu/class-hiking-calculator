@@ -570,7 +570,7 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
   .tab-exp .col-in>.card,.tab-exp .sumcard,.tab-exp #editZone,.tab-exp .rights{display:none}
   .tabs .lb-links{display:none}
 }
-.picdraw #editZone{display:block!important;position:absolute!important;left:-99999px;top:0}   /* V103: the 匯出 tab hides the charts; lay them out off screen while the picture draws them */
+.picdraw #editZone{display:block!important;position:absolute!important;left:-99999px;top:0}   /* V102: the 匯出 tab hides the charts; lay them out off screen while the picture draws them */
 @media (min-width:1200px){.tabbar{display:none}}
 .filegrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:stretch}   /* V100: buttons left, profile thumbnail right */
 .btncol{display:grid;gap:8px;align-content:start}
@@ -2451,18 +2451,21 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     T.secsFull.sort(function (p, q) { return p.a - q.a; });
   }
   function vehicleInfo(parsed) {
-    var pts = parsed.pts, fast = 0, segs = [], cum = 0, FAST_IN = 15, FAST_OUT = 8, FAST_HOLD = 10, FAST_MIN_D = 80, WALK_MIN_S = 15 * 60, WALK_MIN_D = 800;
+    var pts = parsed.pts, fast = 0, segs = [], cum = 0, FAST_IN = 15, FAST_OUT = 8, FAST_HOLD = 10, FAST_MIN_D = 80, VEH_AVG = 15, VEH_CLIMB = 1500, WALK_MIN_S = 15 * 60, WALK_MIN_D = 800;
     for (var i = 1; i < pts.length; i++) {
       var a = pts[i - 1], b = pts[i], d = C.hav(a.lat, a.lon, b.lat, b.lon), isFast = false;
       var dt = a.t != null && b.t != null ? (b.t - a.t) / 1000 : 0, sp = dt > 0 ? d / dt * 3.6 : 0;
       segs.push({ a: cum, b: cum + d, fast: isFast, dt: dt, sp: sp }); cum += d;
     }
-    var runA = null, lowA = null, fastRuns = [];
+    var runA = null, lowA = null, fastRuns = [], footRuns = [];
     function closeFast(endIndex) {
       if (runA === null) return;
       var d0 = 0, t0 = 0, j;
       for (j = runA; j < endIndex; j++) { d0 += segs[j].b - segs[j].a; t0 += segs[j].dt; }
-      if (t0 >= FAST_HOLD && d0 >= FAST_MIN_D) fastRuns.push([segs[runA].a, endIndex < segs.length ? segs[endIndex].a : cum, d0, t0, pts[runA].t, pts[Math.min(endIndex, pts.length - 1)].t]);   // V101: + start and end time (ms)
+      var pA = pts[runA], pB = pts[Math.min(endIndex, pts.length - 1)], climb = pA.ele != null && pB.ele != null && t0 > 0 ? (pB.ele - pA.ele) / t0 * 3600 : 0;
+      // V102: a run entered by a GPS spike stays above 8 km/h while someone runs. Over a minute long, averaging under 15 km/h and climbing under 1,500 m/h, it is running: not walking, not a vehicle
+      var onFoot = t0 >= 60 && d0 / t0 * 3.6 < VEH_AVG && climb < VEH_CLIMB;
+      if (t0 >= FAST_HOLD && d0 >= FAST_MIN_D) (onFoot ? footRuns : fastRuns).push([segs[runA].a, endIndex < segs.length ? segs[endIndex].a : cum, d0, t0, pts[runA].t, pts[Math.min(endIndex, pts.length - 1)].t]);   // V101: + start and end time (ms)
       runA = null; lowA = null;
     }
     segs.forEach(function (s, k) {
@@ -2488,7 +2491,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
         if (s.fast) { walkA = null; walkT = 0; walkD = 0; }
       }
     });
-    return { fast: fast, best: best, bestTime: bestT, bestDist: bestD, total: cum, fastRuns: fastRuns };
+    return { fast: fast, best: best, bestTime: bestT, bestDist: bestD, total: cum, fastRuns: fastRuns, footRuns: footRuns };
   }
 
   // ---------- section boundaries (v31) ----------
@@ -5130,13 +5133,11 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       if (G) {
         try {
           var vi = vehicleInfo(parsed);   // V101: vehicle runs (over 15 km/h) count as gaps: neither walking nor a stop, so a drive never gets walking model time
-          if (vi.fast > 500) {
-            rec.veh = vi.fast;
-            vi.fastRuns.forEach(function (r) {
-              if (r[4] == null || r[5] == null) return;
-              for (var k = 0; k < G.n; k++) if (G.t[k] >= r[4] / 1000 && G.t[k] <= r[5] / 1000) G.gap[k] = 1;
-            });
-          }
+          if (vi.fast > 500) rec.veh = vi.fast;
+          (vi.fast > 500 ? vi.fastRuns : []).concat(vi.footRuns).forEach(function (r) {   // V102: running stretches are gaps too
+            if (r[4] == null || r[5] == null) return;
+            for (var k = 0; k < G.n; k++) if (G.t[k] >= r[4] / 1000 && G.t[k] <= r[5] / 1000) G.gap[k] = 1;
+          });
           var tr = C.buildTrack(parsed, { smooth: 3, cleanElevation: true });   // as a timed record loaded for calibration
           var secs = C.normSections(tr.total, [{ a: 0, b: tr.total, real: null, terr: 'trail', heavy: true, rain: false, run: false }]);
           var P0 = clone(PP); P0.kBase = 1; P0._noLorentz = true;
