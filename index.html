@@ -21,6 +21,7 @@
 #tbody td[data-k]:empty::before{content:none}
 :root[lang=en] .ig label{min-width:7.4em}   /* v57: English labels are longer; keep the boxes in one column */
 :root[lang=en] .livebar{gap:6px 6px;padding-left:8px;padding-right:8px}:root[lang=en] .livebar .lb-k{font-size:.85rem}:root[lang=en] .livebar b{font-size:1.3rem}:root[lang=en] .livebar .lb-go{font-size:.9rem}
+.hl-box{margin-top:10px;display:grid;gap:8px}.hl-box[hidden]{display:none}.hl-note{font-size:.85rem;color:var(--ink2);line-height:1.55;margin:0}.hl-list{display:grid;gap:8px;max-height:420px;overflow:auto;padding-right:2px}.hl-row{border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}.hl-all{background:var(--soft)}.hl-h{display:flex;justify-content:space-between;align-items:center;gap:6px;min-width:0}.hl-h b{font-size:.92rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}.hl-x{border:0;background:none;color:var(--ink2);font-size:1.2rem;line-height:1;cursor:pointer;min-width:32px;min-height:32px}.hl-m{font-size:.8rem;color:var(--ink2);margin:2px 0 6px}.hl-s{display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:6px}.hl-s select{width:100%;min-height:38px;min-width:0}
 .pages{display:grid;gap:14px;justify-items:center;min-width:0;margin-top:10px}.pages:empty{display:none}
 .pages canvas{display:block;max-width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:2px;box-shadow:0 1px 4px rgba(0,0,0,.12)}
 .picinfo{margin:10px 0 0}.picinfo:empty{display:none}
@@ -656,7 +657,7 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
   <details class="card fold" id="advCard">
     <summary><h2 id="hAdv">進階</h2><span class="fsub">跑步速度、勞侖茲最佳化、公式參數</span><button type="button" class="hinfo" data-help="hpAdv" aria-expanded="false" aria-controls="hpAdv" aria-label="說明" title="說明">i</button></summary>
     <div class="foldbody">
-    <div class="helppanel" id="hpAdv" hidden><div class="hp-sec"><h3>勞侖茲函數最佳化</h3><p class="hint">一次上傳一個或多個歷史實走 GPX（或含多檔的 ZIP）。每筆紀錄每 5 秒取一點，停下的判斷和校準相同；每走 1 分鐘取一個樣本，距離沿著軌跡量，超過每小時 15 km（車輛）不用。<br><br>有 3 筆以上紀錄（各要有時間戳記、移動 15 分鐘以上）時，用高斯-牛頓法解出勞侖茲函數參數 [a, b, c]，再拿每筆的實際移動時間和曲線算出的時間相比，先形成路線相似度加權的 kLor 校正倍率（實際移動時間 ÷ 曲線時間），再導入交叉驗證選定的 0.55 收縮：k′Lor = 1 + 0.55 × (kLor − 1)，校正整體快慢；跟目前路線越像的紀錄，權重越重。不到 3 筆時不擬合，改算「上坡與平路」「下坡」兩個隊伍速度。上傳後先顯示結果，按「最佳化」才套用。<br><br>紀錄最好上坡、下坡各有一段，路況與要去的路線相近。隊伍以最慢的人為準時，請用最慢那位也在的紀錄。</p></div></div>
+    <div class="helppanel" id="hpAdv" hidden><div class="hp-sec"><h3>勞侖茲函數最佳化</h3><p class="hint">一次上傳一個或多個歷史實走 GPX（或含多檔的 ZIP）。每筆紀錄每 5 秒取一點，停下的判斷和校準相同；每走 1 分鐘取一個樣本，距離沿著軌跡量，超過每小時 15 km（車輛）不用。<br><br>有 3 筆以上紀錄（各要有時間戳記、移動 15 分鐘以上）時，用高斯-牛頓法解出勞侖茲函數參數 [a, b, c]，再拿每筆的實際移動時間和曲線算出的時間相比，先形成路線相似度加權的 kLor 校正倍率（實際移動時間 ÷ 曲線時間），再導入交叉驗證選定的 0.55 收縮：k′Lor = 1 + 0.55 × (kLor − 1)，校正整體快慢；跟目前路線越像的紀錄，權重越重。不到 3 筆時不擬合，改算「上坡與平路」「下坡」兩個隊伍速度。上傳後先顯示結果，按「最佳化」才套用。<br><br>上傳後每筆紀錄可以選裝備、天氣、地形，海拔由 GPX 帶入。擬合前會把每個樣本的速度換算回基準條件（一般步道、重裝、晴天、海拔 300 m），套用到路線時再依各路段的條件換算回來，輕裝或雨天的紀錄就不會被重複加快或減慢。<br><br>紀錄最好上坡、下坡各有一段，路況與要去的路線相近。隊伍以最慢的人為準時，請用最慢那位也在的紀錄。</p></div></div>
     <div class="teamrow" id="runRow" hidden>
       <span>跑步速度（倍數；只用在勾「跑」的路段；1＝平地每小時 <span id="runFlatTxt">8</span> km）</span>
       <div class="inline"><span class="ig"><label for="runUp">上坡與平路 ×</label><input type="number" id="runUp" min="0.3" max="2.5" step="0.05" inputmode="decimal"></span><span class="ig"><label for="runDn">下坡 ×</label><input type="number" id="runDn" min="0.3" max="2.5" step="0.05" inputmode="decimal"></span></div>
@@ -673,6 +674,7 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
         </div>
         <p class="error" id="calError" hidden></p>
         <p class="status" id="histStatus" style="margin:6px 0 0"></p>
+        <div id="histList" class="hl-box" hidden></div>
         <div id="lorentzParamsView" style="font-family:var(--font-num);font-weight:600;font-size:.95rem;margin-top:6px">目前：使用 Tobler + DIN 混合（尚未解出勞侖茲函數參數）</div>
         <div id="calOut" hidden></div>
         <input type="file" id="calFile" aria-label="上傳歷史 GPX" hidden>
@@ -854,6 +856,15 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
     '高度剖面縮圖，點一下看剖面': 'Elevation profile thumbnail, tap to see the profile', '規劃': 'Plan', '結果': 'Results', '分頁': 'Tabs',   // V100 phone tabs
     '其中 {0} 個檔案的高度在 1 分鐘內跳動 30 m 以上達 10 次以上，高度不可靠，已排除自動校準。': 'The elevation in {0} file(s) has 10 or more jumps of at least 30 m within a minute; the heights are unreliable and the files were excluded from automatic calibration.',
     '另有 {0} 個檔案的 GPS 斷訊超過 5 分鐘，已按斷訊切段判讀並排除自動校準。': '{0} additional file(s) have GPS gaps longer than 5 minutes; they were assessed in separate segments and excluded from automatic calibration.',
+    '選每筆走的時候的條件，海拔由 GPX 帶入。擬合前會把速度換算回「一般步道・重裝・晴天・海拔 {0} m」。': 'Pick the conditions each walk was done in; the altitude comes from the GPX. Before fitting, speeds are converted back to trail, heavy pack, dry, {0} m.',
+    '{0} km · 移動 {1} · 均高 {2} m': '{0} km · moving {1} · mean altitude {2} m',
+    '樣本坡度（5%～95% 分位）：{0}%～{1}%，共 {2} 分鐘。': 'Sample grades (5th to 95th percentile): {0}% to {1}%, {2} min in all.',
+    '全部設為': 'Set all',
+    '（各不同）': '(mixed)',
+    '移除': 'Remove',
+    '裝備': 'Pack',
+    '地形': 'Terrain',
+    '上傳後每筆紀錄可以選裝備、天氣、地形，海拔由 GPX 帶入。擬合前會把每個樣本的速度換算回基準條件（一般步道、重裝、晴天、海拔 300 m），套用到路線時再依各路段的條件換算回來，輕裝或雨天的紀錄就不會被重複加快或減慢。': 'After uploading, pick the pack, weather and terrain of each record; the altitude comes from the GPX. Before fitting, each sample speed is converted back to the base conditions (trail, heavy pack, dry, 300 m), and the route then converts it by the conditions of each section, so a light-pack or rainy record is not sped up or slowed down twice.',
     '{0} 個檔案含搭車段（每小時 15 公里以上），已扣除車程，只用步行段校正。': ' {0} file(s) include vehicle travel (15 km/h or faster); the drive was removed and only the walking parts were used for calibration.',
     '軌跡中約 {0} km 的速度超過每小時 15 公里，可能含搭車段。建議保留步行段（約 {1} 分、{2} km），前段移除 {3} km、後段移除 {4} km。': 'About {0} km of the track exceeds 15 km/h and may include a vehicle segment. Suggested walking section: about {1} min and {2} km; remove {3} km at the front and {4} km at the back.',
     '軌跡中約 {0} km 的速度超過每小時 15 公里，可能含搭車段；未找到至少 15 分鐘且 800 m 的連續步行段。': 'About {0} km of the track exceeds 15 km/h and may include a vehicle segment; no continuous walking section of at least 15 minutes and 800 m was found.'
@@ -1420,7 +1431,7 @@ var CORE = (function () {
         var wx = G.d[k + W] - G.d[k], wz = av(G.z, k + W) - av(G.z, k), wt = G.t[k + W] - G.t[k];
         if (wx >= 3 && wt > 0) {
           var wv = wx / 1000 / (wt / 3600), ws = wz / wx;
-          if (wv <= 15 && Math.abs(ws) <= 2) out.push({ slope: ws, speed: wv });
+          if (wv <= 15 && Math.abs(ws) <= 2) out.push({ slope: ws, speed: wv, z: (av(G.z, k) + av(G.z, k + W)) / 2 });   // V102: + mean height (m)
         }
         k += W;
       }
@@ -1443,6 +1454,32 @@ var CORE = (function () {
     return samples;
   }
 
+  // V102: a sample walked in its own conditions (tag: heavy, rain, terr; height from the GPX) back to the curve's frame: the speed
+  //      spdL that stepHours turns into the walked speed (一般步道, 13 kg, dry, altRef give spdL = walked speed), so the fitted curve
+  //      is not counted again for a light pack, rain or height. Vertical caps and the 80 % step clip are left out: they cap the plan,
+  //      not the walker. Solved by fixed-point steps (the light speed-up depends on the speed).
+  function normLorentzSamples(samples, tag, P) {
+    P = P || DEFAULTS; tag = tag || {};
+    var Q = {}; Object.keys(P).forEach(function (k) { Q[k] = P[k]; });
+    Q.kLor = 1; Q.f = 1; Q._noMargin = true; Q._noLorentz = false; Q.terr = {};
+    Object.keys(P.terr).forEach(function (k) { Q.terr[k] = { sun: [P.terr[k].sun[0], 0, 0], rain: [P.terr[k].rain[0], 0, 0] }; });
+    var terr = Q.terr[tag.terr] ? tag.terr : 'trail', rain = tag.rain === true, light = tag.heavy === false, keep = lorentzParams, out = [];
+    try {
+      (samples || []).forEach(function (q) {
+        var S = Math.max(-0.8, Math.min(0.8, q.slope)), z = q.z != null && isFinite(q.z) ? q.z : P.altRef, v = q.speed, sp = v;
+        for (var it = 0; it < 8; it++) {
+          lorentzParams = [sp, 0, 0];
+          var h = stepHours(1000, S * 1000, z, terr, rain, Q, light, false);
+          if (!(h > 0)) break;
+          var nx = Math.max(0.4, Math.min(40, sp * v * h));
+          if (Math.abs(nx - sp) < 1e-4) { sp = nx; break; }
+          sp = nx;
+        }
+        out.push({ slope: q.slope, speed: sp, z: q.z });
+      });
+    } finally { lorentzParams = keep; }
+    return out;
+  }
   // 高斯-牛頓非線性最小平方，解勞侖茲函數參數 [a,b,c]
   function fitLorentz(samples) {
     if (!samples || samples.length < 20) return null;
@@ -2079,7 +2116,7 @@ var CORE = (function () {
     hav: hav, parseTrackText: parseTrackText, buildTrack: buildTrack, reverseTrack: reverseTrack,
     hasLorentz: hasLorentz, getLorentzParams: getLorentzParams, clearLorentzParams: clearLorentzParams,
     BASE7: BASE7, KBASE0: KBASE0, simRatio: simRatio, routeFeat: routeFeat, baseK: baseK,
-    extractLorentzSamples: extractLorentzSamples, fitLorentz: fitLorentz, setLorentzParams: setLorentzParams,
+    extractLorentzSamples: extractLorentzSamples, normLorentzSamples: normLorentzSamples, fitLorentz: fitLorentz, setLorentzParams: setLorentzParams,
     zAt: zAt, stats: stats, tmod: tmod, runModel: runModel, movingAt: movingAt,
     schedule: schedule, clockAt: clockAt, projectWpts: projectWpts, autoPoints: autoPoints, backSym: backSym, backName: backName, isLocusAct: isLocusAct, cleanSym: cleanSym,
     sunDay: sunDay, gradeClass: gradeClass, timeGrid: timeGrid, matchRoute: matchRoute, calibrate: calibrate, kayPace: kayPace
@@ -5086,7 +5123,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       var pts = parsed && parsed.pts;
       if (!pts || pts.length < 2) return;
       if (pts[0].d == null) { var dist = 0; pts[0].d = 0; for (var j = 1; j < pts.length; j++) { dist += C.hav(pts[j - 1].lat, pts[j - 1].lon, pts[j].lat, pts[j].lon); pts[j].d = dist; } }
-      var rec = { name: name, samp: C.extractLorentzSamples(pts), ok: false };
+      var rec = { name: name, samp: C.extractLorentzSamples(pts), ok: false, tag: { heavy: true, rain: false, terr: 'trail' } };   // V102: conditions of the walk
       rec.shaky = rec.samp.jumps >= 10;
       var G = null; try { G = C.timeGrid(pts); } catch (err) { G = null; }
       if (G) {
@@ -5106,6 +5143,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
           rec.tr = tr; rec.G = G; rec.secs = secs; rec.f = C.routeFeat(tr); rec.kb = C.baseK(tr); rec.gapMin = G.gapMin || 0; rec.longGap = rec.gapMin > 5;
           rec.Au = r.actUp / 60; rec.Ad = r.actDn / 60; rec.Mu = r.modUp / 60; rec.Md = r.modDn / 60; rec.A = rec.Au + rec.Ad;
           rec.ok = rec.A >= 0.25 && rec.Mu + rec.Md > 0 && !!rec.f && !rec.shaky && !rec.longGap;
+          var zs = 0, zc = 0; (tr.z || []).forEach(function (v) { if (isFinite(v)) { zs += v; zc++; } }); rec.zMean = zc ? zs / zc : null;
         } catch (err) { console.warn(err); }
       }
       histRecs.push(rec);
@@ -5119,12 +5157,20 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       var r2 = function (v) { return Math.round(teamV(v) * 100) / 100; };
       return { u: r2(u || all), d: r2(d || all) };
     }
+    function recSecs(q) { return C.normSections(q.tr.total, [{ a: 0, b: q.tr.total, real: null, terr: q.tag.terr, heavy: q.tag.heavy, rain: q.tag.rain, run: false }]); }   // V102
+    var histCount = 0;
     function histDone(count) {
+      if (count != null) histCount = count; else count = histCount;
       var recs = histRecs.filter(function (q) { return q.ok; }), n = recs.length, samples = [], shaky = 0, longGap = 0;
+      recs.forEach(function (q) {   // V102: the model's time on each record in the conditions picked for it
+        q.secs = recSecs(q);
+        try { var P0 = clone(PP); P0.kBase = 1; P0._noLorentz = true; var r0 = C.calibrate(q.tr, q.secs, P0, q.G, 0); q.Mu = r0.modUp / 60; q.Md = r0.modDn / 60; } catch (err) { console.warn(err); }
+      });
+      renderHistList();
       histRecs.forEach(function (q) { if (q.shaky) shaky++; });
       histRecs.forEach(function (q) { if (q.longGap) longGap++; });
       var veh = 0; histRecs.forEach(function (q) { if (q.veh) veh++; });
-      recs.forEach(function (q) { samples = samples.concat(q.samp); });
+      recs.forEach(function (q) { samples = samples.concat(C.normLorentzSamples(q.samp, q.tag, PP)); });   // V102: back to 一般步道・重裝・晴・altRef
       pendingLorentz = null;
       setTx('histStatus', function () {
         return _f('已載入 {0} 個檔案，{1} 筆有時間紀錄、移動 15 分鐘以上，取得 {2} 個樣本（每走 1 分鐘一個，已排除停下與車輛）。', count, n, samples.length) +
@@ -5166,6 +5212,46 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
           : '勞侖茲函數擬合未收斂，改算隊伍速度：上坡與平路 ×{1}、下坡 ×{2}（{0} 筆紀錄，跟目前路線越像的紀錄權重越重）。按「最佳化」後套用。', n, f2(t0.u), f2(t0.d));
       });
     }
+    function renderHistList() {   // V102: the records in use, each with the conditions it was walked in
+      var box = $('histList'); if (!box) return;
+      var recs = histRecs.filter(function (q) { return q.ok; });
+      if (!recs.length) { box.hidden = true; box.innerHTML = ''; return; }
+      function sel(k, v, opts) { return '<select data-k="' + k + '" aria-label="' + esc(_t(k === 'heavy' ? '裝備' : k === 'rain' ? '天氣' : '地形')) + '">' + opts.map(function (o) { return '<option value="' + o[0] + '"' + (String(v) === o[0] ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; }
+      var P_ = [['true', _t('重裝')], ['false', _t('輕裝')]], W_ = [['false', _t('晴天')], ['true', _t('雨天或起霧')]];
+      var T_ = ['trail', 'road', 'root', 'mud'].map(function (k) { return [k, TERR_SHORT[k]]; });
+      var mix = function (f) { var v = f(recs[0]); return recs.every(function (q) { return f(q) === v; }) ? String(v) : ''; };
+      var allSel = function (k, v, opts) { return sel(k, v, [['', _t('（各不同）')]].concat(opts)); };
+      var sl = []; recs.forEach(function (q) { q.samp.forEach(function (x) { sl.push(x.slope); }); });
+      sl.sort(function (a, b) { return a - b; });
+      var pc = function (p) { return sl.length ? Math.round(sl[Math.min(sl.length - 1, Math.floor(p * sl.length))] * 100) : 0; };
+      var h = '<p class="hl-note">' + esc(_f('選每筆走的時候的條件，海拔由 GPX 帶入。擬合前會把速度換算回「一般步道・重裝・晴天・海拔 {0} m」。', Math.round(PP.altRef))) + '</p>';
+      if (recs.length > 1) h += '<div class="hl-row hl-all" data-i="all"><div class="hl-h"><b>' + esc(_t('全部設為')) + '</b></div><div class="hl-s">' +
+        allSel('heavy', mix(function (q) { return q.tag.heavy; }), P_) + allSel('rain', mix(function (q) { return q.tag.rain; }), W_) + allSel('terr', mix(function (q) { return q.tag.terr; }), T_) + '</div></div>';
+      h += '<div class="hl-list">' + recs.map(function (q) {
+        var i = histRecs.indexOf(q);
+        return '<div class="hl-row" data-i="' + i + '"><div class="hl-h"><b title="' + esc(q.name) + '">' + esc(q.name) + '</b><button type="button" class="hl-x" data-x="' + i + '" aria-label="' + esc(_t('移除')) + '" title="' + esc(_t('移除')) + '">×</button></div>' +
+          '<div class="hl-m">' + esc(_f('{0} km · 移動 {1} · 均高 {2} m', (q.tr.total / 1000).toFixed(1), hm(q.A * 60), q.zMean == null ? '–' : Math.round(q.zMean).toLocaleString('en-US'))) + '</div>' +
+          '<div class="hl-s">' + sel('heavy', q.tag.heavy, P_) + sel('rain', q.tag.rain, W_) + sel('terr', q.tag.terr, T_) + '</div></div>';
+      }).join('') + '</div>';
+      h += '<p class="hl-note">' + esc(_f('樣本坡度（5%～95% 分位）：{0}%～{1}%，共 {2} 分鐘。', pc(0.05), pc(0.95), sl.length)) + '</p>';
+      box.innerHTML = h; box.hidden = false;
+    }
+    i18v(renderHistList);
+    $('histList').addEventListener('change', function (e) {
+      var t = e.target; if (!t || !t.dataset || !t.dataset.k) return;
+      var row = t.closest('.hl-row'); if (!row) return;
+      var k = t.dataset.k, v = t.value; if (v === '') return;
+      var val = k === 'terr' ? v : v === 'true';
+      if (row.dataset.i === 'all') histRecs.forEach(function (q) { q.tag[k] = val; });
+      else { var q = histRecs[+row.dataset.i]; if (q) q.tag[k] = val; }
+      histDone();
+    });
+    $('histList').addEventListener('click', function (e) {
+      var b = e.target && e.target.closest ? e.target.closest('[data-x]') : null; if (!b) return;
+      var i = +b.dataset.x; if (!histRecs[i]) return;
+      histRecs.splice(i, 1); histCount = Math.max(0, histCount - 1);
+      histDone();
+    });
     $('histFiles').addEventListener('change', async function (e) {
       var files = e.target.files;
       if (!files || !files.length) return;
@@ -5219,7 +5305,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     $('btnClearLorentz').addEventListener('click', function () {
       C.clearLorentzParams(); LOR_POOL = null; LOR_VER++;
       pendingLorentz = null;
-      histRecs = [];
+      histRecs = []; histCount = 0; renderHistList();
       setTx('histStatus', function () { return ''; });
       setTx('lorentzParamsView', function () { return _t('目前：使用 Tobler + DIN 混合（尚未解出勞侖茲函數參數）'); });
       if ($('teamBox')) $('teamBox').hidden = false;
