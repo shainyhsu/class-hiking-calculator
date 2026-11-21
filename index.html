@@ -3173,10 +3173,6 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     }
     var path = tr.x.map(function (d, k) { return (k ? 'L' : 'M') + sx(xr[k]).toFixed(1) + ' ' + sy(tr.z[k]).toFixed(1); }).join('');
     o.push('<path d="' + path + '" style="fill:none;stroke:var(--profile-line);stroke-width:1.6;stroke-linejoin:round"></path>');
-    if (c.turn && c.turn.i < xr.length) {   // V103: where to turn back for the latest arrival, with dashed lines to both axes
-      var tX = sx(xr[c.turn.i]).toFixed(1), tY = sy(tr.z[c.turn.i]).toFixed(1);
-      o.push('<path d="M' + tX + ' ' + tY + 'V' + (Tp + ph) + 'M' + tX + ' ' + tY + 'H' + L + '" style="fill:none;stroke:var(--crit);stroke-width:1.5;stroke-dasharray:5 4"></path><circle cx="' + tX + '" cy="' + tY + '" r="5" style="fill:var(--crit);stroke:var(--surface);stroke-width:1.5"></circle>');
-    }
     // terrain strip
     var ty = Tp + ph + 3;
     cSecs.forEach(function (q) {
@@ -3262,6 +3258,10 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
         '<path class="bd-grip" d="M' + (x - 2).toFixed(1) + ' ' + (ty - 2) + 'v10M' + (x + 2).toFixed(1) + ' ' + (ty - 2) + 'v10"></path></g>');
     });
     o.push(mkB.join(''));
+    if (c.turn && c.turn.i < xr.length) {   // V103: where to turn back for the latest arrival, with dashed lines to both axes
+      var tX = sx(xr[c.turn.i]).toFixed(1), tY = sy(tr.z[c.turn.i]).toFixed(1);
+      o.push('<path d="M' + tX + ' ' + tY + 'V' + (Tp + ph) + 'M' + tX + ' ' + tY + 'H' + L + '" style="pointer-events:none;fill:none;stroke:var(--crit);stroke-width:1.5;stroke-dasharray:5 4"></path><circle cx="' + tX + '" cy="' + tY + '" r="5" style="pointer-events:none;fill:var(--crit);stroke:var(--surface);stroke-width:1.5"></circle>');
+    }
     // V83: hollow green rings on the A4 elevation line for every point carrying a light-green stop badge.
     if (pic) {
       var stopMarks = [], stopSeen = {};
