@@ -854,6 +854,7 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
     '高度剖面縮圖，點一下看剖面': 'Elevation profile thumbnail, tap to see the profile', '規劃': 'Plan', '結果': 'Results', '分頁': 'Tabs',   // V100 phone tabs
     '其中 {0} 個檔案的高度在 1 分鐘內跳動 30 m 以上達 10 次以上，高度不可靠，已排除自動校準。': 'The elevation in {0} file(s) has 10 or more jumps of at least 30 m within a minute; the heights are unreliable and the files were excluded from automatic calibration.',
     '另有 {0} 個檔案的 GPS 斷訊超過 5 分鐘，已按斷訊切段判讀並排除自動校準。': '{0} additional file(s) have GPS gaps longer than 5 minutes; they were assessed in separate segments and excluded from automatic calibration.',
+    '{0} 個檔案含搭車段（每小時 15 公里以上），已扣除車程，只用步行段校正。': ' {0} file(s) include vehicle travel (15 km/h or faster); the drive was removed and only the walking parts were used for calibration.',
     '軌跡中約 {0} km 的速度超過每小時 15 公里，可能含搭車段。建議保留步行段（約 {1} 分、{2} km），前段移除 {3} km、後段移除 {4} km。': 'About {0} km of the track exceeds 15 km/h and may include a vehicle segment. Suggested walking section: about {1} min and {2} km; remove {3} km at the front and {4} km at the back.',
     '軌跡中約 {0} km 的速度超過每小時 15 公里，可能含搭車段；未找到至少 15 分鐘且 800 m 的連續步行段。': 'About {0} km of the track exceeds 15 km/h and may include a vehicle segment; no continuous walking section of at least 15 minutes and 800 m was found.'
   });
@@ -2423,7 +2424,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       if (runA === null) return;
       var d0 = 0, t0 = 0, j;
       for (j = runA; j < endIndex; j++) { d0 += segs[j].b - segs[j].a; t0 += segs[j].dt; }
-      if (t0 >= FAST_HOLD && d0 >= FAST_MIN_D) fastRuns.push([segs[runA].a, endIndex < segs.length ? segs[endIndex].a : cum, d0, t0]);
+      if (t0 >= FAST_HOLD && d0 >= FAST_MIN_D) fastRuns.push([segs[runA].a, endIndex < segs.length ? segs[endIndex].a : cum, d0, t0, pts[runA].t, pts[Math.min(endIndex, pts.length - 1)].t]);   // V101: + start and end time (ms)
       runA = null; lowA = null;
     }
     segs.forEach(function (s, k) {
@@ -5090,6 +5091,14 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       var G = null; try { G = C.timeGrid(pts); } catch (err) { G = null; }
       if (G) {
         try {
+          var vi = vehicleInfo(parsed);   // V101: vehicle runs (over 15 km/h) count as gaps: neither walking nor a stop, so a drive never gets walking model time
+          if (vi.fast > 500) {
+            rec.veh = vi.fast;
+            vi.fastRuns.forEach(function (r) {
+              if (r[4] == null || r[5] == null) return;
+              for (var k = 0; k < G.n; k++) if (G.t[k] >= r[4] / 1000 && G.t[k] <= r[5] / 1000) G.gap[k] = 1;
+            });
+          }
           var tr = C.buildTrack(parsed, { smooth: 3, cleanElevation: true });   // as a timed record loaded for calibration
           var secs = C.normSections(tr.total, [{ a: 0, b: tr.total, real: null, terr: 'trail', heavy: true, rain: false, run: false }]);
           var P0 = clone(PP); P0.kBase = 1; P0._noLorentz = true;
@@ -5114,12 +5123,14 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       var recs = histRecs.filter(function (q) { return q.ok; }), n = recs.length, samples = [], shaky = 0, longGap = 0;
       histRecs.forEach(function (q) { if (q.shaky) shaky++; });
       histRecs.forEach(function (q) { if (q.longGap) longGap++; });
+      var veh = 0; histRecs.forEach(function (q) { if (q.veh) veh++; });
       recs.forEach(function (q) { samples = samples.concat(q.samp); });
       pendingLorentz = null;
       setTx('histStatus', function () {
         return _f('已載入 {0} 個檔案，{1} 筆有時間紀錄、移動 15 分鐘以上，取得 {2} 個樣本（每走 1 分鐘一個，已排除停下與車輛）。', count, n, samples.length) +
           (shaky ? _f('其中 {0} 個檔案的高度在 1 分鐘內跳動 30 m 以上達 10 次以上，高度不可靠，已排除自動校準。', shaky) : '') +
-          (longGap ? _f('另有 {0} 個檔案的 GPS 斷訊超過 5 分鐘，已按斷訊切段判讀並排除自動校準。', longGap) : '');
+          (longGap ? _f('另有 {0} 個檔案的 GPS 斷訊超過 5 分鐘，已按斷訊切段判讀並排除自動校準。', longGap) : '') +
+          (veh ? _f('{0} 個檔案含搭車段（每小時 15 公里以上），已扣除車程，只用步行段校正。', veh) : '');
       });
       if (!n) { setTx('lorentzParamsView', function () { return _t('沒有可用的紀錄：檔案要有時間戳記，移動 15 分鐘以上。'); }); return; }
       if (n >= 3 && samples.length >= 20) {
