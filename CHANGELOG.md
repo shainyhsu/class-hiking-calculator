@@ -1,6 +1,7 @@
 # Hike Time Estimator: changelog
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
+- V104 | 2026-11-22 19:16 | The light pack can now be set up to 13 kg and the forest road factor blends smoothly into the heavy pack, so there is no jump; the Pack row shows how many sections are heavy or light (or Heavy or Light all the way), and each section has a Heavy 13 kg or Light kg choice.
 - V103 | 2026-11-22 07:47 | Rides are trimmed off automatically when a GPX is loaded, the part-of-track range applies as you type with a Whole track button beside it, and a latest arrival time now marks the latest turnaround point on both profiles and shows how late you would be.
 - V102 | 2026-11-21 10:36 | Each uploaded history GPX now has pack, weather and terrain choices (plus a Set all row and a remove button), and its altitude comes from the file. Sample speeds are converted back to trail, heavy pack, dry, 300 m before the Lorentz fit, so a light-pack or rainy record is no longer counted twice. History GPX stretches where someone was running are no longer counted as vehicle travel, and the A4 picture draws its charts at full width again when made from the phone Export tab.
 - V101 | 2026-11-21 10:29 | History GPX uploads now detect vehicle travel (15 km/h or faster). The drive is skipped like a recording gap, so only the walking parts set the overall pace, and the status line says how many files had a drive.
