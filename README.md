@@ -36,6 +36,7 @@ Copyright (c) 2026 Shainy Hsu. All rights reserved. See [LICENSE](LICENSE).
 
 Newest first. Times are Taiwan time (UTC+8). Also kept in [CHANGELOG.md](CHANGELOG.md).
 
+- V105 | 2026-11-22 20:32 | Add a button that turns back in time for the latest arrival: it finds the farthest turnaround and makes the route an out-and-back in one step, keeping the stops you set; the Mirror button is now a switch that fills in and reads Mirrored when on.
 - V104 | 2026-11-22 19:16 | The light pack can now be set up to 13 kg and the forest road factor blends smoothly into the heavy pack, so there is no jump; the Pack row shows how many sections are heavy or light (or Heavy or Light all the way), and each section has a Heavy 13 kg or Light kg choice.
 - V103 | 2026-11-22 07:47 | Rides are trimmed off automatically when a GPX is loaded, the part-of-track range applies as you type with a Whole track button beside it, and a latest arrival time now marks the latest turnaround point on both profiles and shows how late you would be.
 - V102 | 2026-11-21 10:36 | Each uploaded history GPX now has pack, weather and terrain choices (plus a Set all row and a remove button), and its altitude comes from the file. Sample speeds are converted back to trail, heavy pack, dry, 300 m before the Lorentz fit, so a light-pack or rainy record is no longer counted twice. History GPX stretches where someone was running are no longer counted as vehicle travel, and the A4 picture draws its charts at full width again when made from the phone Export tab.
