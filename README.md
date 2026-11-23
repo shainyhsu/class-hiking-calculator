@@ -36,6 +36,7 @@ Copyright (c) 2026 Shainy Hsu. All rights reserved. See [LICENSE](LICENSE).
 
 Newest first. Times are Taiwan time (UTC+8). Also kept in [CHANGELOG.md](CHANGELOG.md).
 
+- V107 | 2026-11-23 12:54 | Every on/off button in the route card now looks the same: the one in use is filled and reads as already done (file loaded, reversed, mirrored, example loaded, part of the track), and the auto turnaround is one switch you tap again to undo.
 - V106 | 2026-11-23 10:45 | The latest turnaround is labelled with its distance, height and time plus the round-trip total and arrival on the thumbnail, profile and picture; the timetable gets a turnaround row and each point past it shows how late you would be if you turned there; the auto turnaround keeps stops set on the way back and can be undone with one tap.
 - V105 | 2026-11-22 20:32 | Add a button that turns back in time for the latest arrival: it finds the farthest turnaround and makes the route an out-and-back in one step, keeping the stops you set; the Mirror button is now a switch that fills in and reads Mirrored when on.
 - V104 | 2026-11-22 19:16 | The light pack can now be set up to 13 kg and the forest road factor blends smoothly into the heavy pack, so there is no jump; the Pack row shows how many sections are heavy or light (or Heavy or Light all the way), and each section has a Heavy 13 kg or Light kg choice.
