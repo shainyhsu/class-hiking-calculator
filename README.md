@@ -36,6 +36,7 @@ Copyright (c) 2026 Shainy Hsu. All rights reserved. See [LICENSE](LICENSE).
 
 Newest first. Times are Taiwan time (UTC+8). Also kept in [CHANGELOG.md](CHANGELOG.md).
 
+- V110 | 2026-11-24 02:03 | In English, the "Use part of the track" and example buttons use slightly smaller text so the label stays inside its box on every phone width.
 - V109 | 2026-11-23 19:52 | Tapping "Example loaded" again takes you back to the route you had before the example, or to the empty page, with its sections, points, stops and start time; the example button now sits beside "Use part of the track", and "Whole track" moved into the button column.
 - V108 | 2026-11-23 13:45 | Default short breaks are now 16 min per hour uphill and flat and 5 min downhill, and plans saved with the old 13/6 or 16/12 move to it once with a notice; mirrored GPX marks the turnaround as a U-turn and the end as the destination; the English GPX no longer repeats the start; a single GPS jump no longer turns running into a vehicle ride; the way back keeps its own turn points; cleanup of unused code and translations.
 - V107 | 2026-11-23 12:54 | Every on/off button in the route card now looks the same: the one in use is filled and reads as already done (file loaded, reversed, mirrored, example loaded, part of the track), and the auto turnaround is one switch you tap again to undo.
