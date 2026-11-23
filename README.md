@@ -26,7 +26,7 @@ Estimate how long a hiking route will take from a GPX track. Accounts for grade,
 
 ## Tech
 
-Single HTML page on GitHub Pages. No backend, no install. Formula sources and limitations are documented in the in-app “how the model works” section.
+Single HTML page on GitHub Pages. No backend, no install. The model is outlined under Features; in the app, the ⓘ beside each card title explains its settings, and the footer notes the method and its limits.
 
 ## License
 
