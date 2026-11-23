@@ -11,7 +11,7 @@ Estimate how long a hiking route will take from a GPX track. Accounts for grade,
 - Per-segment tags: normal trail / roots & rock / muddy grass / forest road, heavy vs light pack, rain, running
 - Elevation profile, checkpoints, timetable, short stops, and an optional 10% buffer
 - Export image, GPX (with segment and timing settings), or plain-text summary
-- Walk analysis picture: load a timed record of the walk, with or without a plan; times come from the record, places are matched to the planned route (with no plan, or a different route, the record’s own track and waypoints); every duration is taken from the printed times so each line adds up; stops of 10 min or more get a light green badge as in the plan picture, stops under 10 min within 300 m of each other are one line, and the header gives the short stops per hour uphill & flat and downhill beside the plan’s
+- Walk analysis picture: load a timed record of the walk, with or without a plan (a recorded GPX loaded as the route gives the plan and the walk analysis together); times come from the record, places are matched to the planned route (with no plan, or a different route, the record’s own track and waypoints); every duration is taken from the printed times so each line adds up; stops of 10 min or more get a light green badge as in the plan picture, stops under 10 min within 300 m of each other are one line, and the header gives the short stops per hour uphill & flat and downhill beside the plan’s
 - Terrain sunrise/sunset and direct-sun shading on the profile
 - Traditional Chinese / English interface and a time-zone setting
 - Light/dark switch (dark by default); two-column layout on laptops and desktops
@@ -19,7 +19,7 @@ Estimate how long a hiking route will take from a GPX track. Accounts for grade,
 ## How to use
 
 1. Open the link above (fully client-side; nothing is uploaded to a server)
-2. Load a route GPX, or try the sample
+2. Load a route GPX, or try the sample. A GPX recorded by a phone or watch (a time at every point) gives both the trip plan and the walk analysis; a route planned in another app gives the plan only, and a recorded GPX can be loaded beside it for the walk analysis
 3. Adjust settings, terrain segments, and checkpoints as needed
 4. Optionally upload past GPX files of your group (3 or more for the Lorentz curve, fewer give team speed factors)
 5. Review the timetable and summary, then share or download
