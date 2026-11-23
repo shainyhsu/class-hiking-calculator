@@ -1,6 +1,7 @@
 # Hike Time Estimator: changelog
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
+- V111 | 2026-11-24 06:09 | The route card now says what a loaded file gives: a GPX recorded by a phone or watch (a time at every point) makes both the trip plan and the walk analysis, with a “See walk analysis” button that goes straight to it (on phones, the Export tab); a route without times makes the plan only, with a “Load walk record” button for a recorded GPX beside it. With no route, wide screens show one column in the phone order, so the walk card is no longer covered, and the walk preview is drawn again.
 - V110 | 2026-11-24 02:03 | In English, the "Use part of the track" and example buttons use slightly smaller text so the label stays inside its box on every phone width.
 - V109 | 2026-11-23 19:52 | Tapping "Example loaded" again takes you back to the route you had before the example, or to the empty page, with its sections, points, stops and start time; the example button now sits beside "Use part of the track", and "Whole track" moved into the button column.
 - V108 | 2026-11-23 13:45 | Default short breaks are now 16 min per hour uphill and flat and 5 min downhill, and plans saved with the old 13/6 or 16/12 move to it once with a notice; mirrored GPX marks the turnaround as a U-turn and the end as the destination; the English GPX no longer repeats the start; a single GPS jump no longer turns running into a vehicle ride; the way back keeps its own turn points; cleanup of unused code and translations.

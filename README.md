@@ -11,7 +11,7 @@ Estimate how long a hiking route will take from a GPX track. Accounts for grade,
 - Per-segment tags: normal trail / roots & rock / muddy grass / forest road, heavy vs light pack, rain, running
 - Elevation profile, checkpoints, timetable, short stops, and an optional 10% buffer
 - Export image, GPX (with segment and timing settings), or plain-text summary
-- Walk analysis picture: load a timed record of the walk, with or without a plan; times come from the record, places are matched to the planned route (with no plan, or a different route, the record’s own track and waypoints); every duration is taken from the printed times so each line adds up; stops of 10 min or more get a light green badge as in the plan picture, stops under 10 min within 300 m of each other are one line, and the header gives the short stops per hour uphill & flat and downhill beside the plan’s
+- Walk analysis picture: load a timed record of the walk, with or without a plan (a recorded GPX loaded as the route gives the plan and the walk analysis together); times come from the record, places are matched to the planned route (with no plan, or a different route, the record’s own track and waypoints); every duration is taken from the printed times so each line adds up; stops of 10 min or more get a light green badge as in the plan picture, stops under 10 min within 300 m of each other are one line, and the header gives the short stops per hour uphill & flat and downhill beside the plan’s
 - Terrain sunrise/sunset and direct-sun shading on the profile
 - Traditional Chinese / English interface and a time-zone setting
 - Light/dark switch (dark by default); two-column layout on laptops and desktops
@@ -19,14 +19,14 @@ Estimate how long a hiking route will take from a GPX track. Accounts for grade,
 ## How to use
 
 1. Open the link above (fully client-side; nothing is uploaded to a server)
-2. Load a route GPX, or try the sample
+2. Load a route GPX, or try the sample. A GPX recorded by a phone or watch (a time at every point) gives both the trip plan and the walk analysis; a route planned in another app gives the plan only, and a recorded GPX can be loaded beside it for the walk analysis
 3. Adjust settings, terrain segments, and checkpoints as needed
 4. Optionally upload past GPX files of your group (3 or more for the Lorentz curve, fewer give team speed factors)
 5. Review the timetable and summary, then share or download
 
 ## Tech
 
-Single HTML page on GitHub Pages. No backend, no install. Formula sources and limitations are documented in the in-app “how the model works” section.
+Single HTML page on GitHub Pages. No backend, no install. The model is outlined under Features; in the app, the ⓘ beside each card title explains its settings, and the footer notes the method and its limits.
 
 ## License
 
@@ -36,6 +36,7 @@ Copyright (c) 2026 Shainy Hsu. All rights reserved. See [LICENSE](LICENSE).
 
 Newest first. Times are Taiwan time (UTC+8). Also kept in [CHANGELOG.md](CHANGELOG.md).
 
+- V111 | 2026-11-24 06:09 | The route card now says what a loaded file gives: a GPX recorded by a phone or watch (a time at every point) makes both the trip plan and the walk analysis, with a “See walk analysis” button that goes straight to it (on phones, the Export tab); a route without times makes the plan only, with a “Load walk record” button for a recorded GPX beside it. With no route, wide screens show one column in the phone order, so the walk card is no longer covered, and the walk preview is drawn again.
 - V110 | 2026-11-24 02:03 | In English, the "Use part of the track" and example buttons use slightly smaller text so the label stays inside its box on every phone width.
 - V109 | 2026-11-23 19:52 | Tapping "Example loaded" again takes you back to the route you had before the example, or to the empty page, with its sections, points, stops and start time; the example button now sits beside "Use part of the track", and "Whole track" moved into the button column.
 - V108 | 2026-11-23 13:45 | Default short breaks are now 16 min per hour uphill and flat and 5 min downhill, and plans saved with the old 13/6 or 16/12 move to it once with a notice; mirrored GPX marks the turnaround as a U-turn and the end as the destination; the English GPX no longer repeats the start; a single GPS jump no longer turns running into a vehicle ride; the way back keeps its own turn points; cleanup of unused code and translations.
