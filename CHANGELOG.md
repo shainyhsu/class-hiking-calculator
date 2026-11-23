@@ -1,6 +1,7 @@
 # Hike Time Estimator: changelog
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
+- V106 | 2026-11-23 10:45 | The latest turnaround is labelled with its distance, height and time plus the round-trip total and arrival on the thumbnail, profile and picture; the timetable gets a turnaround row and each point past it shows how late you would be if you turned there; the auto turnaround keeps stops set on the way back and can be undone with one tap.
 - V105 | 2026-11-22 20:32 | Add a button that turns back in time for the latest arrival: it finds the farthest turnaround and makes the route an out-and-back in one step, keeping the stops you set; the Mirror button is now a switch that fills in and reads Mirrored when on.
 - V104 | 2026-11-22 19:16 | The light pack can now be set up to 13 kg and the forest road factor blends smoothly into the heavy pack, so there is no jump; the Pack row shows how many sections are heavy or light (or Heavy or Light all the way), and each section has a Heavy 13 kg or Light kg choice.
 - V103 | 2026-11-22 07:47 | Rides are trimmed off automatically when a GPX is loaded, the part-of-track range applies as you type with a Whole track button beside it, and a latest arrival time now marks the latest turnaround point on both profiles and shows how late you would be.
