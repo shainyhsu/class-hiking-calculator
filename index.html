@@ -3933,7 +3933,22 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     if (!T.actOwn || T.actOwn.parsed !== T.parsed) T.actOwn = { parsed: T.parsed, own: true, name: T.name || T.fileName || '' };
     return T.actOwn;
   }
-  function actGrid(src) { if (src.G === undefined) { try { src.G = C.timeGrid(src.parsed.pts); } catch (e) { src.G = null; } } return src.G; }
+  function actGrid(src) {
+    if (src.G === undefined) {
+      try { src.G = C.timeGrid(src.parsed.pts); } catch (e) { src.G = null; }
+      if (src.G && !src.G.rides) {   // V115: vehicle runs (over 15 km/h, as the history upload, V101) are gaps here too: a drive is neither walking nor a stop; running stays walking
+        try {
+          var G = src.G, vi = vehicleInfo(src.parsed);
+          if (vi.fast > 500) vi.fastRuns.forEach(function (r) {
+            if (r[4] == null || r[5] == null) return;
+            for (var k = 0; k < G.n; k++) if (G.t[k] >= r[4] / 1000 && G.t[k] <= r[5] / 1000) G.gap[k] = 1;
+          });
+          G.rides = 1;
+        } catch (e) { }
+      }
+    }
+    return src.G;
+  }
   function actSelf(src) {   // V82: a record on its own: its own track, one plain section and the points of its own file; the route is left as it is
     if (src.self && src.selfLang === I18N.lang) return src.self;   // its own point names follow the language
     var keep = T, keepLast = LAST, keepPM = PM;
