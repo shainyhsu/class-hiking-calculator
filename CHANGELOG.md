@@ -1,6 +1,7 @@
 # Hike Time Estimator: changelog
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
+- V115 | 2026-11-24 21:32 | Walk analysis: vehicle runs (15 km/h or faster) count as record gaps, as in the history upload, so a drive is no longer moving time; running still counts as walking.
 - V114 | 2026-11-24 19:33 | Long breaks stay whole when the height drifts: inside a run of stops, a stretch of 10 min or more within 30 m whose height goes back and forth is no longer cut into short breaks by the steep slow-climb test; one-way height change still counts as walking.
 - V113 | 2026-11-24 16:21 | The single-record calibration now reads short and long breaks the way the walk analysis does (nearby stops merged, 10 min or more is a long break), the same reading the history upload uses; with “Use part of the track” only that part counts.
 - V112 | 2026-11-24 09:31 | Uploading past GPX records now also measures the team’s short breaks per hour, as the walk analysis reads them, uphill and flat apart from downhill; they show under the Lorentz result and “Apply fit” puts them into the plan’s short breaks. The note under short breaks says how many records they came from; typing a value drops that link, and “Clear parameters” returns record-derived values to the 16/5 default. Without usable records the default stays.
