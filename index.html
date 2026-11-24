@@ -159,6 +159,7 @@ details.disc[open]>summary{margin-bottom:10px}
   letter-spacing:.01em;
   line-height:1.45;
 }
+#histBrkView:empty{display:none}   /* V112: the records' short breaks, shown once there are some */
 .kindrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:8px 0 0}   /* V111: what the file gives (plan, walk analysis) */
 .kindrow .kd-t{flex:1 1 15rem;min-width:0;margin:0;line-height:1.6}
 
@@ -626,7 +627,7 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
 
   <section class="card" id="setCard" aria-labelledby="hSet">
     <h2 id="hSet" tabindex="-1">行程設定<button type="button" class="hinfo" data-help="hpSet" aria-expanded="false" aria-controls="hpSet" aria-label="說明" title="說明">i</button></h2>
-    <div class="helppanel" id="hpSet" hidden><div class="hp-sec"><h3>小休</h3><p class="hint">小休＝休息、整裝、等人等 10 分鐘以內停下的合計，算在同一小時之內。<br><br>下坡指比 −5% 陡的路段，和隊伍速度的「下坡」相同；其餘用「上坡與平路」。<br><br>上坡與平路預設 16 分：每小時走 44 分、停 16 分。下坡預設 5 分：每小時走 55 分、停 5 分。<br><br>上坡與平路的預設是 10/6、10/20–21 八年級 7 段實走裡 10 分鐘以內停下的合計，判斷方式和校準相同（V76 起會抓到 1 分鐘左右的小休）：10/6 陣雨每小時約停 17 分，10/20 晴天上坡約 14 分。八年級實測下坡約停 12 分（10/6 陣雨、10/21 晴天），可依隊伍自行調整。V81 以前的預設是 13 分、6 分，V81 到 V107 是 16 分、12 分。<br><br>小休不分晴雨：陣雨的 10/6 上坡與平路每小時約停 17 分、下坡約 12 分；晴天的 10/20–21 合計約 15 分、12 分，相差不到 2 分。<br><br>午餐、集合說明等 ≥ 10 分鐘的大休，另外填在時間表各點的「大休」。<br><br>雨天依各路段的「雨天」勾選。</p></div><div class="hp-sec"><h3>餘裕</h3><p class="hint">預設打勾：算出的 （行進時間 + 小休時間），固定多留 10%作緩衝，給任何會佔用時間的因素。不勾就是模型本身的時間。<br><br>時間表各點，自己填的「大休」（午餐等）不外加10%。<br><br>用自己隊伍的紀錄校準時，紀錄是跟還沒多留的時間比，所以校準完，計畫一樣多留 10%。<br><br>摘要中「最晚抵達」旁的餘裕，是在這 10% 之外，再多出來的時間。</p></div><div class="hp-sec"><h3>輕裝負重</h3><p class="hint" style="margin:4px 0 0">輕裝 0–13 kg：未勾「重裝」路段用 Pandolf 相對 13 kg（體重固定 50 kg）。</p></div><div class="hp-sec"><h3>隊伍速度</h3><p class="hint">上坡與平路／下坡係數，1 為 14 歲無登山經驗小群體的步行速度，請依照自身／群體經驗作估計上的調整。</p></div></div>
+    <div class="helppanel" id="hpSet" hidden><div class="hp-sec"><h3>小休</h3><p class="hint">小休＝休息、整裝、等人等 10 分鐘以內停下的合計，算在同一小時之內。<br><br>下坡指比 −5% 陡的路段，和隊伍速度的「下坡」相同；其餘用「上坡與平路」。<br><br>上坡與平路預設 16 分：每小時走 44 分、停 16 分。下坡預設 5 分：每小時走 55 分、停 5 分。<br><br>上坡與平路的預設是 10/6、10/20–21 八年級 7 段實走裡 10 分鐘以內停下的合計，判斷方式和校準相同（V76 起會抓到 1 分鐘左右的小休）：10/6 陣雨每小時約停 17 分，10/20 晴天上坡約 14 分。八年級實測下坡約停 12 分（10/6 陣雨、10/21 晴天），可依隊伍自行調整。V81 以前的預設是 13 分、6 分，V81 到 V107 是 16 分、12 分。<br><br>上傳歷史 GPX（「進階」的勞侖茲函數最佳化）時，也會照實走分析量出這隊每小時的小休，按「最佳化」一起套用到這裡；沒有可用的紀錄就用預設 16 分、5 分。<br><br>小休不分晴雨：陣雨的 10/6 上坡與平路每小時約停 17 分、下坡約 12 分；晴天的 10/20–21 合計約 15 分、12 分，相差不到 2 分。<br><br>午餐、集合說明等 ≥ 10 分鐘的大休，另外填在時間表各點的「大休」。<br><br>雨天依各路段的「雨天」勾選。</p></div><div class="hp-sec"><h3>餘裕</h3><p class="hint">預設打勾：算出的 （行進時間 + 小休時間），固定多留 10%作緩衝，給任何會佔用時間的因素。不勾就是模型本身的時間。<br><br>時間表各點，自己填的「大休」（午餐等）不外加10%。<br><br>用自己隊伍的紀錄校準時，紀錄是跟還沒多留的時間比，所以校準完，計畫一樣多留 10%。<br><br>摘要中「最晚抵達」旁的餘裕，是在這 10% 之外，再多出來的時間。</p></div><div class="hp-sec"><h3>輕裝負重</h3><p class="hint" style="margin:4px 0 0">輕裝 0–13 kg：未勾「重裝」路段用 Pandolf 相對 13 kg（體重固定 50 kg）。</p></div><div class="hp-sec"><h3>隊伍速度</h3><p class="hint">上坡與平路／下坡係數，1 為 14 歲無登山經驗小群體的步行速度，請依照自身／群體經驗作估計上的調整。</p></div></div>
     <div class="form">
       <label for="date">出發日期<input type="date" id="date"></label>
       <label for="start">出發時間<input type="time" id="start"></label>
@@ -665,7 +666,7 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
   <details class="card fold" id="advCard">
     <summary><h2 id="hAdv">進階</h2><span class="fsub">跑步速度、勞侖茲最佳化、公式參數</span><button type="button" class="hinfo" data-help="hpAdv" aria-expanded="false" aria-controls="hpAdv" aria-label="說明" title="說明">i</button></summary>
     <div class="foldbody">
-    <div class="helppanel" id="hpAdv" hidden><div class="hp-sec"><h3>勞侖茲函數最佳化</h3><p class="hint">一次上傳一個或多個歷史實走 GPX（或含多檔的 ZIP）。每筆紀錄每 5 秒取一點，停下的判斷和校準相同；每走 1 分鐘取一個樣本，距離沿著軌跡量，超過每小時 15 km（車輛）不用。<br><br>有 3 筆以上紀錄（各要有時間戳記、移動 15 分鐘以上）時，用高斯-牛頓法解出勞侖茲函數參數 [a, b, c]，再拿每筆的實際移動時間和曲線算出的時間相比，先形成路線相似度加權的 kLor 校正倍率（實際移動時間 ÷ 曲線時間），再導入交叉驗證選定的 0.55 收縮：k′Lor = 1 + 0.55 × (kLor − 1)，校正整體快慢；跟目前路線越像的紀錄，權重越重。不到 3 筆時不擬合，改算「上坡與平路」「下坡」兩個隊伍速度。上傳後先顯示結果，按「最佳化」才套用。<br><br>上傳後每筆紀錄可以選裝備、天氣、地形，海拔由 GPX 帶入。擬合前會把每個樣本的速度換算回基準條件（一般步道、重裝、晴天、海拔 300 m），套用到路線時再依各路段的條件換算回來，輕裝或雨天的紀錄就不會被重複加快或減慢。<br><br>紀錄最好上坡、下坡各有一段，路況與要去的路線相近。隊伍以最慢的人為準時，請用最慢那位也在的紀錄。</p></div></div>
+    <div class="helppanel" id="hpAdv" hidden><div class="hp-sec"><h3>勞侖茲函數最佳化</h3><p class="hint">一次上傳一個或多個歷史實走 GPX（或含多檔的 ZIP）。每筆紀錄每 5 秒取一點，停下的判斷和校準相同；每走 1 分鐘取一個樣本，距離沿著軌跡量，超過每小時 15 km（車輛）不用。<br><br>有 3 筆以上紀錄（各要有時間戳記、移動 15 分鐘以上）時，用高斯-牛頓法解出勞侖茲函數參數 [a, b, c]，再拿每筆的實際移動時間和曲線算出的時間相比，先形成路線相似度加權的 kLor 校正倍率（實際移動時間 ÷ 曲線時間），再導入交叉驗證選定的 0.55 收縮：k′Lor = 1 + 0.55 × (kLor − 1)，校正整體快慢；跟目前路線越像的紀錄，權重越重。不到 3 筆時不擬合，改算「上坡與平路」「下坡」兩個隊伍速度。上傳後先顯示結果，按「最佳化」才套用。<br><br>每筆紀錄也照實走分析量出小休（10 分鐘以內的停留，上坡與平路、下坡分開），合計後按「最佳化」一起套用到「小休」；「清除參數」會把小休改回預設 16 分、5 分（手動改過的不動）。<br><br>上傳後每筆紀錄可以選裝備、天氣、地形，海拔由 GPX 帶入。擬合前會把每個樣本的速度換算回基準條件（一般步道、重裝、晴天、海拔 300 m），套用到路線時再依各路段的條件換算回來，輕裝或雨天的紀錄就不會被重複加快或減慢。<br><br>紀錄最好上坡、下坡各有一段，路況與要去的路線相近。隊伍以最慢的人為準時，請用最慢那位也在的紀錄。</p></div></div>
     <div class="teamrow" id="runRow" hidden>
       <span>跑步速度（倍數；只用在勾「跑」的路段；1＝平地每小時 <span id="runFlatTxt">8</span> km）</span>
       <div class="inline"><span class="ig"><label for="runUp">上坡與平路 ×</label><input type="number" id="runUp" min="0.3" max="2.5" step="0.05" inputmode="decimal"></span><span class="ig"><label for="runDn">下坡 ×</label><input type="number" id="runDn" min="0.3" max="2.5" step="0.05" inputmode="decimal"></span></div>
@@ -684,6 +685,7 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
         <p class="status" id="histStatus" style="margin:6px 0 0"></p>
         <div id="histList" class="hl-box" hidden></div>
         <div id="lorentzParamsView" style="font-family:var(--font-num);font-weight:600;font-size:.95rem;margin-top:6px">目前：使用 Tobler + DIN 混合（尚未解出勞侖茲函數參數）</div>
+        <p class="status" id="histBrkView" aria-live="polite" style="margin:6px 0 0"></p>
         <div id="calOut" hidden></div>
         <input type="file" id="calFile" aria-label="上傳歷史 GPX" hidden>
       </div>
@@ -885,6 +887,7 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
   Object.assign(EN, {"計畫圖標題": "Plan picture title", "實走圖標題": "Walk picture title", "大休": "Long break", "大休（分）": "Long break (min)", "小休 {0} 分，{1} 出發": "Short break {0} min, leave {1}", "小休不到 1 分": "Short break under 1 min", "出發前休息 ": "Breaks before leaving ", "抵達後休息 ": "Breaks after arriving ", "含小休、大休共 ": "with short and long breaks ", "{0} km｜爬升 {1} m｜下降 {2} m｜移動 {3}｜休息 {4}（{5} 次）": "{0} km | ascent {1} m | descent {2} m | moving {3} | breaks {4} ({5})", "淺綠底標示的大休點": "Light-green long-break badge", "小休：": "Short breaks: ", "午餐、集合說明等 ≥ 10 分鐘的大休，另外填在時間表各點的「大休」。": "Long breaks of 10 minutes or more, such as lunch or group briefings, go into “Long break” at that timetable point.", " 點大休分鐘": " long break, minutes", "小休＝休息、整裝、等人等 10 分鐘以內停下的合計，算在同一小時之內。": "Short breaks = resting, adjusting gear, waiting for others and other stops under 10 minutes, counted within each hour.", "全晴移動": "Dry moving"});   // V99: 小休／大休 terms
   Object.assign(EN, {"<p class=\"calmsg\">小休：10 分鐘以內的停下 ": "<p class=\"calmsg\">Short breaks: ", "A4 預覽": "A4 preview", "小休已改成目前的預設：上坡與平路 16 分、下坡 5 分（這份計畫原本是舊預設 13／6 分）。": "Short breaks now use the current defaults: 16 min uphill & flat, 5 min downhill (this plan had the old 13/6 min defaults).", "小休已改成目前的預設：上坡與平路 16 分、下坡 5 分（這份計畫原本是舊預設 16／12 分）。": "Short breaks now use the current defaults: 16 min uphill & flat, 5 min downhill (this plan had the old 16/12 min defaults)."});   // V108
   Object.assign(EN, {"看實走分析圖": "See walk analysis", "手機或手錶錄下來的 GPX（每一點有時間）同時做行程計畫和實走分析圖；其他程式規劃的路線只做行程計畫。": "A GPX recorded by a phone or watch (with a time at every point) gives both the trip plan and the walk analysis; a route planned in another app gives the plan only.", "錄下來的軌跡（有時間）：行程計畫和實走分析圖都做好了。": "Recorded track (with times): the trip plan and the walk analysis are both ready.", "錄下來的軌跡，但不到 10 分鐘或有時間的點太少，只做行程計畫。": "Recorded track, but it is under 10 minutes or has too few timed points, so it gives the plan only.", "這條路線沒有時間紀錄，只做行程計畫。有手機或手錶錄下來的 GPX，可以載入對照，做實走分析圖。": "This route has no times, so it gives the plan only. To make the walk analysis, load a GPX recorded by a phone or watch to compare.", "實走紀錄「{0}」：": "Walk record “{0}”: ", "實走紀錄「{0}」已載入，實走分析圖對到這條路線。": "Walk record “{0}” is loaded; the walk analysis is laid onto this route.", "實走紀錄「{0}」已載入，和這條路線對不上，實走分析圖用紀錄本身的軌跡。": "Walk record “{0}” is loaded but does not match this route; the walk analysis uses the record’s own track.", "錄下來的 GPX 也可以在「路線檔案」載入，同時做行程計畫和實走分析圖。": "A recorded GPX can also be loaded under “Route file” to get the trip plan and the walk analysis together.", "載入手機或手錶錄下來的 GPX，和目前的路線對照，做實走分析圖。": "Load a GPX recorded by a phone or watch to compare it with this route and make the walk analysis.", "錄下來的軌跡、規劃的路線": "Recorded tracks and planned routes", "手機或手錶錄下來的 GPX，每一點都有時間：載入後同時做行程計畫和實走分析圖。其他程式規劃的路線沒有時間，只做行程計畫；要做實走分析圖，在「實走紀錄分析」再載入錄下來的 GPX 對照。": "A GPX recorded by a phone or watch has a time at every point: loaded here, it gives both the trip plan and the walk analysis. A route planned in another app has no times and gives the plan only; for the walk analysis, also load a recorded GPX under “Walk record analysis” to compare."});   // V111: what a recorded track and a planned route each give
+  Object.assign(EN, {"實走小休量不出來（紀錄要能做出實走分析圖，各方向移動 15 分鐘以上），小休維持現值。": "Short breaks could not be measured (the records need a walk analysis and 15 min or more of moving each way); short breaks stay as they are.", "每小時 {0} 分": " {0} min per hour", "移動不到 15 分鐘，維持 {0} 分": " under 15 min of moving, keeps {0} min", "已套用小休：上坡與平路 {0} 分、下坡 {1} 分（{2} 筆紀錄的實走小休）。": "Short breaks applied: uphill & flat {0} min, downhill {1} min (short breaks walked in {2} records).", "實走小休（{0} 筆紀錄，10 分鐘以內的停留）：上坡與平路{1}、下坡{2}。按「最佳化」一起套用到「小休」。": "Short breaks walked ({0} records, stops under 10 min): uphill & flat{1}, downhill{2}. “Apply fit” applies them to “Short breaks” as well.", "由 {0} 筆歷史紀錄的實走小休算出（「清除參數」回到預設 16、5 分）。": " From the short breaks walked in {0} past records (“Clear parameters” returns to the defaults of 16 and 5 min).", "上傳歷史 GPX（「進階」的勞侖茲函數最佳化）時，也會照實走分析量出這隊每小時的小休，按「最佳化」一起套用到這裡；沒有可用的紀錄就用預設 16 分、5 分。": "When you upload past GPX records (Lorentz fit under “Advanced”), the team’s short breaks per hour are also measured as in the walk analysis and applied here with “Apply fit”; without usable records the defaults of 16 and 5 min stay.", "每筆紀錄也照實走分析量出小休（10 分鐘以內的停留，上坡與平路、下坡分開），合計後按「最佳化」一起套用到「小休」；「清除參數」會把小休改回預設 16 分、5 分（手動改過的不動）。": "Each record’s short breaks (stops under 10 min, uphill & flat and downhill apart) are also measured as in the walk analysis; their total goes into “Short breaks” with “Apply fit”. “Clear parameters” returns short breaks to the defaults of 16 and 5 min (unless you changed them by hand)."});   // V112
   var NAMES = {"航點":"Waypoint","起點":"Start","終點":"End","最高點":"Highest point","折返點":"Turnaround","最高點／折返":"Highest point / turnaround","四季公墓→巨木登山口後 239 m 營地":"Siji cemetery → camp 239 m past the giant-tree trailhead","四季公墓（停車處）":"Siji cemetery (parking)","新柵門":"New gate","紅柵欄（舊柵門）":"Red gate (old gate)","途中午餐":"Lunch on the way","廢棄護管所":"Abandoned ranger post","加納富溪":"Jianafu Creek","巨木登山口":"Giant-tree trailhead","營地":"Camp","大同鄉 健行":"Datong hike","戒茂斯-溪邊營地":"Jiemaosi – creekside camp","戒茂斯登山口（拉繩排隊）":"Jiemaosi trailhead (rope queue)","戒茂斯山前峰":"Jiemaosi fore-peak","碎石坡":"Scree slope","戒茂斯山三叉路口":"Jiemaosi junction","新武呂溪溪底":"Xinwulu Creek bed","溪邊營地":"Creekside camp","武陵山莊停車場":"Wuling Lodge car park","廢棄工寮":"Abandoned work hut","桃山指示牌":"Taoshan signpost","木橋":"Wooden bridge","小空地與指示牌":"Small clearing and signpost","小平台":"Small platform","2K 手機可通訊處":"2K phone signal","大平台與兩張長椅休息處":"Big platform with two benches","兩張長椅休息處(二)":"Two-bench rest stop (2)","黑水塘":"Heishui Pond","停機坪":"Helipad","瞭望小平台":"Lookout platform","4K手機可通訊點":"4K phone signal","桃山":"Taoshan"};
   var L = null, q = /[?&]lang=(zh|en)(&|$)/.exec(location.search);
   if (q) L = q[1];
@@ -2162,7 +2165,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   var WX_LABEL; i18v(function () { WX_LABEL = { sun: _t('晴天'), rain: _t('雨天或起霧') }; });
 
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
-  var S = { date: todayStr(), start: '07:30', deadline: '', stopH: 16, stopHDn: 5, stopV: 108, teamUp: 1, teamDn: 1, runUp: 1, runDn: 1, calKg: '', hourPts: false, hourSkip: [], cutPts: true, cutSkip: [], tz: 'Asia/Taipei', margin: true, picOri: 'p' };
+  var S = { date: todayStr(), start: '07:30', deadline: '', stopH: 16, stopHDn: 5, stopV: 108, stopSrc: 0, teamUp: 1, teamDn: 1, runUp: 1, runDn: 1, calKg: '', hourPts: false, hourSkip: [], cutPts: true, cutSkip: [], tz: 'Asia/Taipei', margin: true, picOri: 'p' };
   // v57: the plan's time zone (IANA name, saved with the plan; plans and examples from before v57 were Taiwan time). TZ = its offset
   //      in hours on the plan date, for sun times and day boundaries; record clocks use the offset at their own instant (DST).
   var TZ = 8, TZF = {};
@@ -2757,6 +2760,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     var sb = buf();   // v54
     $('stopNote').textContent = Math.abs(sb.stopH - sb.stopHDn) < 1e-9 ? _t('上下坡相同：每小時走 ') + nf1(sb.walkH) + _t(' 分、停 ') + nf1(sb.stopH) + _t(' 分。') :
       _t('上坡與平路：每小時走 ') + nf1(sb.walkH) + _t(' 分、停 ') + nf1(sb.stopH) + _t(' 分；下坡：走 ') + nf1(sb.walkHDn) + _t(' 分、停 ') + nf1(sb.stopHDn) + _t(' 分。');
+    if (S.stopSrc > 0) $('stopNote').textContent += _f('由 {0} 筆歷史紀錄的實走小休算出（「清除參數」回到預設 16、5 分）。', S.stopSrc);   // V112
     var ru = teamV(S.runUp), rd = teamV(S.runDn);   // v31: running factor row
     $('runRow').hidden = !(hasRun() || !runIsOne());
     $('runFlatTxt').textContent = nf1(runFlat());
@@ -3872,13 +3876,13 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     } finally { T = keep; LAST = keepLast; PM = keepPM; }
     return src.self;
   }
-  function actData() {
-    var src = actSrc(), i;
+  function actData(srcIn, opt) {   // V112: srcIn / opt.alone: a past record read on its own (history upload); opt.noSun: no sky, no terrain download
+    var src = srcIn || actSrc(), i;
     if (!src) return null;
     var G = actGrid(src);
     if (!G) return { err: 'short', src: src };
     function off(m, t) { return !m || m.far > 0.5 || m.d1 - m.d0 < Math.min(500, t.total * 0.2); }
-    var c = LAST, tr = T.track, cps = T.cps, mt = null, miss = null, X = null;
+    var alone = !!(opt && opt.alone), c = alone ? null : LAST, tr = alone ? null : T.track, cps = alone ? null : T.cps, mt = null, miss = null, X = null;
     if (c && tr) {
       if (src.mtTrack !== tr) { src.mt = C.matchRoute(G, tr); src.mtTrack = tr; }
       mt = src.mt;
@@ -3962,7 +3966,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     if (full) { up = c.st.up; dn = c.st.dn; }
     else for (i = 1; i < tr.x.length; i++) { if (tr.x[i] <= da || tr.x[i - 1] >= db) continue; var dz = tr.z[i] - tr.z[i - 1]; if (dz > 0) up += dz; else dn -= dz; }
     var sunA = null;   // the sky and the terrain of the day walked, moved onto the times walked below (groupSun)
-    if (ds === (S.date || todayStr()) && c.sun) { sunA = {}; for (var key in c.sun) sunA[key] = c.sun[key]; }   // the plan's day: its own terrain result
+    if (opt && opt.noSun) sunA = null;   // V112: a past record's short breaks only (the walk record's terrain slot is left alone)
+    else if (ds === (S.date || todayStr()) && c.sun) { sunA = {}; for (var key in c.sun) sunA[key] = c.sun[key]; }   // the plan's day: its own terrain result
     else { try { sunA = terrainSun(C.sunDay(ds, tr.raw[0].lat, tr.raw[0].lon, TZ), tr, ds); } catch (e) { sunA = null; } }   // another day: computed for that day
     var stopIn = over(stops, dep0, arrN), gapIn = over(gaps, dep0, arrN);
     var A = { src: src, mt: mt, G: G, ds: ds, da: da, db: db, full: full, up: up, dn: dn, total: (arrN - dep0) / 60, stopMin: stopIn / 60, gapMin: gapIn / 60,
@@ -4951,7 +4956,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     });
     $('btnRangeAll').addEventListener('click', function () { T.range = null; rebuild(false); setRangeInputs(); render(); });
     ['date', 'start', 'deadline', 'stopH', 'stopHDn', 'teamUp', 'teamDn', 'runUp', 'runDn'].forEach(function (id) {
-      $(id).addEventListener('input', function () { S[id] = $(id).value; render(); });
+      $(id).addEventListener('input', function () { S[id] = $(id).value; if (id === 'stopH' || id === 'stopHDn') S.stopSrc = 0; render(); });   // V112: typed by hand: no longer the records'
     });
     if ($('marginOn')) $('marginOn').addEventListener('change', function () { S.margin = $('marginOn').checked; render(); });   // v58
     if ($('tzSel')) $('tzSel').addEventListener('change', function () { S.tz = $('tzSel').value || 'Asia/Taipei'; render(); });   // v57
@@ -4977,6 +4982,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       else {   // v54: 上坡與平路 and 下坡 stop minutes
         S.stopH = Math.min(45, Math.max(0, numOr(b.getAttribute('data-q'), 16)));
         if (b.hasAttribute('data-qd')) S.stopHDn = Math.min(45, Math.max(0, numOr(b.getAttribute('data-qd'), S.stopH)));
+        S.stopSrc = 0;   // V112: from this one record, not the uploaded ones
       }
       applyInputs(); render();
     });
@@ -5370,8 +5376,41 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
           rec.ok = rec.A >= 0.25 && rec.Mu + rec.Md > 0 && !!rec.f && !rec.shaky && !rec.longGap;
           var zs = 0, zc = 0; (tr.z || []).forEach(function (v) { if (isFinite(v)) { zs += v; zc++; } }); rec.zMean = zc ? zs / zc : null;
         } catch (err) { console.warn(err); }
+        if (rec.ok) rec.brk = histBreaks(name, parsed, G);   // V112
       }
       histRecs.push(rec);
+    }
+    function histBreaks(name, parsed, G) {   // V112 (c2): the record's 實走小休 as the walk analysis reads it on its own; its rides and runs stay gaps
+      try {
+        var A = actData({ parsed: parsed, name: name, G: G }, { alone: true, noSun: true });
+        if (!A || A.err || !A.c) return null;
+        var V = actView(A.c);
+        return { mvUp: V.mvUp, mvDn: V.mvDn, sUp: V.sUp, sDn: V.sDn };
+      } catch (err) { console.warn(err); return null; }
+    }
+    function histBrk(recs) {   // V112: the team's short breaks per hour, pooled over the records (minutes of short breaks ÷ moving and short breaks); null under 15 min of moving
+      var su = 0, mu = 0, sd = 0, md = 0, n = 0;
+      recs.forEach(function (q) { if (!q.brk) return; n++; su += q.brk.sUp; mu += q.brk.mvUp; sd += q.brk.sDn; md += q.brk.mvDn; });
+      if (!n) return null;
+      var half = function (v) { return Math.min(45, Math.round(v * 2) / 2); };
+      return { n: n, u: mu >= 15 ? half(su / (mu + su) * 60) : null, d: md >= 15 ? half(sd / (md + sd) * 60) : null };
+    }
+    function histBrkView(b, applied) {   // V112: what the records say about the short breaks, before and after 最佳化
+      setTx('histBrkView', function () {
+        if (!b) return '';
+        if (b.u === null && b.d === null) return _t('實走小休量不出來（紀錄要能做出實走分析圖，各方向移動 15 分鐘以上），小休維持現值。');
+        var cur = function (v, k) { return v !== null ? _f('每小時 {0} 分', nf1(v)) : _f('移動不到 15 分鐘，維持 {0} 分', nf1(numOr(S[k], k === 'stopH' ? 16 : 5))); };
+        if (applied) return _f('已套用小休：上坡與平路 {0} 分、下坡 {1} 分（{2} 筆紀錄的實走小休）。', nf1(numOr(S.stopH, 16)), nf1(numOr(S.stopHDn, 5)), b.n);
+        return _f('實走小休（{0} 筆紀錄，10 分鐘以內的停留）：上坡與平路{1}、下坡{2}。按「最佳化」一起套用到「小休」。', b.n, cur(b.u, 'stopH'), cur(b.d, 'stopHDn'));
+      });
+    }
+    function applyHistBrk(b) {   // V112: 最佳化 also sets the plan's short breaks from the records
+      if (!b || (b.u === null && b.d === null)) return;
+      if (b.u !== null) S.stopH = b.u;
+      if (b.d !== null) S.stopHDn = b.d;
+      S.stopSrc = b.n;
+      $('stopH').value = S.stopH; $('stopHDn').value = S.stopHDn;
+      histBrkView(b, true);
     }
     function histTeam(team) {   // 隊伍速度 from the records (model time ÷ moving time), weighted by how much each looks like the current route
       var f = T.track ? C.routeFeat(T.track) : null, au = 0, ad = 0;
@@ -5397,6 +5436,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       var veh = 0; histRecs.forEach(function (q) { if (q.veh) veh++; });
       recs.forEach(function (q) { samples = samples.concat(C.normLorentzSamples(q.samp, q.tag, PP)); });   // V102: back to 一般步道・重裝・晴・altRef
       pendingLorentz = null;
+      var brk = histBrk(recs);   // V112
+      histBrkView(brk, false);
       setTx('histStatus', function () {
         return _f('已載入 {0} 個檔案，{1} 筆有時間紀錄、移動 15 分鐘以上，取得 {2} 個樣本（每走 1 分鐘一個，已排除停下與車輛）。', count, n, samples.length) +
           (shaky ? _f('其中 {0} 個檔案的高度在 1 分鐘內跳動 30 m 以上達 10 次以上，高度不可靠，已排除自動校準。', shaky) : '') +
@@ -5416,7 +5457,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
           });
           if (old) C.setLorentzParams(old); else C.clearLorentzParams();
           if (pool.length >= 3) {
-            pendingLorentz = { p: p, pool: pool };
+            pendingLorentz = { p: p, pool: pool, brk: brk };
             var kRaw = C.simRatio(pool, T.track ? C.routeFeat(T.track) : null, function (q) { return q.A; }, function (q) { return q.L; }) || 1;
             var k = kRaw > 0 ? 1 + LOR_SHRINK * (kRaw - 1) : 1, m = pool.length; // V88: preview the same shrunk level that lorK will apply
             setTx('lorentzParamsView', function () {
@@ -5430,7 +5471,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
         }
       }
       var team = recs.map(function (q) { return { Au: q.Au, Ad: q.Ad, Mu: q.Mu * q.kb, Md: q.Md * q.kb, f: q.f }; });   // the default model's time on each record
-      pendingLorentz = { team: team };
+      pendingLorentz = { team: team, brk: brk };
       var t0 = histTeam(team), few = n < 3;
       setTx('lorentzParamsView', function () {
         return _f(few ? '只有 {0} 筆紀錄，不擬合勞侖茲函數，改算隊伍速度：上坡與平路 ×{1}、下坡 ×{2}（跟目前路線越像的紀錄權重越重）。按「最佳化」後套用。'
@@ -5514,6 +5555,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
         if ($('teamBox')) $('teamBox').hidden = false;
         if ($('lorentzTeamNote')) $('lorentzTeamNote').hidden = true;
         setTx('lorentzParamsView', function () { return _f('已套用隊伍速度：上坡與平路 ×{0}、下坡 ×{1}（由 {2} 筆歷史紀錄算出）。', f2(t1.u), f2(t1.d), m); });
+        applyHistBrk(pendingLorentz.brk);   // V112
         render();
         return;
       }
@@ -5525,6 +5567,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       if ($('teamDn')) $('teamDn').value = 1;
       if ($('teamBox')) $('teamBox').hidden = true;
       if ($('lorentzTeamNote')) $('lorentzTeamNote').hidden = false;
+      applyHistBrk(pendingLorentz.brk);   // V112
       render();
     });
     $('btnClearLorentz').addEventListener('click', function () {
@@ -5532,6 +5575,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       pendingLorentz = null;
       histRecs = []; histCount = 0; renderHistList();
       setTx('histStatus', function () { return ''; });
+      histBrkView(null);   // V112: short breaks taken from the records go back to the defaults; ones typed by hand stay
+      if (S.stopSrc) { S.stopH = 16; S.stopHDn = 5; S.stopSrc = 0; $('stopH').value = S.stopH; $('stopHDn').value = S.stopHDn; }
       setTx('lorentzParamsView', function () { return _t('目前：使用 Tobler + DIN 混合（尚未解出勞侖茲函數參數）'); });
       if ($('teamBox')) $('teamBox').hidden = false;
       if ($('lorentzTeamNote')) $('lorentzTeamNote').hidden = true;

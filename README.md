@@ -7,7 +7,7 @@ Estimate how long a hiking route will take from a GPX track. Accounts for grade,
 ## Features
 
 - Default model: average of **Tobler’s hiking function** and **DIN 33466**, its overall pace set from the moving time of 7 measured class sections
-- Upload 3 or more past GPX logs to fit a group-specific **Lorentz speed curve** (Gauss–Newton) that becomes the base speed, its level set from the logs’ moving time; with fewer logs, uphill and downhill team speeds are worked out instead
+- Upload 3 or more past GPX logs to fit a group-specific **Lorentz speed curve** (Gauss–Newton) that becomes the base speed, its level set from the logs’ moving time; with fewer logs, uphill and downhill team speeds are worked out instead. The same upload measures the group’s short breaks per hour, as the walk analysis reads them, and “Apply fit” puts them into the plan; without usable logs the 16/5 default stays
 - Per-segment tags: normal trail / roots & rock / muddy grass / forest road, heavy vs light pack, rain, running
 - Elevation profile, checkpoints, timetable, short stops, and an optional 10% buffer
 - Export image, GPX (with segment and timing settings), or plain-text summary
@@ -21,7 +21,7 @@ Estimate how long a hiking route will take from a GPX track. Accounts for grade,
 1. Open the link above (fully client-side; nothing is uploaded to a server)
 2. Load a route GPX, or try the sample. A GPX recorded by a phone or watch (a time at every point) gives both the trip plan and the walk analysis; a route planned in another app gives the plan only, and a recorded GPX can be loaded beside it for the walk analysis
 3. Adjust settings, terrain segments, and checkpoints as needed
-4. Optionally upload past GPX files of your group (3 or more for the Lorentz curve, fewer give team speed factors)
+4. Optionally upload past GPX files of your group (3 or more for the Lorentz curve, fewer give team speed factors); they also give the group’s short breaks per hour
 5. Review the timetable and summary, then share or download
 
 ## Tech
