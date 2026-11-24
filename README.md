@@ -7,7 +7,7 @@ Estimate how long a hiking route will take from a GPX track. Accounts for grade,
 ## Features
 
 - Default model: average of **Tobler’s hiking function** and **DIN 33466**, its overall pace set from the moving time of 7 measured class sections
-- Upload 3 or more past GPX logs to fit a group-specific **Lorentz speed curve** (Gauss–Newton) that becomes the base speed, its level set from the logs’ moving time; with fewer logs, uphill and downhill team speeds are worked out instead
+- Upload 3 or more past GPX logs to fit a group-specific **Lorentz speed curve** (Gauss–Newton) that becomes the base speed, its level set from the logs’ moving time; with fewer logs, uphill and downhill team speeds are worked out instead. The same upload measures the group’s short breaks per hour, as the walk analysis reads them, and “Apply fit” puts them into the plan; without usable logs the 16/5 default stays
 - Per-segment tags: normal trail / roots & rock / muddy grass / forest road, heavy vs light pack, rain, running
 - Elevation profile, checkpoints, timetable, short stops, and an optional 10% buffer
 - Export image, GPX (with segment and timing settings), or plain-text summary
@@ -21,7 +21,7 @@ Estimate how long a hiking route will take from a GPX track. Accounts for grade,
 1. Open the link above (fully client-side; nothing is uploaded to a server)
 2. Load a route GPX, or try the sample. A GPX recorded by a phone or watch (a time at every point) gives both the trip plan and the walk analysis; a route planned in another app gives the plan only, and a recorded GPX can be loaded beside it for the walk analysis
 3. Adjust settings, terrain segments, and checkpoints as needed
-4. Optionally upload past GPX files of your group (3 or more for the Lorentz curve, fewer give team speed factors)
+4. Optionally upload past GPX files of your group (3 or more for the Lorentz curve, fewer give team speed factors); they also give the group’s short breaks per hour
 5. Review the timetable and summary, then share or download
 
 ## Tech
@@ -36,6 +36,7 @@ Copyright (c) 2026 Shainy Hsu. All rights reserved. See [LICENSE](LICENSE).
 
 Newest first. Times are Taiwan time (UTC+8). Also kept in [CHANGELOG.md](CHANGELOG.md).
 
+- V112 | 2026-11-24 09:31 | Uploading past GPX records now also measures the team’s short breaks per hour, as the walk analysis reads them, uphill and flat apart from downhill; they show under the Lorentz result and “Apply fit” puts them into the plan’s short breaks. The note under short breaks says how many records they came from; typing a value drops that link, and “Clear parameters” returns record-derived values to the 16/5 default. Without usable records the default stays.
 - V111 | 2026-11-24 06:09 | The route card now says what a loaded file gives: a GPX recorded by a phone or watch (a time at every point) makes both the trip plan and the walk analysis, with a “See walk analysis” button that goes straight to it (on phones, the Export tab); a route without times makes the plan only, with a “Load walk record” button for a recorded GPX beside it. With no route, wide screens show one column in the phone order, so the walk card is no longer covered, and the walk preview is drawn again.
 - V110 | 2026-11-24 02:03 | In English, the "Use part of the track" and example buttons use slightly smaller text so the label stays inside its box on every phone width.
 - V109 | 2026-11-23 19:52 | Tapping "Example loaded" again takes you back to the route you had before the example, or to the empty page, with its sections, points, stops and start time; the example button now sits beside "Use part of the track", and "Whole track" moved into the button column.
