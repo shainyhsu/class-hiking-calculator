@@ -1860,7 +1860,7 @@ var CORE = (function () {
   //      - a "walking" burst of <= MERGE_S s between two stops that ends within MERGE_M m and MERGE_Z m of height of where it began
   //        belongs to the stop
   var SH_WIN = 15, SH_V = 1.0, SH_MIN = 40, SH_DRIFT = 0.25;   // V76 short stops: +-15 s, under 8 m in 30 s, 40 s or more; standing GPS under 0.25 km/h
-  var ZMOVE = 90, ZJIT = 40, ZLONG = 180, ZDRIFT = 0.45, VDRIFT = 0.95, MERGE_S = 120, MERGE_M = 20, MERGE_Z = 5, GAP_S = 300, GAP_M = 150;
+  var ZMOVE = 90, ZJIT = 40, ZLONG = 180, ZDRIFT = 0.45, VDRIFT = 0.95, MERGE_S = 120, MERGE_M = 20, MERGE_Z = 5, GAP_S = 300, GAP_M = 150, ZSTAY = 30, ZBACK = 0.5;   // V114 ZSTAY: m, ZBACK: net height change as a share of its range, see keep in timeGrid
   function countHeightJumps(pts) {
     var s = [], i, ja = 0, jb = 0, lastJ = -1e15, jumps = 0;
     for (i = 0; i < pts.length; i++) if (pts[i].t != null && isFinite(pts[i].t) && pts[i].ele != null && isFinite(pts[i].ele)) s.push([pts[i].t / 1000, +pts[i].ele]);
@@ -1964,9 +1964,37 @@ var CORE = (function () {
     }
     if (dv.length >= Math.round(600 / step)) { dv.sort(function (x, y) { return x - y; }); drift = dv[Math.floor(dv.length / 2)]; }
     var wide = zOk && !zUse && drift >= ZDRIFT, mode = zUse ? 'height' : (zOk ? (wide ? 'drift' : 'height2') : 'flat');
+    if (wide) for (k = 0; k < n; k++) stop[k] = ok[k] && hv[k] < VDRIFT ? 1 : 0;
+    var keep = new Uint8Array(n);   // V114: inside a run of stops (less than MERGE_S apart), a stretch of LONG_STOP min or more whose stops stay within ZSTAY m and whose height goes back and forth
+    if (zOk) {                      //       of the middle of their box is a break: the slow-climb test below does not cut it up because its height drifts
+      var mx = 111320, my = 111320 * Math.cos(LA[0] * Math.PI / 180);
+      for (k = 0; k < n; ) {
+        if (!stop[k]) { k++; continue; }
+        var c1 = k, q;
+        for (q = k + 1; q < n && (T[q] - T[c1]) <= MERGE_S; q++) if (stop[q]) c1 = q;
+        for (var i0 = k; i0 <= c1; ) {
+          if (!stop[i0]) { i0++; continue; }
+          var y0 = LA[i0], y1 = LA[i0], x0 = LO[i0], x1 = LO[i0], j1 = i0;
+          for (q = i0 + 1; q <= c1; q++) {
+            if (!stop[q]) continue;
+            var ya = Math.min(y0, LA[q]), yb = Math.max(y1, LA[q]), xa = Math.min(x0, LO[q]), xb = Math.max(x1, LO[q]);
+            if (Math.hypot((yb - ya) * mx, (xb - xa) * my) / 2 >= ZSTAY) break;
+            y0 = ya; y1 = yb; x0 = xa; x1 = xb; j1 = q;
+          }
+          var back = false;
+          if (T[j1] - T[i0] >= LONG_STOP * 60) {   // the height goes back and forth (drift), not one way (a slow climb)
+            var zl = Z[i0], zh = Z[i0];
+            for (q = i0; q <= j1; q++) if (stop[q]) { if (Z[q] < zl) zl = Z[q]; if (Z[q] > zh) zh = Z[q]; }
+            back = zh - zl < 1 || Math.abs(Z[j1] - Z[i0]) < ZBACK * (zh - zl);
+          }
+          if (back) { for (q = i0; q <= j1; q++) if (stop[q]) keep[q] = 1; i0 = j1 + 1; } else i0++;
+        }
+        k = c1 + 1;
+      }
+    }
     for (k = 0; k < n; k++) {
       if (wide) stop[k] = ok[k] && hv[k] < VDRIFT ? 1 : 0;
-      if (!stop[k] || !zOk) continue;
+      if (!stop[k] || !zOk || keep[k]) continue;
       if (zUse) { if (vz[k] >= ZMOVE) { stop[k] = 0; zMoved++; } continue; }
       var w1 = zr(k, h), w2 = zr(k, hL);
       if (Math.abs(w1) >= ZMOVE && Math.abs(w2) >= ZMOVE && w1 * w2 > 0) { stop[k] = 0; zMoved++; }
