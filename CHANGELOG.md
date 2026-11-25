@@ -1,7 +1,7 @@
 # Hike Time Estimator: changelog
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
-- V117 | 2026-11-25 09:09 | The light/dark switch now also keeps <meta name="color-scheme"> in step with the theme, as Modern Web Guidance asks; colors and layout unchanged.
+- V117 | 2026-11-25 09:35 | The light/dark switch now also keeps <meta name="color-scheme"> in step with the theme, as Modern Web Guidance asks; colors and layout unchanged.
 - V116 | 2026-11-25 09:01 | Modern Web Guidance cleanup, results and layout unchanged: the JSZip library is checked with Subresource Integrity, ten lists are cleared with replaceChildren() instead of innerHTML, the ?lang= link is read with URLSearchParams, and the screen-reader-only text is hidden with clip-path instead of the deprecated clip.
 - V115 | 2026-11-24 21:32 | Walk analysis: vehicle runs (15 km/h or faster) count as record gaps, as in the history upload, so a drive is no longer moving time; running still counts as walking.
 - V114 | 2026-11-24 19:33 | Long breaks stay whole when the height drifts: inside a run of stops, a stretch of 10 min or more within 30 m whose height goes back and forth is no longer cut into short breaks by the steep slow-climb test; one-way height change still counts as walking.
