@@ -61,7 +61,7 @@ details.fold>summary h2{white-space:nowrap}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha384-+mbV2IY1Zk/X1p/nWllGySJSUN8uMs+gUAN10Or95UBH0fpj6GfKgPmgC5EXieXG" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
 /* Layout: phone-first field card — one column (檔案 → 設定 → 剖面 → 路段 → 時間表 → 摘要): inputs first, results after */
 :root{
@@ -295,7 +295,7 @@ td .del{min-width:28px}
 .secgrid input{min-height:38px;padding:.3rem .4rem;text-align:right;-moz-appearance:textfield;appearance:textfield}
 .secgrid input::-webkit-outer-spin-button,.secgrid input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .secempty{color:var(--muted);font-size:.84rem;margin:.2rem 0}
-.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
 .tsw{display:inline-block;width:12px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
 .ck{display:inline-flex;align-items:center;gap:4px;font-size:.74rem;color:var(--ink2);margin-top:2px;cursor:pointer}
 .ck input{width:16px;height:16px;min-height:0;margin:0}
@@ -890,8 +890,8 @@ details.fold>.foldbody{display:grid;gap:12px;margin-top:14px;min-width:0}
   Object.assign(EN, {"\u003cbr>\u003cbr>實走分析讀不出這筆紀錄，小休不提供套用。": "\u003cbr>\u003cbr>The walk analysis cannot read this record, so no short breaks are suggested."});   // Q2
   Object.assign(EN, {"實走小休量不出來（紀錄要能做出實走分析圖，各方向移動 15 分鐘以上），小休維持現值。": "Short breaks could not be measured (the records need a walk analysis and 15 min or more of moving each way); short breaks stay as they are.", "每小時 {0} 分": " {0} min per hour", "移動不到 15 分鐘，維持 {0} 分": " under 15 min of moving, keeps {0} min", "已套用小休：上坡與平路 {0} 分、下坡 {1} 分（{2} 筆紀錄的實走小休）。": "Short breaks applied: uphill & flat {0} min, downhill {1} min (short breaks walked in {2} records).", "實走小休（{0} 筆紀錄，10 分鐘以內的停留）：上坡與平路{1}、下坡{2}。按「最佳化」一起套用到「小休」。": "Short breaks walked ({0} records, stops under 10 min): uphill & flat{1}, downhill{2}. “Apply fit” applies them to “Short breaks” as well.", "由 {0} 筆歷史紀錄的實走小休算出（「清除參數」回到預設 16、5 分）。": " From the short breaks walked in {0} past records (“Clear parameters” returns to the defaults of 16 and 5 min).", "上傳歷史 GPX（「進階」的勞侖茲函數最佳化）時，也會照實走分析量出這隊每小時的小休，按「最佳化」一起套用到這裡；沒有可用的紀錄就用預設 16 分、5 分。": "When you upload past GPX records (Lorentz fit under “Advanced”), the team’s short breaks per hour are also measured as in the walk analysis and applied here with “Apply fit”; without usable records the defaults of 16 and 5 min stay.", "每筆紀錄也照實走分析量出小休（10 分鐘以內的停留，上坡與平路、下坡分開），合計後按「最佳化」一起套用到「小休」；「清除參數」會把小休改回預設 16 分、5 分（手動改過的不動）。": "Each record’s short breaks (stops under 10 min, uphill & flat and downhill apart) are also measured as in the walk analysis; their total goes into “Short breaks” with “Apply fit”. “Clear parameters” returns short breaks to the defaults of 16 and 5 min (unless you changed them by hand)."});   // V112
   var NAMES = {"航點":"Waypoint","起點":"Start","終點":"End","最高點":"Highest point","折返點":"Turnaround","最高點／折返":"Highest point / turnaround","四季公墓→巨木登山口後 239 m 營地":"Siji cemetery → camp 239 m past the giant-tree trailhead","四季公墓（停車處）":"Siji cemetery (parking)","新柵門":"New gate","紅柵欄（舊柵門）":"Red gate (old gate)","途中午餐":"Lunch on the way","廢棄護管所":"Abandoned ranger post","加納富溪":"Jianafu Creek","巨木登山口":"Giant-tree trailhead","營地":"Camp","大同鄉 健行":"Datong hike","戒茂斯-溪邊營地":"Jiemaosi – creekside camp","戒茂斯登山口（拉繩排隊）":"Jiemaosi trailhead (rope queue)","戒茂斯山前峰":"Jiemaosi fore-peak","碎石坡":"Scree slope","戒茂斯山三叉路口":"Jiemaosi junction","新武呂溪溪底":"Xinwulu Creek bed","溪邊營地":"Creekside camp","武陵山莊停車場":"Wuling Lodge car park","廢棄工寮":"Abandoned work hut","桃山指示牌":"Taoshan signpost","木橋":"Wooden bridge","小空地與指示牌":"Small clearing and signpost","小平台":"Small platform","2K 手機可通訊處":"2K phone signal","大平台與兩張長椅休息處":"Big platform with two benches","兩張長椅休息處(二)":"Two-bench rest stop (2)","黑水塘":"Heishui Pond","停機坪":"Helipad","瞭望小平台":"Lookout platform","4K手機可通訊點":"4K phone signal","桃山":"Taoshan"};
-  var L = null, q = /[?&]lang=(zh|en)(&|$)/.exec(location.search);
-  if (q) L = q[1];
+  var L = null, q = new URLSearchParams(location.search).getAll('lang').filter(function (v) { return v === 'zh' || v === 'en'; });
+  if (q.length) L = q[0];
   if (!L) { try { L = localStorage.getItem('ctp.lang'); } catch (e) { L = null; } }
   if (L !== 'zh' && L !== 'en') {   // first visit: Chinese if the browser lists any Chinese (and for search engines), else English
     var ls = (navigator.languages && navigator.languages.length ? Array.prototype.slice.call(navigator.languages) : [navigator.language || 'zh']);
@@ -2502,7 +2502,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   function renderPackBar() {   // V104: the light-pack setting and the per-section packs, shown together
     var el = $('packBar'); if (!el) return;
     var L = T.secsFull || [], nH = 0, nL = 0, nR = 0;
-    if (!T.full) { el.innerHTML = ''; return; }
+    if (!T.full) { el.replaceChildren(); return; }
     if (!L.length) nH = 1; else L.forEach(function (q) { if (q.run === true) nR++; else if (q.heavy !== false) nH++; else nL++; });
     if (L.length <= 1) {
       var allL = nL > 0 && !nH;
@@ -3133,7 +3133,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       w.innerHTML = esc(warnTxt(T.warn)) + (T.suggest && !T.range ? _t(' <button class="btn" type="button" id="btnSuggest">只算步行段 ') + km(T.suggest[0]) + '–' + km(T.suggest[1]) + ' km</button>' : '');
       var bt = $('btnSuggest');
       if (bt) bt.onclick = function () { T.range = T.suggest.slice(); rebuild(false); setRangeInputs(); render(); };
-    } else { w.hidden = true; w.innerHTML = ''; }
+    } else { w.hidden = true; w.replaceChildren(); }
   }
 
   var TERR_SHORT; i18v(function () { TERR_SHORT = { trail: _t('一般步道'), root: _t('樹根岩塊'), mud: _t('泥濘草徑'), road: _t('林道') }; });
@@ -3284,7 +3284,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   }
   function renderThumb(c) {   // V100: a small profile on the route card, stretched to fit, to catch the eye
     var box = $('thumb'); if (!box) return;
-    if (!c) { box.innerHTML = ''; return; }
+    if (!c) { box.replaceChildren(); return; }
     var W = Math.round(box.clientWidth) || 170, H = Math.round(box.clientHeight) || 200, xr = c.m.xr, z = c.tr.z, D = xr[xr.length - 1] || 1;
     var z0 = c.st.zmin, z1 = c.st.zmax, rz = Math.max(1, z1 - z0), pl = 8, pr = 8, pt = 34, pb = 26, pw = W - pl - pr, ph = H - pt - pb, pts = [], n = xr.length, step = Math.max(1, Math.floor(n / 400));
     function X(d) { return (pl + d / D * pw).toFixed(1); } function Y(v) { return (pt + (z1 - v) / rz * ph).toFixed(1); }
@@ -3920,7 +3920,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     } finally {
       boxes.forEach(function (b, i) { b.style.width = keep[i]; }); if (pd) document.body.classList.remove('picdraw');
       if (prev === null) root.removeAttribute('data-theme'); else root.setAttribute('data-theme', prev);
-      if (LAST) { renderStrip(LAST); renderProfile(LAST); } else { $('strip').innerHTML = ''; $('profile').innerHTML = ''; renderThumb(null); }
+      if (LAST) { renderStrip(LAST); renderProfile(LAST); } else { $('strip').replaceChildren(); $('profile').replaceChildren(); renderThumb(null); }
       if (none) document.body.classList.add('noroute');
     }
     return out;
@@ -4628,7 +4628,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   function schedulePreview() { clearTimeout(PREV_T); PREV_T = setTimeout(drawPicPreview, 700); }
   function drawPicPreview() {
     var box = $('picPages'), info = $('picInfo');
-    if (!box || (!LAST && !ACT)) { if (box && !LAST) { box.innerHTML = ''; info.textContent = ''; $('actPages').innerHTML = ''; $('actInfo').textContent = ''; $('actHead').hidden = true; $('btnActPic').hidden = true; $('btnActSave').hidden = true; } return; }   // V82
+    if (!box || (!LAST && !ACT)) { if (box && !LAST) { box.replaceChildren(); info.textContent = ''; $('actPages').replaceChildren(); $('actInfo').textContent = ''; $('actHead').hidden = true; $('btnActPic').hidden = true; $('btnActSave').hidden = true; } return; }   // V82
     if (DRAG || PDRAG) { schedulePreview(); return; }
     var host = (LAST ? box : $('actPages')).parentNode, cs = getComputedStyle(host), wIn = host.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0);   // V111: no route: the share card is hidden, so measure the walk card
     if (!(wIn > 0)) return;   // card not on screen (the empty preview box itself is hidden, so measure the card)
@@ -4644,10 +4644,10 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     }
     function actPart() {   // V77: the 實走分析圖 under it
       var ab = $('actPages'), ai = $('actInfo');
-      if (!ACT) { ab.innerHTML = ''; ai.textContent = ''; $('actHead').hidden = true; $('btnActPic').hidden = true; $('btnActSave').hidden = true; return null; }
+      if (!ACT) { ab.replaceChildren(); ai.textContent = ''; $('actHead').hidden = true; $('btnActPic').hidden = true; $('btnActSave').hidden = true; return null; }
       return makePicDoc(land, Math.max(1, kpx * 1.4), true).then(function (d2) { if (my !== PREV_N) return; $('actHead').hidden = false; $('btnActPic').hidden = false; $('btnActSave').hidden = false; show(d2, ab, ai); });
     }
-    if (!LAST) { box.innerHTML = ''; info.textContent = ''; return Promise.resolve().then(actPart).catch(function () { /* preview only */ }); }   // V82: no route: only the walk; V111: the promise tells goAct when it is drawn
+    if (!LAST) { box.replaceChildren(); info.textContent = ''; return Promise.resolve().then(actPart).catch(function () { /* preview only */ }); }   // V82: no route: only the walk; V111: the promise tells goAct when it is drawn
     return makePicDoc(land, Math.max(1, kpx * 1.4)).then(function (doc) {
       if (my !== PREV_N) return;
       show(doc, box, info);
@@ -5567,7 +5567,7 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     function renderHistList() {   // V102: the records in use, each with the conditions it was walked in
       var box = $('histList'); if (!box) return;
       var recs = histRecs.filter(function (q) { return q.ok; });
-      if (!recs.length) { box.hidden = true; box.innerHTML = ''; return; }
+      if (!recs.length) { box.hidden = true; box.replaceChildren(); return; }
       function sel(k, v, opts) { return '<select data-k="' + k + '" aria-label="' + esc(_t(k === 'heavy' ? '裝備' : k === 'rain' ? '天氣' : '地形')) + '">' + opts.map(function (o) { return '<option value="' + o[0] + '"' + (String(v) === o[0] ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select>'; }
       var P_ = [['true', _t('重裝')], ['false', _t('輕裝')]], W_ = [['false', _t('晴天')], ['true', _t('雨天或起霧')]];
       var T_ = ['trail', 'road', 'root', 'mud'].map(function (k) { return [k, TERR_SHORT[k]]; });
