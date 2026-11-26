@@ -36,6 +36,7 @@ Copyright (c) 2026 Shainy Hsu. All rights reserved. See [LICENSE](LICENSE).
 
 Newest first. Times are Taiwan time (UTC+8). Also kept in [CHANGELOG.md](CHANGELOG.md).
 
+- V119 | 2026-11-26 13:15 | Walk records over several days: a record with gaps of 3 hours or more is cut into parts, and the walk analysis uses the whole record or the part that fits the route best (a 5-day file now reads its first day against a day-1 plan); the status line names the part used.
 - V118 | 2026-11-25 12:54 | Ride sections: a route with vehicle runs keeps every walking stretch and the rides between them take no walking time (new Ride box per section, ride time as a long break at its start); distance and climb count walking only.
 - V117 | 2026-11-25 09:35 | The light/dark switch now also keeps <meta name="color-scheme"> in step with the theme, as Modern Web Guidance asks; colors and layout unchanged.
 - V116 | 2026-11-25 09:01 | Modern Web Guidance cleanup, results and layout unchanged: the JSZip library is checked with Subresource Integrity, ten lists are cleared with replaceChildren() instead of innerHTML, the ?lang= link is read with URLSearchParams, and the screen-reader-only text is hidden with clip-path instead of the deprecated clip.
