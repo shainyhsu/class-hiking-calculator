@@ -3998,8 +3998,17 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     }
     return src.parts;
   }
-  function actPick(src, tr) {   // V119 [Unverified]: a record in several parts: the part that fits the route best, i.e. of the parts matching about as much of the route as any
-    var parts = actParts(src), ok = [], top = 0, best = null;   //   (within 5 % or 100 m), the one least often over 100 m off it, then the nearest (V120). No such part (a route of all the days) or none fits: the whole record
+  function actOnRoute(m, G) {   // V121 [Unverified]: route metres walked along while on it (within 80 m, as near as matchRoute places a step), a 5-s step at most 1.5 x its own metres + 5
+    var s = 0, k, dp;
+    for (k = 1; k < G.n; k++) {
+      if (G.gap[k] || G.gap[k - 1] || m.off[k] > 80 || m.off[k - 1] > 80) continue;
+      dp = m.pd[k] - m.pd[k - 1];
+      if (dp > 0) s += Math.min(dp, Math.max(0, G.d[k] - G.d[k - 1]) * 1.5 + 5);
+    }
+    return s;
+  }
+  function actPick(src, tr) {   // V119 [Unverified]: a record in several parts: the part that fits the route best, i.e. of the parts walking about as much of the route as any
+    var parts = actParts(src), ok = [], top = 0, best = null;   //   (within 5 % or 100 m, actOnRoute, V121), the one walking most of it, then the nearest. No such part (a route of all the days) or none fits: the whole record
     if (!parts) return src;
     if (src.pickTrack === tr) return src.pick;
     [src].concat(parts).forEach(function (p) {
@@ -4008,11 +4017,11 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       if (p.mtTrack !== tr) { p.mt = C.matchRoute(G, tr); p.mtTrack = tr; }
       var m = p.mt;
       if (!m || m.far > 0.5 || m.d1 - m.d0 < Math.min(500, tr.total * 0.2)) return;   // as off() in actData: not on the route
-      ok.push(p); top = Math.max(top, m.d1 - m.d0);
+      p.walked = actOnRoute(m, G); ok.push(p); top = Math.max(top, p.walked);   // V121: matched end to end is not walked; a day spent around the camp at both ends of an out-and-back is matched end to end
     });
     ok.forEach(function (p) {   // V120: a part comes before the whole record, whose stays at the start or the end of the route on the days around would count as the walk's
-      if (p === src || p.mt.d1 - p.mt.d0 < top - Math.max(100, top * 0.05)) return;
-      if (!best || p.mt.far < best.mt.far - 0.05 || (p.mt.far <= best.mt.far + 0.05 && p.mt.offMed < best.mt.offMed)) best = p;
+      if (p === src || p.walked < top - Math.max(100, top * 0.05)) return;
+      if (!best || p.walked > best.walked + 1 || (p.walked >= best.walked - 1 && p.mt.offMed < best.mt.offMed)) best = p;
     });
     src.pick = best || src; src.pickTrack = tr;
     return src.pick;
