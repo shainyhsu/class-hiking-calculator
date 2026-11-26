@@ -4939,7 +4939,6 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     if ($('lorentzTeamNote')) $('lorentzTeamNote').hidden = !hasL;
     if (hasL) { S.teamUp = 1; S.teamDn = 1; $('teamUp').value = 1; $('teamDn').value = 1; }
     if ($('mainLightKg') && isNum(PP.lightKg)) $('mainLightKg').value = PP.lightKg;
-    if ($('mainBodyKg') && isNum(PP.bodyKg)) $('mainBodyKg').value = PP.bodyKg;
     $('runUp').value = S.runUp; $('runDn').value = S.runDn; if ($('calKg')) { $('calKg').value = isNum(S.calKg) ? S.calKg : ''; $('calKg').placeholder = nf1(isNum(PP.lightKg) ? +PP.lightKg : 2); }
     PMAP.forEach(function (pm) { var el = $(pm[0]); if (el) el.value = PP[pm[1]]; });
     ['root', 'mud'].forEach(function (k) { ['Sun', 'Rain'].forEach(function (w) { for (var i = 0; i < 3; i++) { var el = $(k + w + i); if (el) el.value = PP.terr[k][w.toLowerCase()][i]; } }); });
@@ -5779,38 +5778,11 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       });
     }
     
-    if ($('mainBodyKg')) {
-      $('mainBodyKg').value = isNum(PP.bodyKg) ? PP.bodyKg : 50;
-      $('mainBodyKg').addEventListener('change', function () {
-        var v = Math.max(30, Math.min(120, numOr($('mainBodyKg').value, 50)));
-        PP.bodyKg = v;
-        $('mainBodyKg').value = v;
-        render();
-      });
-    }
-    if ($('mainBodyKg')) {
-      $('mainBodyKg').value = isNum(PP.bodyKg) ? PP.bodyKg : 50;
-      $('mainBodyKg').addEventListener('change', function () {
-        var v = Math.max(30, Math.min(120, numOr($('mainBodyKg').value, 50)));
-        PP.bodyKg = v;
-        $('mainBodyKg').value = v;
-        if ($('pBody')) $('pBody').value = v;
-        render();
-      });
-    }
     if ($('pLightKg')) {
       $('pLightKg').addEventListener('change', function () {
         var v = Math.max(0, Math.min(13, numOr($('pLightKg').value, 2)));
         PP.lightKg = v;
         if ($('mainLightKg')) $('mainLightKg').value = v;
-        render();
-      });
-    }
-    if ($('pBody')) {
-      $('pBody').addEventListener('change', function () {
-        var v = Math.max(30, Math.min(120, numOr($('pBody').value, 50)));
-        PP.bodyKg = v;
-        if ($('mainBodyKg')) $('mainBodyKg').value = v;
         render();
       });
     }
