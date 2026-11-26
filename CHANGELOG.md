@@ -1,6 +1,7 @@
 # Hike Time Estimator: changelog
 
 Newest first. Each update of the page is one version. Times are Taiwan time (UTC+8).
+- V120 | 2026-11-26 14:12 | Walk records over several days: a part that fits the route now comes before the whole record, so a day's plan reads that day only (day 3 of a 5-day file no longer starts at the stays of day 2 or runs on to day 5).
 - V119 | 2026-11-26 13:15 | Walk records over several days: a record with gaps of 3 hours or more is cut into parts, and the walk analysis uses the whole record or the part that fits the route best (a 5-day file now reads its first day against a day-1 plan); the status line names the part used.
 - V118 | 2026-11-25 12:54 | Ride sections: a route with vehicle runs keeps every walking stretch and the rides between them take no walking time (new Ride box per section, ride time as a long break at its start); distance and climb count walking only.
 - V117 | 2026-11-25 09:35 | The light/dark switch now also keeps <meta name="color-scheme"> in step with the theme, as Modern Web Guidance asks; colors and layout unchanged.

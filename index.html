@@ -3998,8 +3998,8 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
     }
     return src.parts;
   }
-  function actPick(src, tr) {   // V119 [Unverified]: a record in several parts: the whole record or the part that fits the route best, i.e. of those matching about as much of the
-    var parts = actParts(src), ok = [], top = 0, best = null;   //   route as any (within 5 % or 100 m), the one nearest it (median offset). A route of all the days keeps the whole record; none fits: the whole record
+  function actPick(src, tr) {   // V119 [Unverified]: a record in several parts: the part that fits the route best, i.e. of the parts matching about as much of the route as any
+    var parts = actParts(src), ok = [], top = 0, best = null;   //   (within 5 % or 100 m), the one least often over 100 m off it, then the nearest (V120). No such part (a route of all the days) or none fits: the whole record
     if (!parts) return src;
     if (src.pickTrack === tr) return src.pick;
     [src].concat(parts).forEach(function (p) {
@@ -4010,7 +4010,10 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
       if (!m || m.far > 0.5 || m.d1 - m.d0 < Math.min(500, tr.total * 0.2)) return;   // as off() in actData: not on the route
       ok.push(p); top = Math.max(top, m.d1 - m.d0);
     });
-    ok.forEach(function (p) { if (p.mt.d1 - p.mt.d0 >= top - Math.max(100, top * 0.05) && (!best || p.mt.offMed < best.mt.offMed)) best = p; });
+    ok.forEach(function (p) {   // V120: a part comes before the whole record, whose stays at the start or the end of the route on the days around would count as the walk's
+      if (p === src || p.mt.d1 - p.mt.d0 < top - Math.max(100, top * 0.05)) return;
+      if (!best || p.mt.far < best.mt.far - 0.05 || (p.mt.far <= best.mt.far + 0.05 && p.mt.offMed < best.mt.offMed)) best = p;
+    });
     src.pick = best || src; src.pickTrack = tr;
     return src.pick;
   }
