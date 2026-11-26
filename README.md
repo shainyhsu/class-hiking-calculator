@@ -36,6 +36,7 @@ Copyright (c) 2026 Shainy Hsu. All rights reserved. See [LICENSE](LICENSE).
 
 Newest first. Times are Taiwan time (UTC+8). Also kept in [CHANGELOG.md](CHANGELOG.md).
 
+- V121 | 2026-11-26 14:32 | Walk records over several days: the part is chosen by how much of the route it walks along while on it, not by being matched from end to end, so a day spent around the camp at both ends of an out-and-back no longer passes for the day of the walk.
 - V120 | 2026-11-26 14:12 | Walk records over several days: a part that fits the route now comes before the whole record, so a day's plan reads that day only (day 3 of a 5-day file no longer starts at the stays of day 2 or runs on to day 5).
 - V119 | 2026-11-26 13:15 | Walk records over several days: a record with gaps of 3 hours or more is cut into parts, and the walk analysis uses the whole record or the part that fits the route best (a 5-day file now reads its first day against a day-1 plan); the status line names the part used.
 - V118 | 2026-11-25 12:54 | Ride sections: a route with vehicle runs keeps every walking stretch and the rides between them take no walking time (new Ride box per section, ride time as a long break at its start); distance and climb count walking only.
