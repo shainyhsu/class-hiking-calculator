@@ -61,7 +61,6 @@ details.fold>summary h2{white-space:nowrap}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha384-+mbV2IY1Zk/X1p/nWllGySJSUN8uMs+gUAN10Or95UBH0fpj6GfKgPmgC5EXieXG" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <style>
 /* Layout: phone-first field card — one column (檔案 → 設定 → 剖面 → 路段 → 時間表 → 摘要): inputs first, results after */
 :root{
@@ -4951,9 +4950,21 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
   }
   function showError(msg, cal) { var e = $(cal ? 'calError' : 'fileError'); e.textContent = msg; e.hidden = false; }
   function hideError() { $('fileError').hidden = true; $('calError').hidden = true; }
+  // V122: JSZip loads only when a KMZ or ZIP is read (pinned version + SRI, as before)
+  var JSZIP_URL = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js', jszipP = null;
+  function loadJSZip() {
+    if (window.JSZip) return Promise.resolve(window.JSZip);
+    if (!jszipP) jszipP = new Promise(function (ok, no) {
+      var s = document.createElement('script'); s.src = JSZIP_URL; s.async = true;
+      s.integrity = 'sha384-+mbV2IY1Zk/X1p/nWllGySJSUN8uMs+gUAN10Or95UBH0fpj6GfKgPmgC5EXieXG'; s.crossOrigin = 'anonymous'; s.referrerPolicy = 'no-referrer';
+      s.onload = function () { window.JSZip ? ok(window.JSZip) : (jszipP = null, no(new Error(_t('目前無法解開 KMZ，請改匯出 GPX 或 KML。')))); };
+      s.onerror = function () { jszipP = null; no(new Error(_t('目前無法解開 KMZ，請改匯出 GPX 或 KML。'))); };
+      document.head.appendChild(s);
+    });
+    return jszipP;
+  }
   function readKmz(file) {
-    if (typeof JSZip === 'undefined') return Promise.reject(new Error(_t('目前無法解開 KMZ，請改匯出 GPX 或 KML。')));
-    return file.arrayBuffer().then(function (b) { return JSZip.loadAsync(b); }).then(function (zip) {
+    return loadJSZip().then(function (Z) { return file.arrayBuffer().then(function (b) { return Z.loadAsync(b); }); }).then(function (zip) {
       var name = Object.keys(zip.files).filter(function (n) { return /\.kml$/i.test(n); })[0];
       if (!name) throw new Error(_t('KMZ 裡找不到 KML 檔。'));
       return zip.files[name].async('string');
@@ -5712,9 +5723,9 @@ var SAMPLE = {"name": "四季公墓→巨木登山口後 239 m 營地", "pts": [
         var f = files[i];
         if (/\.gpx$/i.test(f.name)) {
           try { histAdd(f.name, C.parseTrackText(await f.text())); count++; } catch (err) { console.warn(err); }
-        } else if (/\.zip$/i.test(f.name) && typeof JSZip !== 'undefined') {
+        } else if (/\.zip$/i.test(f.name)) {
           try {
-            var zip = await JSZip.loadAsync(f), names = Object.keys(zip.files);
+            var zip = await (await loadJSZip()).loadAsync(f), names = Object.keys(zip.files);
             for (var ni = 0; ni < names.length; ni++) {
               var zname = names[ni];
               if (/\.gpx$/i.test(zname) && !zip.files[zname].dir) {
